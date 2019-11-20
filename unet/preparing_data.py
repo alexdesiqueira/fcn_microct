@@ -55,12 +55,13 @@ pad_width = 32
 window_shape = (512 + 2*pad_width, 512 + 2*pad_width)
 step = 512  # was : 512 + pad_width
 
-for idx, image in enumerate(data_image):
+for idx, (image, label) in enumerate(zip(data_image, data_label)):
     image = np.pad(image, pad_width=pad_width)
+    label = np.pad(label, pad_width=pad_width)
+
     save_cropped_image(image, index=idx, window_shape=window_shape,
                        step=step, folder=train_image_save)
 
-for idx, label in enumerate(data_label):
     image = np.pad(image, pad_width=pad_width)
     save_cropped_image(label, index=idx, window_shape=window_shape,
                        step=step, folder=train_label_save)
@@ -74,18 +75,15 @@ data_label = io.ImageCollection(load_pattern=os.path.join(val_label_nocrop, '*.p
 print(f'* Validation images: {len(data_image)}; labels: {len(data_label)}')
 
 
-for idx, image in enumerate(data_image):
+for idx, (image, label) in enumerate(zip(data_image, data_label)):
     image = np.pad(image, pad_width=pad_width)
+    label = np.pad(label, pad_width=pad_width)
+
     save_cropped_image(image, index=idx, window_shape=window_shape,
                        step=step, folder=val_image_save)
 
-for idx, label in enumerate(data_label):
-    image = np.pad(image, pad_width=pad_width)
     save_cropped_image(label, index=idx, window_shape=window_shape,
                        step=step, folder=val_label_save)
-
-
-# In[ ]:
 
 
 data_image = io.ImageCollection(load_pattern=os.path.join(test_image_nocrop, '*.png'),
@@ -95,12 +93,12 @@ data_label = io.ImageCollection(load_pattern=os.path.join(test_label_nocrop, '*.
 
 print(f'* Testing images: {len(data_image)}; labels: {len(data_label)}')
 
-for idx, image in enumerate(data_image):
+for idx, (image, label) in enumerate(zip(data_image, data_label)):
     image = np.pad(image, pad_width=pad_width)
+    label = np.pad(label, pad_width=pad_width)
+
     save_cropped_image(image, index=idx, window_shape=window_shape,
                        step=step, folder=test_image_save)
 
-for idx, label in enumerate(data_label):
-    image = np.pad(image, pad_width=pad_width)
     save_cropped_image(label, index=idx, window_shape=window_shape,
                        step=step, folder=test_label_save)
