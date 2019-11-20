@@ -60,27 +60,55 @@ def overlap_predictions(image, prediction):
     return overlap
 
 
-def regroup_image(crop_images, images_by_side=10, colors=3):
+def regroup_image(image_set, grid_shape=None, pad_width=32, multichannel=False):
+    """
+    """
+    if multichannel:
+        image_set = image_set[:,
+                              pad_width:-pad_width,
+                              pad_width:-pad_width,
+                              :]
+    else:
+        image_set = image_set[:,
+                              pad_width:-pad_width,
+                              pad_width:-pad_width]
 
-    rows, cols = crop_images[0].shape
-    image = np.zeros((rows*images_by_side,
-                      cols*images_by_side,
-                      colors))
-
-    for idx, (i, j) in enumerate(product(range(images_by_side), repeat=2)):
-        image[i*rows: (i+1)*rows, j*cols: (j+1)*cols, colors-1] = crop_images[idx]
+    image = util.montage(image_set, grid_shape=grid_shape, multichannel=multichannel)
 
     return image
 
 
-def save_cropped_image(image, index, side=10, folder='temp'):
-    old_rows, old_cols = image.shape
-    rows, cols = old_rows // side, old_cols // side
+def save_cropped_image(image, index, window_shape=(512, 512), step=512, folder='temp'):
+    """Crops image and saves the cropped chunks in disk.
 
-    for idx, (i, j) in enumerate(product(range(side), repeat=2)):
-        aux_img = image[i*rows:(i+1)*rows, j*cols:(j+1)*cols]
-        fname = '%003d_img_crop-%02d.png' % (index, idx)
-        io.imsave(os.path.join(folder, fname), aux_img)
+    Parameters
+    ----------
+    image : ndarray
+        Input image.
+    index : int
+        Reference number to saved files.
+    window_shape : integer or tuple of length image.ndim, optional (default : (512, 512))
+        Defines the shape of the elementary n-dimensional orthotope
+        (better know as hyperrectangle) of the rolling window view.
+        If an integer is given, the shape will be a hypercube of
+        sidelength given by its value.
+    step : integer or tuple of length image.ndim, optional (default : 512)
+        Indicates step size at which extraction shall be performed.
+        If integer is given, then the step is uniform in all dimensions.
+    folder : str, optional (default : 'temp')
+        The folder to save the cropped files.
+
+    Returns
+    -------
+        None
+    """
+    img_crop = np.vstack(util.view_as_windows(image,
+                                              window_shape=window_shape,
+                                              step=step))
+
+    for idx, aux in enumerate(img_crop):
+        fname = '%03d_img_crop-%03d.png' % (index, idx)
+        io.imsave(os.path.join(folder, fname), aux)
     return None
 
 

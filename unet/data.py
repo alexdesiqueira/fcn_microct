@@ -1,4 +1,4 @@
-from keras.preprocessing.image import ImageDataGenerator
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from skimage import io, transform
 
 import numpy as np
@@ -7,7 +7,7 @@ import os
 
 def adjust_data(image, labels, flag_multi_class, num_class):
     if flag_multi_class:
-        image /= 255
+        image = image / 255
         if len(labels.shape) == 4:
             labels = labels[:, :, :, 0]
         else:
@@ -26,8 +26,8 @@ def adjust_data(image, labels, flag_multi_class, num_class):
         labels = aux_labels
 
     elif np.max(image) > 1:
-        image /= 255
-        labels /= 255
+        image = image / 255
+        labels = labels / 255
         labels[labels > 0.5] = 1
         labels[labels <= 0.5] = 0
 
@@ -38,7 +38,7 @@ def test_generator(test_path, target_size=(256, 256), pad_width=16,
                    flag_multi_class=False, as_gray=True):
     images = io.ImageCollection(os.path.join(test_path, '*.png'))
     for image in images:
-        image /= 255
+        image = image / 255
         if image.shape != target_size:
             image = transform.resize(image, target_size)
         # padding image

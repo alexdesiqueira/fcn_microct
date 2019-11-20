@@ -5,11 +5,13 @@ from tensorflow.keras.optimizers import Adam
 
 def unet(pretrained_weights=None, input_size=(256, 256, 1)):
     inputs = layers.Input(input_size)
-    conv1 = layers.Conv2D(64, 3,
+    conv1 = layers.Conv2D(filters=64,
+                          kernel_size=3,
                           activation='relu',
                           padding='same',
                           kernel_initializer='he_normal')(inputs)
-    conv1 = layers.Conv2D(64, 3,
+    conv1 = layers.Conv2D(filters=64,
+                          kernel_size=3,
                           activation='relu',
                           padding='same',
                           kernel_initializer='he_normal')(conv1)
@@ -121,7 +123,7 @@ def unet(pretrained_weights=None, input_size=(256, 256, 1)):
     #model = Model(inputs=inputs, output=conv10)
     model = Model(inputs, conv10)
 
-    model.compile(optimizer=Adam(lr=1e-4),
+    model.compile(optimizer=Adam(learning_rate=1e-3),
                   loss='binary_crossentropy',
                   metrics=['accuracy'])
 
