@@ -1,13 +1,23 @@
 from model import unet
-from os.path import join
 from skimage import io
 
+import os
 import utils
 
 
 base_folder = '/home/alex/data/larson_2019/data/'
-test_path = join(base_folder, 'test/image')
+test_path = os.path.join(base_folder, 'test')
+pred_path = os.path.join(test_path, 'predict')
+over_path = os.path.join(test_path, 'overlap')
 
-test_images = io.ImageCollection(join(test_path, '*.png'))
-for image in test_images:
-    result = utils.predict_on_image(image)
+for folder in [pred_path, over_path]:
+    if not os.path.isdir(folder):
+        os.makedirs(folder)
+
+test_images = io.ImageCollection(os.path.join(test_path, 'image/.png'))
+for idx, image in enumerate(test_images):
+    prediction = utils.predict_on_image(image)
+    overlap = utils.overlap_predictions(image, prediction)
+    fname = '%04d.png' % (idx)
+    io.imsave(os.path.join(pred_path, fname), prediction)
+    io.imsave(os.path.join(over_path, fname), overlap)

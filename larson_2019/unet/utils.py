@@ -1,6 +1,8 @@
 from itertools import product
 from model import unet
 from skimage import color, io, transform, util
+from skimage.measure import label
+from skimage.segmentation import mark_boundaries
 
 import glob
 import numpy as np
@@ -52,11 +54,9 @@ def overlap_predictions(image, prediction):
     """
     if not image.shape == prediction.shape:
         raise
-    rows, cols = image.shape
-    overlap = color.gray2rgb(image)
 
-    aux = prediction[..., 0]
-    overlap[:, :, 0] = aux*1.5
+    overlap = util.img_as_ubyte(color.gray2rgb(image))
+    overlap[:, :, 0] = util.img_as_ubyte(prediction > 0.5)
 
     return overlap
 
