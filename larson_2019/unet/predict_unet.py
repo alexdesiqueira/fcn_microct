@@ -22,7 +22,7 @@ test_images = io.ImageCollection(os.path.join(test_path, 'image/*.png'))
 
 print('# Processing...')
 for idx, image in enumerate(test_images):
-    prediction = utils.predict_on_image(image)
+    prediction = utils.predict_on_image(image, weights='576x576_withpad/take_3/larson_unet-576x576_withpad-take3.hdf5')
     overlap = utils.overlap_predictions(image, prediction)
     fname = '%04d.png' % (idx)
     io.imsave(os.path.join(pred_path, fname), prediction)

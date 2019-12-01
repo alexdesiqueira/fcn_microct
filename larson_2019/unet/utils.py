@@ -127,11 +127,11 @@ def save_predictions(save_folder, predictions, flag_multi_class=False,
     return None
 
 
-def predict_on_image(image, pad_width=32, window_shape=(576, 576), step=512):
+def predict_on_image(image, weights, pad_width=32, window_shape=(576, 576), step=512):
     """
     """
     model = unet(input_size=(576, 576, 1))
-    model.load_weights('576x576_withpad/larson_unet-576x576_withpad.hdf5')
+    model.load_weights(weights)
 
     image = np.pad(image, pad_width=pad_width)
     image_crop = np.vstack(util.view_as_windows(image,
