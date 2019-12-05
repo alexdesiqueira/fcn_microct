@@ -20,12 +20,15 @@ target_size = (576, 576)
 steps_per_epoch = int(15000 // batch_size)  # a total of 15000 crops
 validation_steps = int(6250 // batch_size)  # a total of 6250 crops
 
-data_gen_args = dict(rotation_range=0.1,  # was : 0.2
-                     width_shift_range=0.05,
+data_gen_args = dict(rotation_range=0.1,  # rotation
+                     width_shift_range=0.05,  # random shifts
                      height_shift_range=0.05,
-                     shear_range=0.05,
-                     zoom_range=0.05,
-                     horizontal_flip=True,
+                     shear_range=0.05,  # shearing transformations
+                     zoom_range=0.05,  # zooming
+                     horizontal_flip=True,  # flips
+                     vertical_flip=True,
+                     featurewise_center=True,  # feature standardization
+                     featurewise_std_normalization=True,
                      fill_mode='nearest')
 
 train_gene = data.train_generator(batch_size=batch_size,
