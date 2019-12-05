@@ -1,3 +1,4 @@
+from itertools import chain
 from model import unet
 from skimage import io, util
 
@@ -8,8 +9,10 @@ import utils
 print('# Preparing folders...')
 base_folder = '/home/alex/data/larson_2019'
 
-for test_path, subfolders, _ in [os.walk(os.path.join(base_folder, 'Recons/Bunch2WoPR/wet/')),
-                                 os.walk(os.path.join(base_folder, 'Recons/Bunch2WoPR/cured/'))]:
+folders = (os.path.join(base_folder, 'Recons/Bunch2WoPR/wet/'),
+           os.path.join(base_folder, 'Recons/Bunch2WoPR/cured/'))
+
+for test_path, subfolders, _ in chain.from_iterable(os.walk(folder) for folder in folders):
     if not subfolders:
         folder = test_path.split('/')[-1]
         pred_path = os.path.join(base_folder, 'data', folder, 'predict')
@@ -30,4 +33,4 @@ for test_path, subfolders, _ in [os.walk(os.path.join(base_folder, 'Recons/Bunch
             io.imsave(os.path.join(pred_path, fname), util.img_as_ubyte(prediction))
             io.imsave(os.path.join(over_path, fname), util.img_as_ubyte(overlap))
 
-            tf.keras.backend.clear_session()  # For easy reset of notebook state.
+            tf.keras.backend.clear_session()  # resetting session state.
