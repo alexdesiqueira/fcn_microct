@@ -8,8 +8,7 @@ def densenet(input_size=(512, 512, 1), densenet_model='201'):
     """
 
     args = dict(weights=None,
-                input_shape=input_size,
-                classes=input_size.shape[-1])
+                input_shape=input_size)
 
     models = {
         '121': ds.DenseNet121(**args),

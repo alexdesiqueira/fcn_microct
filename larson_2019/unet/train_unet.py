@@ -65,7 +65,7 @@ with mirrored_strategy.scope():
 
     history_callback = model.fit(train_gene,
                                  steps_per_epoch=steps_per_epoch,
-                                 epochs=120,
+                                 epochs=10,  # used 120 before
                                  validation_data=valid_gene,
                                  validation_steps=validation_steps,
                                  verbose=1,
