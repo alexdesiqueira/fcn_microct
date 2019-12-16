@@ -11,14 +11,15 @@ print(f'Num GPUs Available: {len(tf.config.experimental.list_physical_devices("G
 # print(tf.config.experimental.list_physical_devices('GPU'))
 # tf.debugging.set_log_device_placement(True)
 
-base_folder = '/home/alex/data/larson_2019/data/original_training_sample'
+# base_folder = '/home/alex/data/larson_2019/data/original_training_sample'
+base_folder = '/home/alex/data/larson_2019/data/original_288x288'
 mirrored_strategy = tf.distribute.MirroredStrategy(devices=['/gpu:0', '/gpu:1'])
 
 print('# Setting hyperparameters')
-batch_size = 2
-target_size = (576, 576)
-steps_per_epoch = int(15000 // batch_size)  # a total of 15000 crops
-validation_steps = int(6250 // batch_size)  # a total of 6250 crops
+batch_size = 1
+target_size = (288, 288)  # was : (576, 576)
+steps_per_epoch = int(60000 // batch_size)  # a total of 60000 crops
+validation_steps = int(25000 // batch_size)  # a total of 25000 crops
 
 data_gen_args = dict(rotation_range=0.1,  # rotation
                      width_shift_range=0.05,  # random shifts
@@ -51,8 +52,7 @@ valid_gene = data.train_generator(batch_size=batch_size,
 
 print('# Processing')
 with mirrored_strategy.scope():
-
-    model = unet(input_size=(576, 576, 1))
+    model = unet(input_size=(target_size[0], target_size[1], 1))
 
     filename = 'larson_unet.hdf5'
     if isfile(filename):

@@ -1,5 +1,5 @@
 from itertools import product
-from model import unet
+from model import unet, tiramisu
 from skimage import color, io, transform, util
 from skimage.measure import label
 from skimage.segmentation import mark_boundaries
