@@ -1,5 +1,5 @@
 from tensorflow.keras.applications import densenet as ds
-from tensorflow.keras.optimizers import Adam
+from tensorflow.keras.optimizers import Adam, SGD
 
 
 def densenet(input_size=(512, 512, 1), densenet_model='201'):
@@ -8,7 +8,8 @@ def densenet(input_size=(512, 512, 1), densenet_model='201'):
     """
 
     args = dict(weights=None,
-                input_shape=input_size)
+                input_shape=input_size,
+		classes=2)
 
     models = {
         '121': ds.DenseNet121(**args),
@@ -20,7 +21,7 @@ def densenet(input_size=(512, 512, 1), densenet_model='201'):
     if model is None:
         raise
 
-    model.compile(optimizer=Adam(learning_rate=1e-5),
+    model.compile(optimizer=SGD(learning_rate=1e-2),
                   loss='binary_crossentropy',
                   metrics=['accuracy'])
 

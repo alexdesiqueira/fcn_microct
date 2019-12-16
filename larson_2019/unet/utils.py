@@ -127,10 +127,10 @@ def save_predictions(save_folder, predictions, flag_multi_class=False,
     return None
 
 
-def predict_on_image(image, weights, pad_width=32, window_shape=(576, 576), step=512):
+def predict_on_image(image, weights, pad_width=16, window_shape=(288, 288), step=256):
     """
     """
-    model = unet(input_size=(576, 576, 1))
+    model = unet(input_size=(window_shape[0], window_shape[1], 1))
     model.load_weights(weights)
 
     image = np.pad(image, pad_width=pad_width)
@@ -139,7 +139,7 @@ def predict_on_image(image, weights, pad_width=32, window_shape=(576, 576), step
                                                 step=step))
     image_gen = _aux_generator(image_crop)
 
-    results = model.predict(image_gen, steps=25, verbose=1)
+    results = model.predict(image_gen, steps=100, verbose=1)
     prediction = _aux_predict(results)
 
     return prediction
@@ -156,7 +156,7 @@ def _aux_generator(images, multichannel=False):
         yield image
 
 
-def _aux_predict(predictions, pad_width=32, grid_shape=(5, 5),
+def _aux_predict(predictions, pad_width=16, grid_shape=(10, 10),
                  num_class=2, multichannel=False):
     """
     """

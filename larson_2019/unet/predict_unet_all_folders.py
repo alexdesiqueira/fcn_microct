@@ -27,7 +27,7 @@ for test_path, subfolders, _ in chain.from_iterable(os.walk(folder) for folder i
 
         print('# Processing...')
         for idx, image in enumerate(test_images):
-            prediction = utils.predict_on_image(image, weights='576x576_withpad/take_final/larson_unet.hdf5')
+            prediction = utils.predict_on_image(image, weights='288x288/larson_unet.hdf5')
             overlap = utils.overlap_predictions(image, prediction)
             fname = '%04d.png' % (idx)
             io.imsave(os.path.join(pred_path, fname), util.img_as_ubyte(prediction))
