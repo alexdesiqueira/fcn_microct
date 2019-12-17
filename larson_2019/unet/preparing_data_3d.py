@@ -16,7 +16,7 @@ from utils import save_cropped_image
 
 
 folder_nocrop = '/home/alex/data/larson_2019/data_NOCROP/'
-folder_save = '/home/alex/data/larson_2019/data/original_288x288-3d/'
+folder_save = '/home/alex/data/larson_2019/data/original_40x40_3d/'
 
 train_image_nocrop = os.path.join(folder_nocrop, 'train/image/')
 train_label_nocrop = os.path.join(folder_nocrop, 'train/label/')
@@ -36,22 +36,20 @@ for folder in [train_image_save, train_label_save,
         os.makedirs(folder)
 
 
-def save_cropped_3d(image, index, window_shape=(10, 256, 256), step=256, folder='temp'):
+def save_cropped_3d(image, window_shape=(32, 32, 32), step=32, folder='temp'):
     """Crops image and saves the cropped chunks in disk.
 
     Parameters
     ----------
     image : ndarray
         Input image.
-    index : int
-        Reference number to saved files.
     window_shape : integer or tuple of length image.ndim, optional
-        (default : (10, 256, 256))
+        (default : (32, 32, 32))
         Defines the shape of the elementary n-dimensional orthotope
         (better know as hyperrectangle) of the rolling window view.
         If an integer is given, the shape will be a hypercube of
         sidelength given by its value.
-    step : integer or tuple of length image.ndim, optional (default : 256)
+    step : integer or tuple of length image.ndim, optional (default : 32)
         Indicates step size at which extraction shall be performed.
         If integer is given, then the step is uniform in all dimensions.
     folder : str, optional (default : 'temp')
@@ -61,51 +59,70 @@ def save_cropped_3d(image, index, window_shape=(10, 256, 256), step=256, folder=
     -------
         None
     """
-    img_crop = np.vstack(util.view_as_windows(image,
-                                              window_shape=window_shape,
-                                              step=step))
+    cube_crop = np.vstack(np.hstack(
+        util.view_as_windows(image,
+                             window_shape=window_shape,
+                             step=step)
+    ))
 
-    for idx, aux in enumerate(img_crop):
-        fname = '%03d_img_crop-%03d.npz' % (index, idx)
-        # io.imsave(os.path.join(folder, fname), aux)
-        np.savez_compressed(os.path.join(folder, fname), aux)
+    for idx, aux in enumerate(cube_crop):
+        fname = 'cube_crop-%06d.npy' % (idx)
+        np.save(os.path.join(folder, fname), aux)
     return None
 
 
-data_image = io.ImageCollection(load_pattern=os.path.join(train_image_nocrop,
-                                                          '*.png'),
+pad_width = 4
+planes, rows, cols = (32, 32, 32)
+window_shape = (planes + 2*pad_width,
+                rows + 2*pad_width,
+                cols + 2*pad_width)
+step = 32
+
+
+# def image_chunks(collection, chunk_size=step+pad_width):
+#    """Yield successive n-sized chunks from lst."""
+#     for idx in range(0, len(collection), chunk_size):
+#         yield collection[idx:idx + chunk_size]
+
+# Training images.
+data_image = io.ImageCollection(load_pattern=os.path.join(train_image_nocrop, '*.png'),
                                 plugin=None)
-data_label = io.ImageCollection(load_pattern=os.path.join(train_label_nocrop,
-                                                          '*.png'),
+data_label = io.ImageCollection(load_pattern=os.path.join(train_label_nocrop, '*.png'),
                                 plugin=None)
 
 print(f'* Training images: {len(data_image)}; labels: {len(data_label)}')
 
-pad_width = 16  # was : 32
-planes, rows, cols = (10, 256, 256)  # was : (512, 512)
-window_shape = (planes, rows + 2*pad_width, cols + 2*pad_width)
-step = 256  # was : 512
+# We need to load all data, to be able to pad the structure before operating in it.
+data_image = data_image.concatenate()
+data_label = data_label.concatenate()
 
+# Then, we can pad the image at once.
+data_image = np.pad(data_image, pad_width=pad_width)
+data_label = np.pad(data_label, pad_width=pad_width)
 
-for idx, (image, label) in enumerate(zip(data_image, data_label)):
-    image = np.pad(image, pad_width=pad_width)
-    label = np.pad(label, pad_width=pad_width)
+# for idx, (image, label) in enumerate(zip(image_chunks(data_image), image_chunks(data_label))):
+save_cropped_3d(data_image, window_shape=window_shape, step=step,
+                folder=train_image_save)
 
-    save_cropped_3d(image, index=idx, window_shape=window_shape,
-                    step=step, folder=train_image_save)
+save_cropped_3d(data_label, window_shape=window_shape, step=step,
+                folder=train_label_save)
 
-    image = np.pad(image, pad_width=pad_width)
-    save_cropped_3d(label, index=idx, window_shape=window_shape,
-                    step=step, folder=train_label_save)
+# Validation images.
+data_image = io.ImageCollection(load_pattern=os.path.join(val_image_nocrop, '*.png'),
+                                plugin=None)
+data_label = io.ImageCollection(load_pattern=os.path.join(val_label_nocrop, '*.png'),
+                                plugin=None)
 
 print(f'* Validation images: {len(data_image)}; labels: {len(data_label)}')
 
-for idx, (image, label) in enumerate(zip(data_image, data_label)):
-    image = np.pad(image, pad_width=pad_width)
-    label = np.pad(label, pad_width=pad_width)
+data_image = data_image.concatenate()
+data_label = data_label.concatenate()
 
-    save_cropped_image(image, index=idx, window_shape=window_shape,
-                       step=step, folder=val_image_save)
+data_image = np.pad(data_image, pad_width=pad_width)
+data_label = np.pad(data_label, pad_width=pad_width)
 
-    save_cropped_image(label, index=idx, window_shape=window_shape,
-                       step=step, folder=val_label_save)
+save_cropped_3d(data_image, window_shape=window_shape, step=step,
+                folder=val_image_save)
+
+save_cropped_3d(data_label, window_shape=window_shape, step=step,
+                folder=val_label_save)
