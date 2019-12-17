@@ -13,10 +13,11 @@ print(f'Num GPUs Available: {len(tf.config.experimental.list_physical_devices("G
 
 # base_folder = '/home/alex/data/larson_2019/data/original_training_sample'
 base_folder = '/home/alex/data/larson_2019/data/original_288x288'
-mirrored_strategy = tf.distribute.MirroredStrategy(devices=['/gpu:0', '/gpu:1'])
+mirrored_strategy = tf.distribute.MirroredStrategy(devices=['/gpu:1', '/gpu:2', '/gpu:3',
+                                                            '/gpu:4', '/gpu:5', '/gpu:6'])
 
 print('# Setting hyperparameters')
-batch_size = 1
+batch_size = 6
 target_size = (288, 288)  # was : (576, 576)
 steps_per_epoch = int(60000 // batch_size)  # a total of 60000 crops
 validation_steps = int(25000 // batch_size)  # a total of 25000 crops
@@ -55,8 +56,6 @@ with mirrored_strategy.scope():
     model = unet(input_size=(target_size[0], target_size[1], 1))
 
     filename = 'larson_unet.hdf5'
-    if isfile(filename):
-        model.load_weights(filename)
 
     model_checkpoint = ModelCheckpoint(filename,
                                        monitor='val_loss',
@@ -72,6 +71,11 @@ with mirrored_strategy.scope():
                                  callbacks=[model_checkpoint])
 
 print('# Saving indicators')
+
+folder_indicators = 'callbacks'
+if not os.path.isdir(folder_indicators):
+    os.makedirs(folder_indicators)
+
 np.savetxt('callbacks/larson_unet_accuracy.csv',
            np.asarray(history_callback.history['accuracy']),
            delimiter=',')
