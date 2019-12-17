@@ -108,7 +108,7 @@ print(f'Num GPUs Available: {len(tf.config.experimental.list_physical_devices("G
 # print(tf.config.experimental.list_physical_devices('GPU'))
 # tf.debugging.set_log_device_placement(True)
 
-base_folder = '/home/alex/data/larson_2019/data/original_training_sample'
+base_folder = '/home/alex/data/larson_2019/data/original_40x40x40'
 mirrored_strategy = tf.distribute.MirroredStrategy(devices=['/gpu:1', '/gpu:2', '/gpu:3',
                                                             '/gpu:4', '/gpu:5', '/gpu:6'])
 
