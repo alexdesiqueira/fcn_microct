@@ -46,7 +46,7 @@ def adjust_data(image, labels, multiclass, num_class):
 
 def test_generator(test_path, target_size=(32, 32, 32), pad_width=4,
                    multiclass=False, as_gray=True):
-    images = io.ImageCollection(os.path.join(test_path, '*.png'))
+    images = io.ImageCollection(os.path.join(test_path, '*.tif'))
     for image in images:
         image = image / 255
         if image.shape != target_size:
@@ -127,23 +127,23 @@ data_gen_args = dict(rotation_range=0.1,  # rotation
                      vertical_flip=True,
                      fill_mode='nearest')
 
-train_gene = data.train_generator(batch_size=batch_size,
-                                  train_path=join(base_folder,
-                                                  'train'),
-                                  image_folder='image',
-                                  label_folder='label',
-                                  aug_dict=data_gen_args,
-                                  target_size=target_size,
-                                  save_to_dir=None)
+train_gene = train_generator(batch_size=batch_size,
+                             train_path=join(base_folder,
+                                             'train'),
+                             image_folder='image',
+                             label_folder='label',
+                             aug_dict=data_gen_args,
+                             target_size=target_size,
+                             save_to_dir=None)
 
-valid_gene = data.train_generator(batch_size=batch_size,
-                                  train_path=join(base_folder,
-                                                  'validate'),
-                                  image_folder='image',
-                                  label_folder='label',
-                                  aug_dict=data_gen_args,
-                                  target_size=target_size,
-                                  save_to_dir=None)
+valid_gene = train_generator(batch_size=batch_size,
+                             train_path=join(base_folder,
+                                             'validate'),
+                             image_folder='image',
+                             label_folder='label',
+                             aug_dict=data_gen_args,
+                             target_size=target_size,
+                             save_to_dir=None)
 
 print('# Processing')
 with mirrored_strategy.scope():

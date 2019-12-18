@@ -22,9 +22,10 @@ import scipy.ndimage as ndi
 from six.moves import range
 import threading
 import warnings
+from tensorflow.keras.preprocessing.image import DirectoryIterator
 
 try:
-    from keras import backend as K
+    from tensorflow.keras import backend as K
     #print(K.floatx())
     #K.set_floatx('float16')
     #print(K.floatx())
@@ -449,7 +450,8 @@ class customImageDataGenerator(object):
                  preprocessing_function=None,
                  expand_dims = True,
                  data_format=None,
-                 random_mult_range=0):
+                 random_mult_range=0,
+                 dtype='float32'):
         if data_format is None:
             data_format = K.image_data_format()
         self.featurewise_center = featurewise_center
@@ -474,6 +476,7 @@ class customImageDataGenerator(object):
         self.preprocessing_function = preprocessing_function
         self.random_mult_range = random_mult_range
         self.expand_dims = expand_dims
+        self.dtype = dtype
 
         if data_format not in {'channels_last', 'channels_first'}:
             raise ValueError('`data_format` should be `"channels_last"` (channel after row and '
@@ -513,7 +516,116 @@ class customImageDataGenerator(object):
             data_format=self.data_format,
             save_to_dir=save_to_dir,
             save_prefix=save_prefix,
-            save_format=save_format)
+            save_format=save_format,
+            dtype=self.dtype)
+
+    def flow_from_directory(self,
+                            directory,
+                            target_size=(256, 256, 256),
+                            color_mode='rgb',
+                            classes=None,
+                            class_mode='categorical',
+                            batch_size=32,
+                            shuffle=True,
+                            seed=None,
+                            save_to_dir=None,
+                            save_prefix='',
+                            save_format='png',
+                            follow_links=False,
+                            subset=None,
+                            interpolation='nearest'):
+        """https://github.com/keras-team/keras-preprocessing/blob/master/keras_preprocessing/image/image_data_generator.py
+        Takes the path to a directory & generates batches of augmented data.
+        # Arguments
+            directory: string, path to the target directory.
+                It should contain one subdirectory per class.
+                Any PNG, JPG, BMP, PPM or TIF images
+                inside each of the subdirectories directory tree
+                will be included in the generator.
+                See [this script](
+                https://gist.github.com/fchollet/0830affa1f7f19fd47b06d4cf89ed44d)
+                for more details.
+            target_size: Tuple of integers `(height, width)`,
+                default: `(256, 256)`.
+                The dimensions to which all images found will be resized.
+            color_mode: One of "grayscale", "rgb", "rgba". Default: "rgb".
+                Whether the images will be converted to
+                have 1, 3, or 4 channels.
+            classes: Optional list of class subdirectories
+                (e.g. `['dogs', 'cats']`). Default: None.
+                If not provided, the list of classes will be automatically
+                inferred from the subdirectory names/structure
+                under `directory`, where each subdirectory will
+                be treated as a different class
+                (and the order of the classes, which will map to the label
+                indices, will be alphanumeric).
+                The dictionary containing the mapping from class names to class
+                indices can be obtained via the attribute `class_indices`.
+            class_mode: One of "categorical", "binary", "sparse",
+                "input", or None. Default: "categorical".
+                Determines the type of label arrays that are returned:
+                - "categorical" will be 2D one-hot encoded labels,
+                - "binary" will be 1D binary labels,
+                    "sparse" will be 1D integer labels,
+                - "input" will be images identical
+                    to input images (mainly used to work with autoencoders).
+                - If None, no labels are returned
+                  (the generator will only yield batches of image data,
+                  which is useful to use with `model.predict_generator()`).
+                  Please note that in case of class_mode None,
+                  the data still needs to reside in a subdirectory
+                  of `directory` for it to work correctly.
+            batch_size: Size of the batches of data (default: 32).
+            shuffle: Whether to shuffle the data (default: True)
+                If set to False, sorts the data in alphanumeric order.
+            seed: Optional random seed for shuffling and transformations.
+            save_to_dir: None or str (default: None).
+                This allows you to optionally specify
+                a directory to which to save
+                the augmented pictures being generated
+                (useful for visualizing what you are doing).
+            save_prefix: Str. Prefix to use for filenames of saved pictures
+                (only relevant if `save_to_dir` is set).
+            save_format: One of "png", "jpeg"
+                (only relevant if `save_to_dir` is set). Default: "png".
+            follow_links: Whether to follow symlinks inside
+                class subdirectories (default: False).
+            subset: Subset of data (`"training"` or `"validation"`) if
+                `validation_split` is set in `ImageDataGenerator`.
+            interpolation: Interpolation method used to
+                resample the image if the
+                target size is different from that of the loaded image.
+                Supported methods are `"nearest"`, `"bilinear"`,
+                and `"bicubic"`.
+                If PIL version 1.1.3 or newer is installed, `"lanczos"` is also
+                supported. If PIL version 3.4.0 or newer is installed,
+                `"box"` and `"hamming"` are also supported.
+                By default, `"nearest"` is used.
+        # Returns
+            A `DirectoryIterator` yielding tuples of `(x, y)`
+                where `x` is a NumPy array containing a batch
+                of images with shape `(batch_size, *target_size, channels)`
+                and `y` is a NumPy array of corresponding labels.
+        """
+        return DirectoryIterator(
+            directory,
+            self,
+            target_size=target_size,
+            color_mode=color_mode,
+            classes=classes,
+            class_mode=class_mode,
+            data_format=self.data_format,
+            batch_size=batch_size,
+            shuffle=shuffle,
+            seed=seed,
+            save_to_dir=save_to_dir,
+            save_prefix=save_prefix,
+            save_format=save_format,
+            follow_links=follow_links,
+            subset=subset,
+            interpolation=interpolation,
+            dtype=self.dtype
+        )
 
     def standardize(self, x):
         """Apply the normalization configuration to a batch of inputs.
@@ -561,7 +673,7 @@ class customImageDataGenerator(object):
                               'first by calling `.fit(numpy_data)`.')
         return x
 
-    def random_transform(self, x, seed=None):
+    def get_random_transform(self, x, seed=None):
         """Randomly augment a single image tensor.
         # Arguments
             x: 3D tensor, single image.
@@ -576,6 +688,7 @@ class customImageDataGenerator(object):
 
         np.random.seed(seed)
 
+        x = np.asarray(x)  # [TODO] improve this gambiarra
         if self.rotation_range:
             theta = np.pi / 180 * \
                 np.random.uniform(-self.rotation_range, self.rotation_range)
