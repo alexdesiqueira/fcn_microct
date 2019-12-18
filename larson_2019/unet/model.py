@@ -215,7 +215,7 @@ def unet_3d(input_size=(132, 132, 116, 1)):
                               activation='relu',
                               padding='same',
                               kernel_initializer='he_normal')(
-                                  layers.UpSampling2D(size=(2, 2, 2))
+                                  layers.UpSampling3D(size=(2, 2, 2))
                                   (conv_down_4)
                               )
     merge_3 = layers.concatenate([conv_down_3, conv_up_3], axis=4)  # axis=4? Last axis
@@ -231,7 +231,7 @@ def unet_3d(input_size=(132, 132, 116, 1)):
                               activation='relu',
                               padding='same',
                               kernel_initializer='he_normal')(
-                                  layers.UpSampling2D(size=(2, 2, 2))
+                                  layers.UpSampling3D(size=(2, 2, 2))
                                   (conv_up_3)
                               )
     merge_2 = layers.concatenate([conv_down_2, conv_up_2], axis=4)
@@ -247,7 +247,7 @@ def unet_3d(input_size=(132, 132, 116, 1)):
                               activation='relu',
                               padding='same',
                               kernel_initializer='he_normal')(
-                                  layers.UpSampling2D(size=(2, 2, 2))
+                                  layers.UpSampling3D(size=(2, 2, 2))
                                   (conv_up_2)
                               )
     merge_1 = layers.concatenate([conv_down_1, conv_up_1], axis=4)

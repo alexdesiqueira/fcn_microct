@@ -16,7 +16,7 @@ from utils import save_cropped_image
 
 
 folder_nocrop = '/home/alex/data/larson_2019/data_NOCROP/'
-folder_save = '/home/alex/data/larson_2019/data/original_40x40_3d/'
+folder_save = '/home/alex/data/larson_2019/data/original_40x40x40/'
 
 train_image_nocrop = os.path.join(folder_nocrop, 'train/image/')
 train_label_nocrop = os.path.join(folder_nocrop, 'train/label/')
@@ -66,8 +66,9 @@ def save_cropped_3d(image, window_shape=(32, 32, 32), step=32, folder='temp'):
     ))
 
     for idx, aux in enumerate(cube_crop):
-        fname = 'cube_crop-%06d.npy' % (idx)
-        np.save(os.path.join(folder, fname), aux)
+        fname = 'cube_crop-%06d.tif' % (idx)
+        # np.save(os.path.join(folder, fname), aux)
+        io.imsave(os.path.join(folder, fname), aux)
     return None
 
 
@@ -78,11 +79,6 @@ window_shape = (planes + 2*pad_width,
                 cols + 2*pad_width)
 step = 32
 
-
-# def image_chunks(collection, chunk_size=step+pad_width):
-#    """Yield successive n-sized chunks from lst."""
-#     for idx in range(0, len(collection), chunk_size):
-#         yield collection[idx:idx + chunk_size]
 
 # Training images.
 data_image = io.ImageCollection(load_pattern=os.path.join(train_image_nocrop, '*.png'),
@@ -100,7 +96,6 @@ data_label = data_label.concatenate()
 data_image = np.pad(data_image, pad_width=pad_width)
 data_label = np.pad(data_label, pad_width=pad_width)
 
-# for idx, (image, label) in enumerate(zip(image_chunks(data_image), image_chunks(data_label))):
 save_cropped_3d(data_image, window_shape=window_shape, step=step,
                 folder=train_image_save)
 

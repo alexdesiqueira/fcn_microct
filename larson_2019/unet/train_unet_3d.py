@@ -1,6 +1,6 @@
 from itertools import product
 from tensorflow.keras.callbacks import ModelCheckpoint
-from model import unet
+from model import unet_3d
 from os.path import join, isfile
 
 import data
@@ -18,10 +18,10 @@ import os
 def adjust_data(image, labels, multiclass, num_class):
     if multiclass:
         image = image / 255
-        if len(labels.shape) == 4:
-            labels = labels[:, :, :, 0]
+        if len(labels.shape) == 5:
+            labels = labels[:, :, :, :, 0]
         else:
-            labels = labels[:, :, 0]
+            labels = labels[:, :, :, 0]
         aux_labels = np.zeros(labels.shape + (num_class,))
 
         for num in range(num_class):
@@ -108,9 +108,9 @@ print(f'Num GPUs Available: {len(tf.config.experimental.list_physical_devices("G
 # print(tf.config.experimental.list_physical_devices('GPU'))
 # tf.debugging.set_log_device_placement(True)
 
-base_folder = '/home/alex/data/larson_2019/data/original_training_sample'
-mirrored_strategy = tf.distribute.MirroredStrategy(devices=['/gpu:1', '/gpu:2', '/gpu:3',
-                                                            '/gpu:4', '/gpu:5', '/gpu:6'])
+base_folder = '/home/alex/data/larson_2019/data/original_40x40x40'
+mirrored_strategy = tf.distribute.MirroredStrategy(devices=['/gpu:4', '/gpu:5',
+                                                            '/gpu:6', '/gpu:7'])
 
 print('# Setting hyperparameters')
 batch_size = 1
@@ -148,10 +148,10 @@ valid_gene = data.train_generator(batch_size=batch_size,
 print('# Processing')
 with mirrored_strategy.scope():
 
-    model = unet(input_size=(target_size[0],
-                             target_size[1],
-                             target_size[2],
-                             1)
+    model = unet_3d(input_size=(target_size[0],
+                                target_size[1],
+                                target_size[2],
+                                1)
     )
 
     filename = 'larson_unet3d.hdf5'
