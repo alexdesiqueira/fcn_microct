@@ -13,7 +13,7 @@ print(f'Num GPUs Available: {len(tf.config.experimental.list_physical_devices("G
 
 # base_folder = '/home/alex/data/larson_2019/data/original_training_sample'
 base_folder = '/home/alex/data/larson_2019/data/original_288x288'
-mirrored_strategy = tf.distribute.MirroredStrategy(devices=['/gpu:1'])
+mirrored_strategy = tf.distribute.MirroredStrategy(devices=['/gpu:0', '/gpu:1'])
 
 print('# Setting hyperparameters')
 batch_size = 1
@@ -65,7 +65,7 @@ with mirrored_strategy.scope():
 
     history_callback = model.fit(train_gene,
                                  steps_per_epoch=steps_per_epoch,
-                                 epochs=5,
+                                 epochs=10,
                                  validation_data=valid_gene,
                                  validation_steps=validation_steps,
                                  verbose=1,

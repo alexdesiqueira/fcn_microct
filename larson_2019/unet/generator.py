@@ -673,7 +673,7 @@ class customImageDataGenerator(object):
                               'first by calling `.fit(numpy_data)`.')
         return x
 
-    def get_random_transform(self, x, seed=None):
+    def random_transform(self, x, seed=None):
         """Randomly augment a single image tensor.
         # Arguments
             x: 3D tensor, single image.
@@ -689,6 +689,7 @@ class customImageDataGenerator(object):
         np.random.seed(seed)
 
         x = np.asarray(x)  # [TODO] improve this gambiarra
+        print(x.shape)
         if self.rotation_range:
             theta = np.pi / 180 * \
                 np.random.uniform(-self.rotation_range, self.rotation_range)

@@ -146,7 +146,7 @@ class DirectoryIterator(image.DirectoryIterator, Iterator):
             considered to contain images from one class,
             or alternatively you could specify class subdirectories
             via the `classes` argument.
-        image_data_generator: Instance of `ImageDataGenerator`
+        chunk_data_generator: Instance of `ChunkDataGenerator`
             to use for random transformations and normalization.
         target_size: tuple of integers, dimensions to resize input images to.
         color_mode: One of `"rgb"`, `"rgba"`, `"grayscale"`.
@@ -174,7 +174,7 @@ class DirectoryIterator(image.DirectoryIterator, Iterator):
         save_format: Format to use for saving sample images
             (if `save_to_dir` is set).
         subset: Subset of data (`"training"` or `"validation"`) if
-            validation_split is set in ImageDataGenerator.
+            validation_split is set in ChunkDataGenerator.
         interpolation: Interpolation method used to resample the image if the
             target size is different from that of the loaded image.
             Supported methods are "nearest", "bilinear", and "bicubic".
@@ -184,7 +184,7 @@ class DirectoryIterator(image.DirectoryIterator, Iterator):
         dtype: Dtype to use for generated arrays.
     """
 
-    def __init__(self, directory, image_data_generator,
+    def __init__(self, directory, chunk_data_generator,
                  target_size=(256, 256),
                  color_mode='rgb',
                  classes=None,
@@ -204,12 +204,12 @@ class DirectoryIterator(image.DirectoryIterator, Iterator):
             data_format = backend.image_data_format()
         kwargs = {}
         if 'dtype' in tf_inspect.getfullargspec(
-                image.ImageDataGenerator.__init__)[0]:
+                image.ChunkDataGenerator.__init__)[0]:
             if dtype is None:
                 dtype = backend.floatx()
             kwargs['dtype'] = dtype
         super(DirectoryIterator, self).__init__(
-            directory, image_data_generator,
+            directory, chunk_data_generator,
             target_size=target_size,
             color_mode=color_mode,
             classes=classes,
@@ -238,7 +238,7 @@ class NumpyArrayIterator(image.NumpyArrayIterator, Iterator):
             each of which gets passed
             through as an output without any modifications.
         y: Numpy array of targets data.
-        image_data_generator: Instance of `ImageDataGenerator`
+        chunk_data_generator: Instance of `ChunkDataGenerator`
             to use for random transformations and normalization.
         batch_size: Integer, size of a batch.
         shuffle: Boolean, whether to shuffle the data between epochs.
@@ -254,11 +254,11 @@ class NumpyArrayIterator(image.NumpyArrayIterator, Iterator):
         save_format: Format to use for saving sample images
             (if `save_to_dir` is set).
         subset: Subset of data (`"training"` or `"validation"`) if
-            validation_split is set in ImageDataGenerator.
+            validation_split is set in ChunkDataGenerator.
         dtype: Dtype to use for the generated arrays.
     """
 
-    def __init__(self, x, y, image_data_generator,
+    def __init__(self, x, y, chunk_data_generator,
                  batch_size=32,
                  shuffle=False,
                  sample_weight=None,
@@ -278,7 +278,7 @@ class NumpyArrayIterator(image.NumpyArrayIterator, Iterator):
                 dtype = backend.floatx()
             kwargs['dtype'] = dtype
         super(NumpyArrayIterator, self).__init__(
-            x, y, image_data_generator,
+            x, y, chunk_data_generator,
             batch_size=batch_size,
             shuffle=shuffle,
             sample_weight=sample_weight,
@@ -291,8 +291,8 @@ class NumpyArrayIterator(image.NumpyArrayIterator, Iterator):
             **kwargs)
 
 
-@keras_export('keras.preprocessing.image.ImageDataGenerator')
-class ImageDataGenerator(image.ImageDataGenerator):
+@keras_export('keras.preprocessing.image.ChunkDataGenerator')
+class ChunkDataGenerator(image.ImageDataGenerator):
     """Generate batches of tensor image data with real-time data augmentation.
 
     The data will be looped over (in batches).
@@ -377,7 +377,7 @@ class ImageDataGenerator(image.ImageDataGenerator):
     (x_train, y_train), (x_test, y_test) = cifar10.load_data()
     y_train = np_utils.to_categorical(y_train, num_classes)
     y_test = np_utils.to_categorical(y_test, num_classes)
-    datagen = ImageDataGenerator(
+    datagen = ChunkDataGenerator(
         featurewise_center=True,
         featurewise_std_normalization=True,
         rotation_range=20,
@@ -406,12 +406,12 @@ class ImageDataGenerator(image.ImageDataGenerator):
     Example of using `.flow_from_directory(directory)`:
 
     ```python
-    train_datagen = ImageDataGenerator(
+    train_datagen = ChunkDataGenerator(
             rescale=1./255,
             shear_range=0.2,
             zoom_range=0.2,
             horizontal_flip=True)
-    test_datagen = ImageDataGenerator(rescale=1./255)
+    test_datagen = ChunkDataGenerator(rescale=1./255)
     train_generator = train_datagen.flow_from_directory(
             'data/train',
             target_size=(150, 150),
@@ -440,8 +440,8 @@ class ImageDataGenerator(image.ImageDataGenerator):
                          width_shift_range=0.1,
                          height_shift_range=0.1,
                          zoom_range=0.2)
-    image_datagen = ImageDataGenerator(**data_gen_args)
-    mask_datagen = ImageDataGenerator(**data_gen_args)
+    image_datagen = ChunkDataGenerator(**data_gen_args)
+    mask_datagen = ChunkDataGenerator(**data_gen_args)
     # Provide the same seed and keyword arguments to the fit and flow methods
     seed = 1
     image_datagen.fit(images, augment=True, seed=seed)
@@ -494,7 +494,7 @@ class ImageDataGenerator(image.ImageDataGenerator):
             if dtype is None:
                 dtype = backend.floatx()
             kwargs['dtype'] = dtype
-        super(ImageDataGenerator, self).__init__(
+        super(ChunkDataGenerator, self).__init__(
             featurewise_center=featurewise_center,
             samplewise_center=samplewise_center,
             featurewise_std_normalization=featurewise_std_normalization,
@@ -518,17 +518,17 @@ class ImageDataGenerator(image.ImageDataGenerator):
             validation_split=validation_split,
             **kwargs)
 
-keras_export('keras.preprocessing.image.random_rotation')(random_rotation)
-keras_export('keras.preprocessing.image.random_shift')(random_shift)
-keras_export('keras.preprocessing.image.random_shear')(random_shear)
-keras_export('keras.preprocessing.image.random_zoom')(random_zoom)
-keras_export(
-    'keras.preprocessing.image.apply_channel_shift')(apply_channel_shift)
-keras_export(
-    'keras.preprocessing.image.random_channel_shift')(random_channel_shift)
-keras_export(
-    'keras.preprocessing.image.apply_brightness_shift')(apply_brightness_shift)
-keras_export('keras.preprocessing.image.random_brightness')(random_brightness)
-keras_export(
-    'keras.preprocessing.image.apply_affine_transform')(apply_affine_transform)
-keras_export('keras.preprocessing.image.load_img')(load_img)
+#keras_export('keras.preprocessing.image.random_rotation')(random_rotation)
+#keras_export('keras.preprocessing.image.random_shift')(random_shift)
+#keras_export('keras.preprocessing.image.random_shear')(random_shear)
+#keras_export('keras.preprocessing.image.random_zoom')(random_zoom)
+#keras_export(
+#    'keras.preprocessing.image.apply_channel_shift')(apply_channel_shift)
+#keras_export(
+#    'keras.preprocessing.image.random_channel_shift')(random_channel_shift)
+#keras_export(
+#    'keras.preprocessing.image.apply_brightness_shift')(apply_brightness_shift)
+#keras_export('keras.preprocessing.image.random_brightness')(random_brightness)
+#keras_export(
+#    'keras.preprocessing.image.apply_affine_transform')(apply_affine_transform)
+#keras_export('keras.preprocessing.image.load_img')(load_img)

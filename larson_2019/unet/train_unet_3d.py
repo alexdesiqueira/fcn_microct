@@ -4,7 +4,7 @@ from model import unet_3d
 from os.path import join, isfile
 
 import data
-import generator
+import other_generator
 import numpy as np
 import tensorflow as tf
 
@@ -72,8 +72,8 @@ def train_generator(batch_size, train_path, image_folder, label_folder,
     if you want to visualize the results of generator, set
     save_to_dir = "your path"
     '''
-    image_datagen = generator.customImageDataGenerator(**aug_dict)
-    label_datagen = generator.customImageDataGenerator(**aug_dict)
+    image_datagen = other_generator.ChunkDataGenerator(**aug_dict)
+    label_datagen = other_generator.ChunkDataGenerator(**aug_dict)
 
     image_generator = image_datagen.flow_from_directory(
         train_path,
@@ -109,8 +109,7 @@ print(f'Num GPUs Available: {len(tf.config.experimental.list_physical_devices("G
 # tf.debugging.set_log_device_placement(True)
 
 base_folder = '/home/alex/data/larson_2019/data/original_40x40x40'
-mirrored_strategy = tf.distribute.MirroredStrategy(devices=['/gpu:4', '/gpu:5',
-                                                            '/gpu:6', '/gpu:7'])
+mirrored_strategy = tf.distribute.MirroredStrategy(devices=['/gpu:0'])
 
 print('# Setting hyperparameters')
 batch_size = 1
