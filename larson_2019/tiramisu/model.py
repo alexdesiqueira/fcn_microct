@@ -381,5 +381,5 @@ def softmax_layer(inputs, n_classes):
                       padding='same',
                       kernel_initializer='he_uniform')(inputs)
     # l = Reshape((-1, n_classes))(l)
-    l = layers.Activation('sigmoid')(l)  # or softmax for multi-class
+    l = layers.Activation('softmax')(l)  # or softmax for multi-class
     return l
