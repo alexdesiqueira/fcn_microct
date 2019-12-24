@@ -8,7 +8,7 @@ import tensorflow as tf
 
 
 print('# Preparing folders...')
-base_folder = '/home/alex/data/larson_2019/data/original_224x224'
+base_folder = '/home/alex/data/larson_2019/data/original_288x288'
 test_path = os.path.join(base_folder, 'test')
 pred_path = os.path.join(test_path, 'predict')
 over_path = os.path.join(test_path, 'overlap')

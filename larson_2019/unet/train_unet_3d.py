@@ -11,7 +11,6 @@ import tensorflow as tf
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from skimage import io, transform
 
-import numpy as np
 import os
 
 
@@ -109,10 +108,10 @@ print(f'Num GPUs Available: {len(tf.config.experimental.list_physical_devices("G
 # tf.debugging.set_log_device_placement(True)
 
 base_folder = '/home/alex/data/larson_2019/data/original_40x40x40'
-mirrored_strategy = tf.distribute.MirroredStrategy(devices=['/gpu:0'])
+mirrored_strategy = tf.distribute.MirroredStrategy(devices=['/gpu:0', '/gpu:1'])
 
 print('# Setting hyperparameters')
-batch_size = 1
+batch_size = 2
 target_size = (40, 40, 40)
 steps_per_epoch = int(115200 // batch_size)  # a total of 115200 crops
 validation_steps = int(32920 // batch_size)  # a total of 32920 crops
@@ -162,7 +161,7 @@ with mirrored_strategy.scope():
 
     history_callback = model.fit(train_gene,
                                  steps_per_epoch=steps_per_epoch,
-                                 epochs=1,
+                                 epochs=10,
                                  validation_data=valid_gene,
                                  validation_steps=validation_steps,
                                  verbose=1,

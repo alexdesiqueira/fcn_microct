@@ -1,7 +1,7 @@
-from itertools import product
 from model import tiramisu
 from tensorflow.keras.callbacks import ModelCheckpoint
-from os.path import join, isfile
+from os import makedirs
+from os.path import join, isdir
 
 import data
 import numpy as np
@@ -28,8 +28,6 @@ data_gen_args = dict(rotation_range=0.1,  # rotation
                      zoom_range=0.05,  # zooming
                      horizontal_flip=True,  # flips
                      vertical_flip=True,
-                     #featurewise_center=True,  # feature standardization
-                     #featurewise_std_normalization=True,
                      fill_mode='nearest')
 
 train_gene = data.train_generator(batch_size=batch_size,
@@ -55,8 +53,6 @@ with mirrored_strategy.scope():
     model = tiramisu(input_size=(target_size[0], target_size[1], 1))
 
     filename = 'larson_tiramisu.hdf5'
-    if isfile(filename):
-        model.load_weights(filename)
 
     model_checkpoint = ModelCheckpoint(filename,
                                        monitor='val_loss',
@@ -72,6 +68,11 @@ with mirrored_strategy.scope():
                                  callbacks=[model_checkpoint])
 
 print('# Saving indicators')
+
+folder_indicators = 'callbacks'
+if not isdir(folder_indicators):
+    makedirs(folder_indicators)
+
 np.savetxt('callbacks/larson_tiramisu_accuracy.csv',
            np.asarray(history_callback.history['accuracy']),
            delimiter=',')

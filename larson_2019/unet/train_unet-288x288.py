@@ -13,12 +13,11 @@ print(f'Num GPUs Available: {len(tf.config.experimental.list_physical_devices("G
 
 # base_folder = '/home/alex/data/larson_2019/data/original_training_sample'
 base_folder = '/home/alex/data/larson_2019/data/original_288x288'
-mirrored_strategy = tf.distribute.MirroredStrategy(devices=['/gpu:1', '/gpu:2', '/gpu:3',
-                                                            '/gpu:4', '/gpu:5', '/gpu:6'])
+mirrored_strategy = tf.distribute.MirroredStrategy(devices=['/gpu:0', '/gpu:1'])
 
 print('# Setting hyperparameters')
-batch_size = 6
-target_size = (288, 288)  # was : (576, 576)
+batch_size = 1
+target_size = (288, 288)
 steps_per_epoch = int(60000 // batch_size)  # a total of 60000 crops
 validation_steps = int(25000 // batch_size)  # a total of 25000 crops
 
@@ -29,8 +28,6 @@ data_gen_args = dict(rotation_range=0.1,  # rotation
                      zoom_range=0.05,  # zooming
                      horizontal_flip=True,  # flips
                      vertical_flip=True,
-                     #featurewise_center=True,  # feature standardization
-                     #featurewise_std_normalization=True,
                      fill_mode='nearest')
 
 train_gene = data.train_generator(batch_size=batch_size,
@@ -64,7 +61,7 @@ with mirrored_strategy.scope():
 
     history_callback = model.fit(train_gene,
                                  steps_per_epoch=steps_per_epoch,
-                                 epochs=10,  # used 120 before
+                                 epochs=10,
                                  validation_data=valid_gene,
                                  validation_steps=validation_steps,
                                  verbose=1,
