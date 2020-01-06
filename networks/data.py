@@ -5,8 +5,8 @@ import numpy as np
 import os
 
 
-def adjust_data(image, labels, multiclass, num_class):
-    if multiclass:
+def adjust_data(image, labels, multichannel, num_class):
+    if multichannel:
         image = image / 255
         if len(labels.shape) == 4:
             labels = labels[:, :, :, 0]
@@ -17,7 +17,7 @@ def adjust_data(image, labels, multiclass, num_class):
         for num in range(num_class):
             aux_labels[labels == num, num] = 1
 
-        if multiclass:
+        if multichannel:
             batch, rows, cols, classes = aux_labels.shape
             aux_labels = np.reshape(aux_labels, (batch, rows*cols, classes))
         else:
@@ -35,7 +35,7 @@ def adjust_data(image, labels, multiclass, num_class):
 
 
 def test_generator(test_path, target_size=(256, 256), pad_width=16,
-                   multiclass=False, as_gray=True):
+                   multichannel=False, as_gray=True):
     images = io.ImageCollection(os.path.join(test_path, '*.png'))
     for image in images:
         image = image / 255
@@ -43,7 +43,7 @@ def test_generator(test_path, target_size=(256, 256), pad_width=16,
             image = transform.resize(image, target_size)
         # padding image to correct slicing after
         image = np.pad(image, pad_width=pad_width, mode='reflect')
-        if not multiclass:
+        if not multichannel:
             image = np.reshape(image, image.shape+(1,))
         image = np.reshape(image, (1,)+image.shape)
         yield image
@@ -52,7 +52,7 @@ def test_generator(test_path, target_size=(256, 256), pad_width=16,
 def train_generator(batch_size, train_path, image_folder, label_folder,
                     aug_dict, image_color_mode='grayscale',
                     label_color_mode='grayscale', image_save_prefix='image',
-                    label_save_prefix='label', multiclass=False,
+                    label_save_prefix='label', multichannel=False,
                     num_class=2, save_to_dir=None, target_size=(256, 256),
                     seed=1):
     '''
@@ -90,5 +90,5 @@ def train_generator(batch_size, train_path, image_folder, label_folder,
     train_generator = zip(image_generator, label_generator)
 
     for (image, label) in train_generator:
-        image, label = adjust_data(image, label, multiclass, num_class)
+        image, label = adjust_data(image, label, multichannel, num_class)
         yield (image, label)
