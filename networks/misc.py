@@ -1,4 +1,4 @@
-from skimage import util
+from skimage import io, util
 
 import csv
 import evaluation
@@ -97,11 +97,11 @@ def measure_all_coefficients(data_test, data_gt,
     if save_coef:
         if calc_coef['matthews']:
             with open(filename, 'a+') as file_coef:
-                coef_writer = csv.writer(file_coef, delimiter=',', newline='')
+                coef_writer = csv.writer(file_coef, delimiter=',')
                 coef_writer.writerow(all_matthews)
         if calc_coef['dice']:
             with open(filename, 'a+') as file_coef:
-                coef_writer = csv.writer(file_coef, delimiter=',', newline='')
+                coef_writer = csv.writer(file_coef, delimiter=',')
                 coef_writer.writerow(all_dice)
 
     return all_matthews, all_dice

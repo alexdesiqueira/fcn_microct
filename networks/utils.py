@@ -1,10 +1,6 @@
-from itertools import product
-from model import unet, tiramisu
-from skimage import color, io, transform, util
-from skimage.measure import label
-from skimage.segmentation import mark_boundaries
+from model import unet
+from skimage import color, util
 
-import glob
 import numpy as np
 
 class_1 = [128, 128, 128]

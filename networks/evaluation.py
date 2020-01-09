@@ -1,3 +1,5 @@
+from skimage import util
+
 import numpy as np
 import utils
 
