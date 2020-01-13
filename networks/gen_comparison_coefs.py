@@ -21,19 +21,12 @@ FEXT_GS = '*.tif'
 
 # each sample defined by Larson has a specific segmentation interval.
 SEGMENTATION_INTERVALS = {
-    '244p1': [150, 1150],
-    '232p3': [159, 1159],
-    '232p1': [160, 1160],
-    '235p1': None,
-    '235p4': None,
-    '245p1': None,
-    '245p2': [1000, 2000],
-    '234p3': [1000, 2000],
-    '234p5': [1000, 2000],
-    '234p2': None,
-    '234p1': [1000, 2000],
-    '234p4': None,
-    '245p3': [1000, 2000]
+    '232p1': [160, 1160],  # Larson's slices start and end at [0, 2159]
+    '232p3': [0, 1000],  # ... at [159, 1158]
+    '235p1': None,  # no segmented data available
+    '235p4': None,  # no segmented data available
+    '244p1': [150, 1150],  # ... at [0, 2159]
+    '245p1': None  # no segmented data available
 }
 
 
@@ -67,13 +60,16 @@ for pred_folder, gold_folder in zip(pred_folders, gold_folders):
 
     # getting the name of the sample from the path.
     name_sample = pred_folder.split('_')[3]
+
     slicing_interval = SEGMENTATION_INTERVALS[name_sample]
     pred_data = pred_data[slice(*slicing_interval)]
 
     print(name_sample, slicing_interval, len(pred_data))  # DEBUGGING
 
+    # coefficients will receive the folder name as a filename.
+    filename = f'{pred_folder.split("/")[-2]}_coefs.csv'
+
     # measuring coefficients for all data.
-    filename = f'{name_sample}_coefs.csv'
     _, _ = misc.measure_all_coefficients(pred_data,
                                          gold_data,
                                          save_coef=True,
