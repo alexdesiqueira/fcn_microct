@@ -58,7 +58,8 @@ for pred_folder, gold_folder in zip(pred_folders, gold_folders):
                                    load_func=_imread_goldstd)
 
     # using the name of the folder to get the slicing interval.
-    slicing_interval = SEGMENTATION_INTERVALS[pred_folder]
+    folder = pred_folder.split('/')[-2]
+    slicing_interval = SEGMENTATION_INTERVALS[folder]
     pred_data = pred_data[slice(*slicing_interval)]
 
     # coefficients will receive the folder name as a filename.
