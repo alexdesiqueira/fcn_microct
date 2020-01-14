@@ -1,6 +1,7 @@
 from model import unet
 from skimage import color, util
 
+import csv
 import numpy as np
 
 class_1 = [128, 128, 128]
@@ -53,6 +54,17 @@ def overlap_predictions(image, prediction):
     overlap[:, :, 0] = util.img_as_ubyte(prediction > 0.5)
 
     return overlap
+
+
+def read_csv_coefficients(filename):
+    """Reads csv coefficients saved in a file."""
+    coefs = []
+    csv_file = csv.reader(open(filename, 'r'))
+    for row in csv_file:
+        coefs.append(row)
+    return coefs
+
+
 
 
 def regroup_image(image_set, grid_shape=None, pad_width=32, multichannel=False):
