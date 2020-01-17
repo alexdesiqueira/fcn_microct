@@ -4,22 +4,25 @@ from skimage import color, util
 import csv
 import numpy as np
 
-class_1 = [128, 128, 128]
-class_2 = [128, 0, 0]
-class_3 = [192, 192, 128]
-class_4 = [128, 64, 128]
-class_5 = [60, 40, 222]
-class_6 = [128, 128, 0]
-class_7 = [192, 128, 128]
-class_8 = [64, 64, 128]
-class_9 = [64, 0, 128]
-class_0 = [0, 0, 0]
 
-COLOR_DICT = np.array([class_1, class_2, class_3, class_4, class_5,
-                       class_6, class_7, class_8, class_9, class_0])
+CLASS_0 = [0, 0, 0]
+CLASS_1 = [128, 128, 128]
+CLASS_2 = [128, 0, 0]
+CLASS_3 = [192, 192, 128]
+CLASS_4 = [128, 64, 128]
+CLASS_5 = [60, 40, 222]
+CLASS_6 = [128, 128, 0]
+CLASS_7 = [192, 128, 128]
+CLASS_8 = [64, 64, 128]
+CLASS_9 = [64, 0, 128]
+
+COLOR_DICT = np.array([CLASS_0, CLASS_1, CLASS_2, CLASS_3, CLASS_4,
+                       CLASS_5, CLASS_6, CLASS_7, CLASS_8, CLASS_9])
 
 
 def label_visualize(image, num_class, color_dict):
+    """
+    """
     if len(image.shape) == 3:
         image = image[:, :, 0]
     output = np.zeros(image.shape + (3,))
