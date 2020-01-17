@@ -1,5 +1,6 @@
 from skimage import io
 
+import constants as const
 import misc
 import os
 import utils

@@ -65,8 +65,6 @@ def read_csv_coefficients(filename):
     return coefs
 
 
-
-
 def regroup_image(image_set, grid_shape=None, pad_width=32, multichannel=False):
     """
     """
