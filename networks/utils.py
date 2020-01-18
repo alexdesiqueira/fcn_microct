@@ -20,7 +20,7 @@ COLOR_DICT = np.array([CLASS_0, CLASS_1, CLASS_2, CLASS_3, CLASS_4,
                        CLASS_5, CLASS_6, CLASS_7, CLASS_8, CLASS_9])
 
 
-def label_visualize(image, num_class, color_dict):
+def label_visualize(image, color_dict, num_class=2):
     """
     """
     if len(image.shape) == 3:
@@ -88,7 +88,8 @@ def regroup_image(image_set, grid_shape=None, pad_width=32, multichannel=False):
     return image
 
 
-def predict_on_image(image, weights, pad_width=16, window_shape=(288, 288), step=256):
+def predict_on_image(image, weights, pad_width=16, window_shape=(288, 288),
+                     step=256):
     """
     """
     model = unet(input_size=(window_shape[0], window_shape[1], 1))

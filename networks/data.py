@@ -1,13 +1,13 @@
+from skimage import io, transform, util
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
-from skimage import io, transform
 
 import numpy as np
 import os
 
 
-def adjust_data(image, labels, multichannel, num_class):
+def adjust_data(image, labels, num_class=2, multichannel=False):
     if multichannel:
-        image = image / 255
+        image = util.img_as_float(image)
         if len(labels.shape) == 4:
             labels = labels[:, :, :, 0]
         else:
@@ -19,15 +19,16 @@ def adjust_data(image, labels, multichannel, num_class):
 
         if multichannel:
             batch, rows, cols, classes = aux_labels.shape
-            aux_labels = np.reshape(aux_labels, (batch, rows*cols, classes))
+            aux_labels = np.reshape(aux_labels,
+                                    (batch, rows*cols, classes))
         else:
             rows, cols, classes = aux_labels.shape
             aux_labels = np.reshape(aux_labels, (rows*cols, classes))
         labels = aux_labels
 
     elif np.max(image) > 1:
-        image = image / 255
-        labels = labels / 255
+        image = util.img_as_float(image)
+        labels = util.img_as_float(labels)
         labels[labels > 0.5] = 1
         labels[labels <= 0.5] = 0
 
@@ -38,7 +39,7 @@ def test_generator(test_path, target_size=(256, 256), pad_width=16,
                    multichannel=False, as_gray=True):
     images = io.ImageCollection(os.path.join(test_path, '*.png'))
     for image in images:
-        image = image / 255
+        image = util.img_as_float(image)
         if image.shape != target_size:
             image = transform.resize(image, target_size)
         # padding image to correct slicing after
