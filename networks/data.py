@@ -26,7 +26,7 @@ def adjust_data(image, labels, num_class=2, multichannel=False):
             aux_labels = np.reshape(aux_labels, (rows*cols, classes))
         labels = aux_labels
 
-    elif np.max(image) > 1:
+    elif image.dtype != 'float':
         image = util.img_as_float(image)
         labels = util.img_as_float(labels)
         labels[labels > 0.5] = 1

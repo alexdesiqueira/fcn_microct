@@ -120,7 +120,7 @@ def _aux_generator(images, multichannel=False):
     """
     """
     for image in images:
-        image = image / 255
+        image = util.img_as_float(image)
         if not multichannel:
             image = np.reshape(image, image.shape+(1,))
         image = np.reshape(image, (1,)+image.shape)
@@ -150,6 +150,7 @@ def _aux_predict(predictions, pad_width=16, grid_shape=(10, 10),
                              0]
 
     output = util.montage(output,
+                          fill=0,
                           grid_shape=grid_shape,
                           multichannel=multichannel)
 

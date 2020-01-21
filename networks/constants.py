@@ -17,7 +17,20 @@ SUBFOLDER_GOLDSTD = '19_Gray_image'
 SUBFOLDER_REG = 'Registered/Bunch2WoPR'
 EXT_GOLDSTD = '.tif'
 
-# our results
+# the training folder and its subfolders.
+FOLDER_TRAINING = os.path.join(FOLDER_BASE, 'training_data_nocrop')
+FOLDER_TRAIN_IMAGE = FOLDER_TRAINING + 'train/image/'
+FOLDER_TRAIN_LABEL = FOLDER_TRAINING + 'train/label/'
+FOLDER_VAL_IMAGE = FOLDER_TRAINING + 'validate/image/'
+FOLDER_VAL_LABEL = FOLDER_TRAINING + 'validate/label/'
+
+# interval images used in the training.
+INTERVAL_TRAIN_CURED = [159, 460]
+INTERVAL_TRAIN_WET = [460, 761]
+INTERVAL_VAL_CURED = [761, 912]
+INTERVAL_VAL_WET = [912, 1062]
+
+# our results.
 FOLDER_RESULTS_UNET = os.path.join(FOLDER_BASE, 'data/unet')
 FOLDER_RESULTS_TIRAMISU = os.path.join(FOLDER_BASE, 'data/tiramisu')
 FOLDER_RESULTS_3DUNET = os.path.join(FOLDER_BASE, 'data/unet_3d')
