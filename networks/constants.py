@@ -14,6 +14,7 @@ EXT_SAMPLE = '.tiff'
 # — for the registered stacks — as well.
 FOLDER_GOLDSTD = os.path.join(FOLDER_BASE, 'Seg/Bunch2/')
 SUBFOLDER_GOLDSTD = '19_Gray_image'
+SUBFOLDER_GOLDSTD_REG= 'Registered/19_Gray_image'
 SUBFOLDER_REG = 'Registered/Bunch2WoPR'
 EXT_GOLDSTD = '.tif'
 
@@ -79,7 +80,7 @@ SAMPLE_232p3_cured = {
     'has_goldstd': True,
     'path_goldstd': os.path.join(FOLDER_GOLDSTD,
                                  FOLDER_232p3_cured,
-                                 SUBFOLDER_GOLDSTD),
+                                 SUBFOLDER_GOLDSTD_REG),
     'segmentation_interval': [159, 1159],  # [0, 1000],
     'registered_path': os.path.join(FOLDER_GOLDSTD,
                                     FOLDER_232p3_cured,
@@ -137,7 +138,7 @@ SAMPLE_244p1_cured = {
     'has_goldstd': True,
     'path_goldstd': os.path.join(FOLDER_GOLDSTD,
                                  FOLDER_244p1_cured,
-                                 SUBFOLDER_GOLDSTD),
+                                 SUBFOLDER_GOLDSTD_REG),
     'segmentation_interval': [150, 1150],
     'registered_path': os.path.join(FOLDER_GOLDSTD,
                                     FOLDER_235p4_cured,
