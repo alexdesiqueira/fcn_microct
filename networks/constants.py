@@ -19,11 +19,11 @@ SUBFOLDER_REG = 'Registered/Bunch2WoPR'
 EXT_GOLDSTD = '.tif'
 
 # the training folder and its subfolders.
-FOLDER_TRAINING = os.path.join(FOLDER_BASE, 'training_data_nocrop')
-FOLDER_TRAIN_IMAGE = FOLDER_TRAINING + 'train/image/'
-FOLDER_TRAIN_LABEL = FOLDER_TRAINING + 'train/label/'
-FOLDER_VAL_IMAGE = FOLDER_TRAINING + 'validate/image/'
-FOLDER_VAL_LABEL = FOLDER_TRAINING + 'validate/label/'
+FOLDER_TRAINING = os.path.join(FOLDER_BASE, 'data_training_nocrop')
+FOLDER_TRAIN_IMAGE = os.path.join(FOLDER_TRAINING, 'train/image/')
+FOLDER_TRAIN_LABEL = os.path.join(FOLDER_TRAINING, 'train/label/')
+FOLDER_VAL_IMAGE = os.path.join(FOLDER_TRAINING, 'validate/image/')
+FOLDER_VAL_LABEL = os.path.join(FOLDER_TRAINING, 'validate/label/')
 
 # interval images used in the training.
 INTERVAL_TRAIN_CURED = [159, 460]
