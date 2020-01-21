@@ -22,7 +22,7 @@ def copy_training_samples():
         for number in range(start, end):
             shutil.copy(src=f"{const.SAMPLE_232p3_cured['registered_path']}/Reg_0{number}.tif",
                         dst=f"{const.FOLDER_TRAIN_IMAGE}")
-            shutil.copy(src=f"const.SAMPLE_232p3_cured['path_goldstd']/19_Gray_0{number}.tif",
+            shutil.copy(src=f"{const.SAMPLE_232p3_cured['path_goldstd']}/19_Gray_0{number}.tif",
                         dst=f"{const.FOLDER_TRAIN_LABEL}")
 
     for interval in [const.INTERVAL_TRAIN_WET,
