@@ -14,22 +14,22 @@ EXT_SAMPLE = '.tiff'
 # — for the registered stacks — as well.
 FOLDER_GOLDSTD = os.path.join(FOLDER_BASE, 'Seg/Bunch2/')
 SUBFOLDER_GOLDSTD = '19_Gray_image'
-SUBFOLDER_GOLDSTD_REG= 'Registered/19_Gray_image'
+SUBFOLDER_GOLDSTD_REG = 'Registered/19_Gray_image'
 SUBFOLDER_REG = 'Registered/Bunch2WoPR'
 EXT_GOLDSTD = '.tif'
 
 # the training folder and its subfolders.
-FOLDER_TRAINING = os.path.join(FOLDER_BASE, 'data_training_nocrop')
+FOLDER_TRAINING = os.path.join(FOLDER_BASE, 'data_training')
 FOLDER_TRAIN_IMAGE = os.path.join(FOLDER_TRAINING, 'train/image/')
 FOLDER_TRAIN_LABEL = os.path.join(FOLDER_TRAINING, 'train/label/')
 FOLDER_VAL_IMAGE = os.path.join(FOLDER_TRAINING, 'validate/image/')
 FOLDER_VAL_LABEL = os.path.join(FOLDER_TRAINING, 'validate/label/')
 
 # interval images used in the training.
-INTERVAL_TRAIN_CURED = [159, 460]
-INTERVAL_TRAIN_WET = [460, 761]
-INTERVAL_VAL_CURED = [761, 912]
-INTERVAL_VAL_WET = [912, 1062]
+INTERVAL_TRAIN_CURED = [160, 460]
+INTERVAL_TRAIN_WET = [460, 760]
+INTERVAL_VAL_CURED = [760, 910]
+INTERVAL_VAL_WET = [910, 1060]
 
 # our results.
 FOLDER_RESULTS_UNET = os.path.join(FOLDER_BASE, 'data/unet')

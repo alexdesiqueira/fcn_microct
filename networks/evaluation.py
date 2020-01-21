@@ -102,7 +102,7 @@ def generate_heatmap(data_test, data_gt):
 
     for idx, img_test in enumerate(data_test):
         aux_diff = difference_bin_gt(img_test, data_gt[idx])
-        heatmap += util.img_as_float(aux_diff)
+        heatmap += util.img_as_float(aux_diff / 255)
 
     return heatmap
 

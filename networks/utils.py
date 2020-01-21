@@ -28,7 +28,7 @@ def label_visualize(image, color_dict, num_class=2):
     output = np.zeros(image.shape + (3,))
     for num in range(num_class):
         output[image == num, :] = color_dict[num]
-    return output / 255
+    return util.img_as_float(output / 255)
 
 
 def overlap_predictions(image, prediction):
@@ -120,7 +120,7 @@ def _aux_generator(images, multichannel=False):
     """
     """
     for image in images:
-        image = util.img_as_float(image)
+        image = util.img_as_float(image / 255)
         if not multichannel:
             image = np.reshape(image, image.shape+(1,))
         image = np.reshape(image, (1,)+image.shape)

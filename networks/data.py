@@ -7,7 +7,7 @@ import os
 
 def adjust_data(image, labels, num_class=2, multichannel=False):
     if multichannel:
-        image = util.img_as_float(image)
+        image = util.img_as_float(image / 255)
         if len(labels.shape) == 4:
             labels = labels[:, :, :, 0]
         else:
@@ -27,8 +27,8 @@ def adjust_data(image, labels, num_class=2, multichannel=False):
         labels = aux_labels
 
     elif image.dtype != 'float':
-        image = util.img_as_float(image)
-        labels = util.img_as_float(labels)
+        image = util.img_as_float(image / 255)
+        labels = util.img_as_float(labels / 255)
         labels[labels > 0.5] = 1
         labels[labels <= 0.5] = 0
 
@@ -39,7 +39,7 @@ def test_generator(test_path, target_size=(256, 256), pad_width=16,
                    multichannel=False, as_gray=True):
     images = io.ImageCollection(os.path.join(test_path, '*.png'))
     for image in images:
-        image = util.img_as_float(image)
+        image = util.img_as_float(image / 255)
         if image.shape != target_size:
             image = transform.resize(image, target_size)
         # padding image to correct slicing after
