@@ -36,9 +36,6 @@ RANGE_ROTATION = 0.1
 RANGE_SHEAR = 0.05
 RANGE_WIDTH_SHIFT = 0.05
 RANGE_ZOOM = 0.05
-SAMPLEWISE_CENTER = True
-SAMPLEWISE_STD_NORM = True
-ZCA_WHITENING = True
 
 
 def save_callbacks_csv(callbacks, filename_base='larson'):
@@ -69,10 +66,7 @@ gpus_avail = len(tf.config.experimental.list_physical_devices("GPU"))
 mirrored_strategy = tf.distribute.MirroredStrategy(devices=GPUS[:gpus_avail])
 
 print('# Setting hyperparameters')
-DATA_GEN_ARGS = dict(samplewise_center=SAMPLEWISE_CENTER,
-                     samplewise_std_normalizartion=SAMPLEWISE_STD_NORM,
-                     zca_whitening=ZCA_WHITENING,
-                     rotation_range=RANGE_ROTATION,
+DATA_GEN_ARGS = dict(rotation_range=RANGE_ROTATION,
                      width_shift_range=RANGE_WIDTH_SHIFT,
                      height_shift_range=RANGE_HEIGHT_SHIFT,
                      shear_range=RANGE_SHEAR,
