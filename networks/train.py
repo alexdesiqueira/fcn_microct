@@ -13,7 +13,7 @@ BATCH_SIZE = 1
 TARGET_SIZE = (288, 288)
 
 # image and label folders.
-FOLDER_BASE = '/home/alex/data/larson_2019/data/original_288x288'
+FOLDER_BASE = '/home/alex/data/larson_2019/data_training/cropped'
 FOLDER_TRAIN = os.path.join(FOLDER_BASE, 'train')
 FOLDER_VALIDATE = os.path.join(FOLDER_BASE, 'validate')
 SUBFOLDER_IMAGE = 'image'
@@ -21,7 +21,7 @@ SUBFOLDER_LABEL = 'label'
 
 # training and validation images.
 TRAINING_IMAGES = 60000
-VALIDATION_IMAGES = 25000
+VALIDATION_IMAGES = 30000
 
 EPOCHS = 10
 STEPS_PER_EPOCH = int(TRAINING_IMAGES // BATCH_SIZE)

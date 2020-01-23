@@ -275,7 +275,7 @@ def unet_3d(input_size=(64, 64, 64, 1)):
 
 
 def tiramisu(input_size=(512, 512, 1), n_filters=48, pool=5, growth_rate=16,
-             dropout_p=0.2, layers_per_block=[4, 5, 7, 10, 12, 15, 12, 10, 7, 5, 4]):
+             dropout_perc=0.2, layers_per_block=[4, 5, 7, 10, 12, 15, 12, 10, 7, 5, 4]):
     """Implements the One Hundred Layers Tiramisu dense neural network.
 
     Notes
@@ -294,19 +294,19 @@ def tiramisu(input_size=(512, 512, 1), n_filters=48, pool=5, growth_rate=16,
         for j in range(layers_per_block[i]):
             layer = BN_ReLU_Conv(stack,
                                  n_filters=growth_rate,
-                                 dropout_p=dropout_p)
+                                 dropout_perc=dropout_perc)
             stack = layers.concatenate([stack, layer])
             n_filters += growth_rate
 
         skip_connection.append(stack)
-        stack = transition_down(stack, n_filters, dropout_p=dropout_p)
+        stack = transition_down(stack, n_filters, dropout_perc=dropout_perc)
     skip_connection = skip_connection[::-1]
 
     # Bottleneck.
     upsample_block = []
 
     for j in range(layers_per_block[pool]):
-        layer = BN_ReLU_Conv(stack, growth_rate, dropout_p=dropout_p)
+        layer = BN_ReLU_Conv(stack, growth_rate, dropout_perc=dropout_perc)
         upsample_block.append(layer)
         stack = layers.concatenate([stack, layer])
     upsample_block = layers.concatenate(upsample_block)
@@ -314,17 +314,19 @@ def tiramisu(input_size=(512, 512, 1), n_filters=48, pool=5, growth_rate=16,
     # Upsampling path.
     for i in range(pool):
         filters_to_keep = growth_rate * layers_per_block[pool + i]
-        stack = transition_up(skip_connection[i], upsample_block, filters_to_keep)
+        stack = transition_up(skip_connection[i],
+                              upsample_block,
+                              filters_to_keep)
 
         upsample_block = []
         for j in range(layers_per_block[pool + i + 1]):
-            layer = BN_ReLU_Conv(stack, growth_rate, dropout_p=dropout_p)
+            layer = BN_ReLU_Conv(stack, growth_rate, dropout_perc=dropout_perc)
             upsample_block.append(layer)
             stack = layers.concatenate([stack, layer])
 
         upsample_block = layers.concatenate(upsample_block)
 
-    # Softmax
+    # Applying the softmax layer.
     output = softmax_layer(stack, n_classes=1)  # is 1 correct?
     model = Model(inputs, output)
 
@@ -335,23 +337,28 @@ def tiramisu(input_size=(512, 512, 1), n_filters=48, pool=5, growth_rate=16,
     return model
 
 
-def BN_ReLU_Conv(inputs, n_filters, filter_size=3, dropout_p=0.2):
+def BN_ReLU_Conv(inputs, n_filters, filter_size=3, dropout_perc=0.2):
     '''Apply successively Batch Normalization, ReLu nonlinearity,
-    Convolution and Dropout (if dropout_p > 0)'''
+    Convolution and Dropout (if dropout_perc > 0)'''
 
     l = layers.BatchNormalization()(inputs)
     l = layers.Activation('relu')(l)
-    l = layers.Conv2D(n_filters, filter_size, padding='same',
+    l = layers.Conv2D(n_filters,
+                      filter_size,
+                      padding='same',
                       kernel_initializer='he_uniform')(l)
-    if dropout_p != 0.0:
-        l = layers.Dropout(dropout_p)(l)
+    if dropout_perc != 0.0:
+        l = layers.Dropout(dropout_perc)(l)
     return l
 
 
-def transition_down(inputs, n_filters, dropout_p=0.2):
+def transition_down(inputs, n_filters, dropout_perc=0.2):
     """ Apply first a BN_ReLu_conv layer with filter size = 1, and
     a max pooling with a factor 2  """
-    l = BN_ReLU_Conv(inputs, n_filters, filter_size=1, dropout_p=dropout_p)
+    l = BN_ReLU_Conv(inputs,
+                     n_filters,
+                     filter_size=1,
+                     dropout_perc=dropout_perc)
     l = layers.MaxPooling2D((2, 2))(l)
     return l
 

@@ -91,5 +91,5 @@ def train_generator(batch_size, train_path, image_folder, label_folder,
     train_generator = zip(image_generator, label_generator)
 
     for (image, label) in train_generator:
-        image, label = adjust_data(image, label, multichannel, num_class)
+        image, label = adjust_data(image, label, num_class, multichannel)
         yield (image, label)
