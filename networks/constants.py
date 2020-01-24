@@ -41,7 +41,7 @@ FOLDER_VAL_LABEL_CROP = os.path.join(FOLDER_TRAINING_CROP, 'validate/label/')
 INTERVAL_TRAIN_CURED = [160, 510]
 INTERVAL_TRAIN_WET = [510, 860]
 INTERVAL_VAL_CURED = [860, 1010]
-INTERVAL_VAL_WET = [1010, 1160]
+INTERVAL_VAL_WET = [1010, 1158]  # a total of 298 validation images
 
 # our results.
 FOLDER_RESULTS_UNET = os.path.join(FOLDER_BASE, 'data/unet')
