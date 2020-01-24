@@ -1,5 +1,5 @@
 from utils import process_gt_images
-from skimage import io
+from skimage import io, util
 
 import constants as const
 import misc
@@ -9,7 +9,7 @@ import shutil
 
 
 def _imread_goldstd(image):
-    return process_gt_images(io.imread(image))
+    return util.img_as_ubyte(process_gt_images(io.imread(image)))
 
 
 def copy_training_samples():
