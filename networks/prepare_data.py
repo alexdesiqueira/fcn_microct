@@ -58,7 +58,6 @@ def copy_training_samples():
                     dst=f"{const.FOLDER_VAL_IMAGE}")
         shutil.copy(src=f"{const.SAMPLE_232p3_wet['path_goldstd']}/{aux_label}{number}.tif",
                     dst=f"{const.FOLDER_VAL_LABEL}")
-
     return None
 
 
@@ -130,3 +129,4 @@ def crop_training_samples():
                                 window_shape=const.WINDOW_SHAPE,
                                 step=const.STEP,
                                 folder=const.FOLDER_VAL_LABEL_CROP)
+    return None
