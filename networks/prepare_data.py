@@ -92,14 +92,12 @@ def crop_training_samples():
     # reading training images and its labels.
     aux = [os.path.join(const.FOLDER_TRAIN_IMAGE_ORIG, '*' + const.EXT_SAMPLE),
            os.path.join(const.FOLDER_TRAIN_IMAGE_ORIG, '*' + const.EXT_GOLDSTD)]
-    data_image = io.ImageCollection(load_pattern=':'.join(aux),
-                                    plugin=None)
+    data_image = io.ImageCollection(load_pattern=':'.join(aux))
 
     aux = [os.path.join(const.FOLDER_TRAIN_LABEL_ORIG, '*' + const.EXT_SAMPLE),
            os.path.join(const.FOLDER_TRAIN_LABEL_ORIG, '*' + const.EXT_GOLDSTD)]
     data_label = io.ImageCollection(load_pattern=':'.join(aux),
-                                    load_func=_imread_goldstd,
-                                    plugin=None)
+                                    load_func=_imread_goldstd)
 
     print(f'* Training images: {len(data_image)}; labels: {len(data_label)}')
 
@@ -122,14 +120,12 @@ def crop_training_samples():
     # reading training images and its labels.
     aux = [os.path.join(const.FOLDER_VAL_IMAGE_ORIG, '*' + const.EXT_SAMPLE),
            os.path.join(const.FOLDER_VAL_IMAGE_ORIG, '*' + const.EXT_GOLDSTD)]
-    data_image = io.ImageCollection(load_pattern=':'.join(aux),
-                                    plugin=None)
+    data_image = io.ImageCollection(load_pattern=':'.join(aux))
 
     aux = [os.path.join(const.FOLDER_VAL_LABEL_ORIG, '*' + const.EXT_SAMPLE),
            os.path.join(const.FOLDER_VAL_LABEL_ORIG, '*' + const.EXT_GOLDSTD)]
     data_label = io.ImageCollection(load_pattern=':'.join(aux),
-                                    load_func=_imread_goldstd,
-                                    plugin=None)
+                                    load_func=_imread_goldstd)
 
     print(f'* Validation images: {len(data_image)}; labels: {len(data_label)}')
 
