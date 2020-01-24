@@ -1,3 +1,4 @@
+from utils import process_gt_images
 from skimage import io
 
 import constants as const
@@ -5,6 +6,10 @@ import misc
 import numpy as np
 import os
 import shutil
+
+
+def _imread_goldstd(image):
+    return process_gt_images(io.imread(image))
 
 
 def copy_training_samples():
@@ -93,6 +98,7 @@ def crop_training_samples():
     aux = [os.path.join(const.FOLDER_TRAIN_LABEL_ORIG, '*' + const.EXT_SAMPLE),
            os.path.join(const.FOLDER_TRAIN_LABEL_ORIG, '*' + const.EXT_GOLDSTD)]
     data_label = io.ImageCollection(load_pattern=':'.join(aux),
+                                    load_func=_imread_goldstd,
                                     plugin=None)
 
     print(f'* Training images: {len(data_image)}; labels: {len(data_label)}')
@@ -122,6 +128,7 @@ def crop_training_samples():
     aux = [os.path.join(const.FOLDER_VAL_LABEL_ORIG, '*' + const.EXT_SAMPLE),
            os.path.join(const.FOLDER_VAL_LABEL_ORIG, '*' + const.EXT_GOLDSTD)]
     data_label = io.ImageCollection(load_pattern=':'.join(aux),
+                                    load_func=_imread_goldstd,
                                     plugin=None)
 
     print(f'* Validation images: {len(data_image)}; labels: {len(data_label)}')
