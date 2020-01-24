@@ -21,16 +21,28 @@ def copy_training_samples():
     # getting image intervals.
     start, end = const.INTERVAL_TRAIN_CURED
     for number in range(start, end):
-        shutil.copy(src=f"{const.SAMPLE_232p3_cured['registered_path']}/Reg_0{number}.tif",
+        if number < 1000:
+            aux_image = 'Reg_0'
+            aux_label = '19_Gray_0'
+        else:
+            aux_image = 'Reg_'
+            aux_label = '19_Gray_'
+        shutil.copy(src=f"{const.SAMPLE_232p3_cured['registered_path']}/{aux_image}{number}.tif",
                     dst=f"{const.FOLDER_TRAIN_IMAGE_ORIG}")
-        shutil.copy(src=f"{const.SAMPLE_232p3_cured['path_goldstd']}/19_Gray_0{number}.tif",
+        shutil.copy(src=f"{const.SAMPLE_232p3_cured['path_goldstd']}/{aux_label}{number}.tif",
                     dst=f"{const.FOLDER_TRAIN_LABEL_ORIG}")
 
     start, end = const.INTERVAL_VAL_CURED
     for number in range(start, end):
-        shutil.copy(src=f"{const.SAMPLE_232p3_cured['registered_path']}/Reg_0{number}.tif",
+        if number < 1000:
+            aux_image = 'Reg_0'
+            aux_label = '19_Gray_0'
+        else:
+            aux_image = 'Reg_'
+            aux_label = '19_Gray_'
+        shutil.copy(src=f"{const.SAMPLE_232p3_cured['registered_path']}/{aux_image}{number}.tif",
                     dst=f"{const.FOLDER_VAL_IMAGE_ORIG}")
-        shutil.copy(src=f"{const.SAMPLE_232p3_cured['path_goldstd']}/19_Gray_0{number}.tif",
+        shutil.copy(src=f"{const.SAMPLE_232p3_cured['path_goldstd']}/{aux_label}{number}.tif",
                     dst=f"{const.FOLDER_VAL_LABEL_ORIG}")
 
     start, end = const.INTERVAL_TRAIN_WET
