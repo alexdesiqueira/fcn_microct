@@ -85,13 +85,13 @@ def crop_training_samples():
             os.makedirs(folder)
 
     # reading training images and its labels.
-    aux = [os.path.join(const.FOLDER_TRAIN_IMAGE_ORIG, const.EXT_SAMPLE),
-           os.path.join(const.FOLDER_TRAIN_IMAGE_ORIG, const.EXT_GOLDSTD)]
+    aux = [os.path.join(const.FOLDER_TRAIN_IMAGE_ORIG, '*' + const.EXT_SAMPLE),
+           os.path.join(const.FOLDER_TRAIN_IMAGE_ORIG, '*' + const.EXT_GOLDSTD)]
     data_image = io.ImageCollection(load_pattern=':'.join(aux),
                                     plugin=None)
 
-    aux = [os.path.join(const.FOLDER_TRAIN_LABEL_ORIG, const.EXT_SAMPLE),
-           os.path.join(const.FOLDER_TRAIN_LABEL_ORIG, const.EXT_GOLDSTD)]
+    aux = [os.path.join(const.FOLDER_TRAIN_LABEL_ORIG, '*' + const.EXT_SAMPLE),
+           os.path.join(const.FOLDER_TRAIN_LABEL_ORIG, '*' + const.EXT_GOLDSTD)]
     data_label = io.ImageCollection(load_pattern=':'.join(aux),
                                     plugin=None)
 
@@ -114,13 +114,13 @@ def crop_training_samples():
                                 folder=const.FOLDER_TRAIN_LABEL_CROP)
 
     # reading training images and its labels.
-    aux = [os.path.join(const.FOLDER_VAL_IMAGE_ORIG, const.EXT_SAMPLE),
-           os.path.join(const.FOLDER_VAL_IMAGE_ORIG, const.EXT_GOLDSTD)]
+    aux = [os.path.join(const.FOLDER_VAL_IMAGE_ORIG, '*' + const.EXT_SAMPLE),
+           os.path.join(const.FOLDER_VAL_IMAGE_ORIG, '*' + const.EXT_GOLDSTD)]
     data_image = io.ImageCollection(load_pattern=':'.join(aux),
                                     plugin=None)
 
-    aux = [os.path.join(const.FOLDER_VAL_LABEL_ORIG, const.EXT_SAMPLE),
-           os.path.join(const.FOLDER_VAL_LABEL_ORIG, const.EXT_GOLDSTD)]
+    aux = [os.path.join(const.FOLDER_VAL_LABEL_ORIG, '*' + const.EXT_SAMPLE),
+           os.path.join(const.FOLDER_VAL_LABEL_ORIG, '*' + const.EXT_GOLDSTD)]
     data_label = io.ImageCollection(load_pattern=':'.join(aux),
                                     plugin=None)
 
