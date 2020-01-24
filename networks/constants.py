@@ -18,18 +18,30 @@ SUBFOLDER_GOLDSTD_REG = 'Registered/19_Gray_image'
 SUBFOLDER_REG = 'Registered/Bunch2WoPR'
 EXT_GOLDSTD = '.tif'
 
-# the training folder and its subfolders.
-FOLDER_TRAINING = os.path.join(FOLDER_BASE, 'data_training')
-FOLDER_TRAIN_IMAGE = os.path.join(FOLDER_TRAINING, 'train/image/')
-FOLDER_TRAIN_LABEL = os.path.join(FOLDER_TRAINING, 'train/label/')
-FOLDER_VAL_IMAGE = os.path.join(FOLDER_TRAINING, 'validate/image/')
-FOLDER_VAL_LABEL = os.path.join(FOLDER_TRAINING, 'validate/label/')
+# setting image constants.
+PAD_WIDTH = 16
+ROWS, COLS = (256, 256)
+STEP = 256
+WINDOW_SHAPE = (ROWS + 2*PAD_WIDTH, COLS + 2*PAD_WIDTH)
+
+# the training folders and its subfolders.
+FOLDER_TRAINING_ORIG = os.path.join(FOLDER_BASE, 'data_training/original')
+FOLDER_TRAIN_IMAGE_ORIG = os.path.join(FOLDER_TRAINING_ORIG, 'train/image/')
+FOLDER_TRAIN_LABEL_ORIG = os.path.join(FOLDER_TRAINING_ORIG, 'train/label/')
+FOLDER_VAL_IMAGE_ORIG = os.path.join(FOLDER_TRAINING_ORIG, 'validate/image/')
+FOLDER_VAL_LABEL_ORIG = os.path.join(FOLDER_TRAINING_ORIG, 'validate/label/')
+
+FOLDER_TRAINING_CROP = os.path.join(FOLDER_BASE, 'data_training/cropped')
+FOLDER_TRAIN_IMAGE_CROP = os.path.join(FOLDER_TRAINING_CROP, 'train/image/')
+FOLDER_TRAIN_LABEL_CROP = os.path.join(FOLDER_TRAINING_CROP, 'train/label/')
+FOLDER_VAL_IMAGE_CROP = os.path.join(FOLDER_TRAINING_CROP, 'validate/image/')
+FOLDER_VAL_LABEL_CROP = os.path.join(FOLDER_TRAINING_CROP, 'validate/label/')
 
 # interval images used in the training.
-INTERVAL_TRAIN_CURED = [160, 460]
-INTERVAL_TRAIN_WET = [460, 760]
-INTERVAL_VAL_CURED = [760, 910]
-INTERVAL_VAL_WET = [910, 1060]
+INTERVAL_TRAIN_CURED = [160, 510]
+INTERVAL_TRAIN_WET = [510, 860]
+INTERVAL_VAL_CURED = [860, 1010]
+INTERVAL_VAL_WET = [1010, 1160]
 
 # our results.
 FOLDER_RESULTS_UNET = os.path.join(FOLDER_BASE, 'data/unet')
