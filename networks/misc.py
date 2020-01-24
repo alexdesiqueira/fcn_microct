@@ -107,6 +107,27 @@ def measure_all_coefficients(data_test, data_gt,
     return all_matthews, all_dice
 
 
+def save_callbacks_csv(callbacks, filename_base='larson'):
+    """Small utility function to save Keras's callbacks.
+    """
+    np.savetxt(f'{filename_base}-accuracy.csv',
+               np.asarray(callbacks.history['accuracy']),
+               delimiter=',')
+
+    np.savetxt(f'{filename_base}-val_accuracy.csv',
+               np.asarray(callbacks.history['val_accuracy']),
+               delimiter=',')
+
+    np.savetxt(f'{filename_base}-loss.csv',
+               np.asarray(callbacks.history['loss']),
+               delimiter=',')
+
+    np.savetxt(f'{filename_base}-val_loss.csv',
+               np.asarray(callbacks.history['val_loss']),
+               delimiter=',')
+    return None
+
+
 def save_cropped_image(image, index, window_shape=(512, 512), step=512, folder='temp'):
     """Crops image and saves the cropped chunks in disk.
 
