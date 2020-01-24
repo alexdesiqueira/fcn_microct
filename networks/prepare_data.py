@@ -22,16 +22,16 @@ def copy_training_samples():
     start, end = const.INTERVAL_TRAIN_CURED
     for number in range(start, end):
         shutil.copy(src=f"{const.SAMPLE_232p3_cured['registered_path']}/Reg_0{number}.tif",
-                    dst=f"{const.FOLDER_TRAIN_IMAGE}")
+                    dst=f"{const.FOLDER_TRAIN_IMAGE_ORIG}")
         shutil.copy(src=f"{const.SAMPLE_232p3_cured['path_goldstd']}/19_Gray_0{number}.tif",
-                    dst=f"{const.FOLDER_TRAIN_LABEL}")
+                    dst=f"{const.FOLDER_TRAIN_LABEL_ORIG}")
 
     start, end = const.INTERVAL_VAL_CURED
     for number in range(start, end):
         shutil.copy(src=f"{const.SAMPLE_232p3_cured['registered_path']}/Reg_0{number}.tif",
-                    dst=f"{const.FOLDER_VAL_IMAGE}")
+                    dst=f"{const.FOLDER_VAL_IMAGE_ORIG}")
         shutil.copy(src=f"{const.SAMPLE_232p3_cured['path_goldstd']}/19_Gray_0{number}.tif",
-                    dst=f"{const.FOLDER_VAL_LABEL}")
+                    dst=f"{const.FOLDER_VAL_LABEL_ORIG}")
 
     start, end = const.INTERVAL_TRAIN_WET
     for number in range(start, end):
@@ -42,9 +42,9 @@ def copy_training_samples():
             aux_image = 'rec_SFRR_2600_B0p2_0'
             aux_label = '19_Gray_'
         shutil.copy(src=f"{const.SAMPLE_232p3_wet['path']}/{aux_image}{number}.tiff",
-                    dst=f"{const.FOLDER_TRAIN_IMAGE}")
+                    dst=f"{const.FOLDER_TRAIN_IMAGE_ORIG}")
         shutil.copy(src=f"{const.SAMPLE_232p3_wet['path_goldstd']}/{aux_label}{number}.tif",
-                    dst=f"{const.FOLDER_TRAIN_LABEL}")
+                    dst=f"{const.FOLDER_TRAIN_LABEL_ORIG}")
 
     start, end = const.INTERVAL_VAL_WET
     for number in range(start, end):
@@ -55,9 +55,9 @@ def copy_training_samples():
             aux_image = 'rec_SFRR_2600_B0p2_0'
             aux_label = '19_Gray_'
         shutil.copy(src=f"{const.SAMPLE_232p3_wet['path']}/{aux_image}{number}.tiff",
-                    dst=f"{const.FOLDER_VAL_IMAGE}")
+                    dst=f"{const.FOLDER_VAL_IMAGE_ORIG}")
         shutil.copy(src=f"{const.SAMPLE_232p3_wet['path_goldstd']}/{aux_label}{number}.tif",
-                    dst=f"{const.FOLDER_VAL_LABEL}")
+                    dst=f"{const.FOLDER_VAL_LABEL_ORIG}")
     return None
 
 
