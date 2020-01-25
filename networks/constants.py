@@ -39,14 +39,14 @@ FOLDER_VAL_LABEL_CROP = os.path.join(FOLDER_TRAINING_CROP, 'validate/label/')
 
 # interval images used in the training.
 INTERVAL_TRAIN_CURED = [160, 510]
-INTERVAL_TRAIN_WET = [510, 860]
+INTERVAL_TRAIN_WET = [510, 860]  # a total of 700 training images
 INTERVAL_VAL_CURED = [860, 1010]
 INTERVAL_VAL_WET = [1010, 1158]  # a total of 298 validation images
 
-# our results.
-FOLDER_RESULTS_UNET = os.path.join(FOLDER_BASE, 'data/unet')
-FOLDER_RESULTS_TIRAMISU = os.path.join(FOLDER_BASE, 'data/tiramisu')
-FOLDER_RESULTS_3DUNET = os.path.join(FOLDER_BASE, 'data/unet_3d')
+# our prediction folders.
+FOLDER_PRED_UNET = os.path.join(FOLDER_BASE, 'data_prediction/unet')
+FOLDER_PRED_TIRAMISU = os.path.join(FOLDER_BASE, 'data_prediction/tiramisu')
+FOLDER_PRED_3DUNET = os.path.join(FOLDER_BASE, 'data_prediction/unet_3d')
 SUBFOLDER_PRED = 'predict'
 SUBFOLDER_OVER = 'overlap'
 EXT_PRED = '.png'

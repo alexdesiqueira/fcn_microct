@@ -4,7 +4,6 @@ import constants as const
 import data
 import misc
 import model
-import numpy as np
 import os
 import tensorflow as tf
 
@@ -15,15 +14,14 @@ BATCH_SIZE = 1
 TARGET_SIZE = (288, 288)
 
 # image and label folders.
-FOLDER_BASE = const.FOLDER_TRAINING_CROP
-FOLDER_TRAIN = os.path.join(FOLDER_BASE, 'train')
-FOLDER_VALIDATE = os.path.join(FOLDER_BASE, 'validate')
+FOLDER_TRAIN = os.path.join(const.FOLDER_TRAINING_CROP, 'train')
+FOLDER_VALIDATE = os.path.join(const.FOLDER_TRAINING_CROP, 'validate')
 SUBFOLDER_IMAGE = 'image'
 SUBFOLDER_LABEL = 'label'
 
 # training and validation images.
 TRAINING_IMAGES = 70000
-VALIDATION_IMAGES = 29900
+VALIDATION_IMAGES = 29800
 
 EPOCHS = 10
 STEPS_PER_EPOCH = int(TRAINING_IMAGES // BATCH_SIZE)
@@ -39,10 +37,10 @@ RANGE_SHEAR = 0.05
 RANGE_WIDTH_SHIFT = 0.05
 RANGE_ZOOM = 0.05
 
-
 # preparing TensorFlow
 GPUS = ['/gpu:0', '/gpu:1', '/gpu:2', '/gpu:3', '/gpu:4',
         '/gpu:5', '/gpu:6', '/gpu:7', '/gpu:8', '/gpu:9']
+
 gpus_avail = len(tf.config.experimental.list_physical_devices("GPU"))
 mirrored_strategy = tf.distribute.MirroredStrategy(devices=GPUS[:gpus_avail])
 

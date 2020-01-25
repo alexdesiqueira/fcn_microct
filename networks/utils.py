@@ -1,5 +1,5 @@
-from model import unet
-from skimage import color, util
+from model import unet, tiramisu
+from skimage import color, io, util
 
 import csv
 import numpy as np
@@ -18,17 +18,6 @@ CLASS_9 = [64, 0, 128]
 
 COLOR_DICT = np.array([CLASS_0, CLASS_1, CLASS_2, CLASS_3, CLASS_4,
                        CLASS_5, CLASS_6, CLASS_7, CLASS_8, CLASS_9])
-
-
-def label_visualize(image, color_dict, num_class=2):
-    """
-    """
-    if len(image.shape) == 3:
-        image = image[:, :, 0]
-    output = np.zeros(image.shape + (3,))
-    for num in range(num_class):
-        output[image == num, :] = color_dict[num]
-    return util.img_as_float(output / 255)
 
 
 def overlap_predictions(image, prediction):
@@ -59,40 +48,11 @@ def overlap_predictions(image, prediction):
     return overlap
 
 
-def read_csv_coefficients(filename):
-    """Reads csv coefficients saved in a file."""
-    coefs = []
-    csv_file = csv.reader(open(filename, 'r'))
-    for row in csv_file:
-        coefs.append(row)
-    return coefs
-
-
-def regroup_image(image_set, grid_shape=None, pad_width=32, multichannel=False):
-    """
-    """
-    if multichannel:
-        image_set = image_set[:,
-                              pad_width:-pad_width,
-                              pad_width:-pad_width,
-                              :]
-    else:
-        image_set = image_set[:,
-                              pad_width:-pad_width,
-                              pad_width:-pad_width]
-
-    image = util.montage(image_set,
-                         grid_shape=grid_shape,
-                         multichannel=multichannel)
-
-    return image
-
-
 def predict_on_image(image, weights, pad_width=16, window_shape=(288, 288),
                      step=256):
     """
     """
-    model = unet(input_size=(window_shape[0], window_shape[1], 1))
+    model = tiramisu(input_size=(window_shape[0], window_shape[1], 1))
     model.load_weights(weights)
 
     image = np.pad(image, pad_width=pad_width)
@@ -116,6 +76,36 @@ def process_gt_images(data_gt):
     return util.img_as_bool(data_gt)
 
 
+def read_csv_coefficients(filename):
+    """Reads csv coefficients saved in a file."""
+    coefs = []
+    csv_file = csv.reader(open(filename, 'r'))
+    for row in csv_file:
+        coefs.append(row)
+    return coefs
+
+
+def regroup_image(image_set, grid_shape=None, pad_width=32,
+                  multichannel=False):
+    """
+    """
+    if multichannel:
+        image_set = image_set[:,
+                              pad_width:-pad_width,
+                              pad_width:-pad_width,
+                              :]
+    else:
+        image_set = image_set[:,
+                              pad_width:-pad_width,
+                              pad_width:-pad_width]
+
+    image = util.montage(image_set,
+                         grid_shape=grid_shape,
+                         multichannel=multichannel)
+
+    return image
+
+
 def _aux_generator(images, multichannel=False):
     """
     """
@@ -127,6 +117,17 @@ def _aux_generator(images, multichannel=False):
         yield image
 
 
+def _aux_label_visualize(image, color_dict, num_class=2):
+    """
+    """
+    if len(image.shape) == 3:
+        image = image[:, :, 0]
+    output = np.zeros(image.shape + (3,))
+    for num in range(num_class):
+        output[image == num, :] = color_dict[num]
+    return util.img_as_float(output / 255)
+
+
 def _aux_predict(predictions, pad_width=16, grid_shape=(10, 10),
                  num_class=2, multichannel=False):
     """
@@ -136,9 +137,9 @@ def _aux_predict(predictions, pad_width=16, grid_shape=(10, 10),
     if multichannel:
         output = np.zeros((depth, rows-2*pad_width, cols-2*pad_width, colors))
         for idx, pred in enumerate(predictions):
-            aux_pred = label_visualize(image=pred,
-                                       num_class=num_class,
-                                       color_dict=COLOR_DICT)
+            aux_pred = _aux_label_visualize(image=pred,
+                                            num_class=num_class,
+                                            color_dict=COLOR_DICT)
             output[idx] = aux_pred[pad_width:-pad_width,
                                    pad_width:-pad_width,
                                    :]
@@ -155,3 +156,11 @@ def _aux_predict(predictions, pad_width=16, grid_shape=(10, 10),
                           multichannel=multichannel)
 
     return output
+
+
+def _imread_prediction(image):
+    return io.imread(image) > 127
+
+
+def _imread_goldstd(image):
+    return process_gt_images(io.imread(image))
