@@ -4,7 +4,6 @@ import constants as const
 import data
 import misc
 import model
-import numpy as np
 import os
 import tensorflow as tf
 
@@ -41,6 +40,7 @@ RANGE_ZOOM = 0.05
 # preparing TensorFlow
 GPUS = ['/gpu:0', '/gpu:1', '/gpu:2', '/gpu:3', '/gpu:4',
         '/gpu:5', '/gpu:6', '/gpu:7', '/gpu:8', '/gpu:9']
+
 gpus_avail = len(tf.config.experimental.list_physical_devices("GPU"))
 mirrored_strategy = tf.distribute.MirroredStrategy(devices=GPUS[:gpus_avail])
 

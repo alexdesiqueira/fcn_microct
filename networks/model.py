@@ -286,7 +286,7 @@ def tiramisu(input_size=(512, 512, 1), n_filters=48, pool=5, growth_rate=16,
     stack = layers.Conv2D(filters=n_filters,
                           kernel_size=3,
                           padding='same',
-                          kernel_initializer='he_uniform')(inputs)
+                          kernel_initializer='he_normal')(inputs)
 
     # Downsampling path.
     skip_connection = []
@@ -346,7 +346,7 @@ def BN_ReLU_Conv(inputs, n_filters, filter_size=3, dropout_perc=0.2):
     l = layers.Conv2D(n_filters,
                       filter_size,
                       padding='same',
-                      kernel_initializer='he_uniform')(l)
+                      kernel_initializer='he_normal')(l)
     if dropout_perc != 0.0:
         l = layers.Dropout(dropout_perc)(l)
     return l
@@ -371,7 +371,7 @@ def transition_up(skip_connection, block_to_upsample, n_filters_keep):
                                kernel_size=3,
                                strides=2,
                                padding='same',
-                               kernel_initializer='he_uniform')(
+                               kernel_initializer='he_normal')(
                                    block_to_upsample
                                )
     l = layers.concatenate([l, skip_connection], axis=-1)
@@ -386,7 +386,6 @@ def softmax_layer(inputs, n_classes):
     l = layers.Conv2D(n_classes,
                       kernel_size=1,
                       padding='same',
-                      kernel_initializer='he_uniform')(inputs)
-    # l = Reshape((-1, n_classes))(l)
+                      kernel_initializer='he_normal')(inputs)
     l = layers.Activation('sigmoid')(l)  # or softmax for multi-class
     return l
