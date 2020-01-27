@@ -1,9 +1,10 @@
+from models.tiramisu import tiramisu
+from models.unet import unet
 from tensorflow.keras.callbacks import ModelCheckpoint
 
 import constants as const
 import data
 import misc
-import model
 import os
 import tensorflow as tf
 
@@ -72,10 +73,10 @@ valid_gen = data.train_generator(batch_size=BATCH_SIZE,
 
 print('# Processing')
 with mirrored_strategy.scope():
-    if NETWORK == 'unet':
-        model = model.unet(input_size=(*TARGET_SIZE, 1))
-    elif NETWORK == 'tiramisu':
-        model = model.tiramisu(input_size=(*TARGET_SIZE, 1))
+    if NETWORK == 'tiramisu':
+        model = tiramisu(input_size=(*TARGET_SIZE, 1))
+    elif NETWORK == 'unet':
+        model = unet(input_size=(*TARGET_SIZE, 1))
     else:
         raise ValueError(f'Model {NETWORK} is not available.')
 
