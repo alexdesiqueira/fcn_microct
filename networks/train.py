@@ -12,7 +12,7 @@ import tensorflow as tf
 # setting network constants.
 NETWORK = 'unet_3d'  # available: 'tiramisu', 'unet', 'unet_3d'
 FILENAME = f'larson_{NETWORK}.hdf5'
-BATCH_SIZE = 1
+BATCH_SIZE = 2
 
 if NETWORK in ('tiramisu', 'unet'):
     TARGET_SIZE = const.WINDOW_SHAPE  # (288, 288)
