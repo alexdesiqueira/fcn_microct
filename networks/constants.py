@@ -27,9 +27,9 @@ WINDOW_SHAPE = (ROWS + 2*PAD_WIDTH, COLS + 2*PAD_WIDTH)
 PAD_WIDTH_3D = 4
 PLANES_3D, ROWS_3D, COLS_3D = (32, 32, 32)
 STEP_3D = 32
-WINDOW_SHAPE = (PLANES_3D + 2*PAD_WIDTH_3D,
-                ROWS_3D + 2*PAD_WIDTH_3D,
-                COLS_3D + 2*PAD_WIDTH_3D)
+WINDOW_SHAPE_3D = (PLANES_3D + 2*PAD_WIDTH_3D,
+                   ROWS_3D + 2*PAD_WIDTH_3D,
+                   COLS_3D + 2*PAD_WIDTH_3D)
 
 # the training folders and its subfolders.
 FOLDER_TRAINING_ORIG = os.path.join(FOLDER_BASE, 'data_training/original')
