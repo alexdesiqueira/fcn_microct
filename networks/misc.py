@@ -163,7 +163,7 @@ def save_cropped_image(image, index, window_shape=(512, 512), step=512,
     return None
 
 
-def save_cropped_chunk(image, index, window_shape=(32, 32, 32), step=32,
+def save_cropped_chunk(image, window_shape=(32, 32, 32), step=32,
                        folder='temp'):
     """Crops image and saves the cropped chunks in disk.
 
@@ -194,7 +194,7 @@ def save_cropped_chunk(image, index, window_shape=(32, 32, 32), step=32,
     ))
 
     for idx, aux in enumerate(chunk_crop):
-        fname = '%06_chunk_crop-%06d.tif' % (index, idx)
+        fname = 'chunk_crop-%06d.tif' % (idx)
         io.imsave(os.path.join(folder, fname), aux)
     return None
 
