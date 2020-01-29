@@ -1,5 +1,6 @@
 from models.tiramisu import tiramisu
 from models.unet import unet
+from models.unet_3d import unet_3d
 from tensorflow.keras.callbacks import ModelCheckpoint
 
 import constants as const
@@ -9,20 +10,27 @@ import os
 import tensorflow as tf
 
 # setting network constants.
-NETWORK = 'unet'  # available: 'unet', 'tiramisu'
+NETWORK = 'unet'  # available: 'tiramisu', 'unet', 'unet_3d'
 FILENAME = f'larson_{NETWORK}.hdf5'
 BATCH_SIZE = 1
-TARGET_SIZE = (288, 288)
 
-# image and label folders.
-FOLDER_TRAIN = os.path.join(const.FOLDER_TRAINING_CROP, 'train')
-FOLDER_VALIDATE = os.path.join(const.FOLDER_TRAINING_CROP, 'validate')
+if NETWORK in ('tiramisu', 'unet'):
+    TARGET_SIZE = const.WINDOW_SHAPE  # (288, 288)
+    # image and label folders.
+    FOLDER_TRAIN = os.path.join(const.FOLDER_TRAINING_CROP, 'train')
+    FOLDER_VALIDATE = os.path.join(const.FOLDER_TRAINING_CROP, 'validate')
+    # training and validation images.
+    TRAINING_IMAGES = 70000
+    VALIDATION_IMAGES = 29800
+elif NETWORK in ('unet_3d'):
+    TARGET_SIZE = const.WINDOW_SHAPE_3D  # (40, 40, 40)
+    FOLDER_TRAIN = os.path.join(const.FOLDER_TRAINING_CROP_3D, 'train')
+    FOLDER_VALIDATE = os.path.join(const.FOLDER_TRAINING_CROP_3D, 'validate')
+    TRAINING_IMAGES = 134400
+    VALIDATION_IMAGES = 57600
+
 SUBFOLDER_IMAGE = 'image'
 SUBFOLDER_LABEL = 'label'
-
-# training and validation images.
-TRAINING_IMAGES = 70000
-VALIDATION_IMAGES = 29800
 
 EPOCHS = 10
 STEPS_PER_EPOCH = int(TRAINING_IMAGES // BATCH_SIZE)
@@ -77,6 +85,8 @@ with mirrored_strategy.scope():
         model = tiramisu(input_size=(*TARGET_SIZE, 1))
     elif NETWORK == 'unet':
         model = unet(input_size=(*TARGET_SIZE, 1))
+    elif NETWORK == 'unet_3d':
+        model = unet_3d(input_size=(*TARGET_SIZE, 1))
     else:
         raise ValueError(f'Model {NETWORK} is not available.')
 
