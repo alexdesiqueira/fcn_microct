@@ -8,7 +8,7 @@ import os
 
 def adjust_data(image, labels, num_class=2, multichannel=False):
     if multichannel:
-        image = util.img_as_float(image / 255)
+        image = image / 255
         labels = labels[..., 0]
         aux_labels = np.zeros(labels.shape + (num_class,))
 
