@@ -53,7 +53,7 @@ def predict_on_image(image, weights, pad_width=16, window_shape=(288, 288),
                      step=256):
     """
     """
-    model = tiramisu(input_size=(*window_shape, 1))
+    model = unet(input_size=(*window_shape, 1))
     model.load_weights(weights)
 
     image = np.pad(image, pad_width=pad_width)
@@ -111,7 +111,7 @@ def _aux_generator(images, multichannel=False):
     """
     """
     for image in images:
-        image = util.img_as_float32(image / 255)
+        image = image / 255
         if not multichannel:
             image = np.reshape(image, image.shape+(1,))
         image = np.reshape(image, (1,)+image.shape)
@@ -126,7 +126,7 @@ def _aux_label_visualize(image, color_dict, num_class=2):
     output = np.zeros(image.shape + (3,))
     for num in range(num_class):
         output[image == num, :] = color_dict[num]
-    return util.img_as_float32(output / 255)
+    return output / 255
 
 
 def _aux_predict(predictions, pad_width=16, grid_shape=(10, 10),
