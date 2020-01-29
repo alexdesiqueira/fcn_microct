@@ -128,7 +128,8 @@ def save_callbacks_csv(callbacks, filename_base='larson'):
     return None
 
 
-def save_cropped_image(image, index, window_shape=(512, 512), step=512, folder='temp'):
+def save_cropped_image(image, index, window_shape=(512, 512), step=512,
+                       folder='temp'):
     """Crops image and saves the cropped chunks in disk.
 
     Parameters
@@ -158,6 +159,42 @@ def save_cropped_image(image, index, window_shape=(512, 512), step=512, folder='
 
     for idx, aux in enumerate(img_crop):
         fname = '%03d_img_crop-%03d.png' % (index, idx)
+        io.imsave(os.path.join(folder, fname), aux)
+    return None
+
+
+def save_cropped_chunk(image, index, window_shape=(32, 32, 32), step=32,
+                       folder='temp'):
+    """Crops image and saves the cropped chunks in disk.
+
+    Parameters
+    ----------
+    image : ndarray
+        Input image.
+    window_shape : integer or tuple of length image.ndim, optional
+        (default : (32, 32, 32))
+        Defines the shape of the elementary n-dimensional orthotope
+        (better know as hyperrectangle) of the rolling window view.
+        If an integer is given, the shape will be a hypercube of
+        sidelength given by its value.
+    step : integer or tuple of length image.ndim, optional (default : 32)
+        Indicates step size at which extraction shall be performed.
+        If integer is given, then the step is uniform in all dimensions.
+    folder : str, optional (default : 'temp')
+        The folder to save the cropped files.
+
+    Returns
+    -------
+        None
+    """
+    chunk_crop = np.vstack(np.hstack(
+        util.view_as_windows(image,
+                             window_shape=window_shape,
+                             step=step)
+    ))
+
+    for idx, aux in enumerate(chunk_crop):
+        fname = '%06_chunk_crop-%06d.tif' % (index, idx)
         io.imsave(os.path.join(folder, fname), aux)
     return None
 

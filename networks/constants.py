@@ -37,6 +37,16 @@ FOLDER_TRAIN_LABEL_CROP = os.path.join(FOLDER_TRAINING_CROP, 'train/label/')
 FOLDER_VAL_IMAGE_CROP = os.path.join(FOLDER_TRAINING_CROP, 'validate/image/')
 FOLDER_VAL_LABEL_CROP = os.path.join(FOLDER_TRAINING_CROP, 'validate/label/')
 
+FOLDER_TRAINING_CROP_3D = os.path.join(FOLDER_BASE, 'data_training/cropped')
+FOLDER_TRAIN_IMAGE_CROP_3D = os.path.join(FOLDER_TRAINING_CROP_3D,
+                                          'train/image/')
+FOLDER_TRAIN_LABEL_CROP_3D = os.path.join(FOLDER_TRAINING_CROP_3D,
+                                          'train/label/')
+FOLDER_VAL_IMAGE_CROP_3D = os.path.join(FOLDER_TRAINING_CROP_3D,
+                                        'validate/image/')
+FOLDER_VAL_LABEL_CROP_3D = os.path.join(FOLDER_TRAINING_CROP_3D,
+                                        'validate/label/')
+
 # interval images used in the training.
 INTERVAL_TRAIN_CURED = [160, 510]
 INTERVAL_TRAIN_WET = [510, 860]  # a total of 700 training images
