@@ -44,7 +44,7 @@ FOLDER_TRAIN_LABEL_CROP = os.path.join(FOLDER_TRAINING_CROP, 'train/label/')
 FOLDER_VAL_IMAGE_CROP = os.path.join(FOLDER_TRAINING_CROP, 'validate/image/')
 FOLDER_VAL_LABEL_CROP = os.path.join(FOLDER_TRAINING_CROP, 'validate/label/')
 
-FOLDER_TRAINING_CROP_3D = os.path.join(FOLDER_BASE, 'data_training/cropped')
+FOLDER_TRAINING_CROP_3D = os.path.join(FOLDER_BASE, 'data_training/cropped_3d')
 FOLDER_TRAIN_IMAGE_CROP_3D = os.path.join(FOLDER_TRAINING_CROP_3D,
                                           'train/image/')
 FOLDER_TRAIN_LABEL_CROP_3D = os.path.join(FOLDER_TRAINING_CROP_3D,

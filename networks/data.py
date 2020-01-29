@@ -1,6 +1,7 @@
 from skimage import io, transform, util
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
+import generator_3d
 import numpy as np
 import os
 
@@ -8,10 +9,7 @@ import os
 def adjust_data(image, labels, num_class=2, multichannel=False):
     if multichannel:
         image = util.img_as_float(image / 255)
-        if len(labels.shape) == 4:
-            labels = labels[:, :, :, 0]
-        else:
-            labels = labels[:, :, 0]
+        labels = labels[..., 0]
         aux_labels = np.zeros(labels.shape + (num_class,))
 
         for num in range(num_class):
@@ -63,8 +61,12 @@ def train_generator(batch_size, train_path, image_folder, label_folder,
     if you want to visualize the results of generator, set
     save_to_dir = "your path"
     '''
-    image_datagen = ImageDataGenerator(**aug_dict)
-    label_datagen = ImageDataGenerator(**aug_dict)
+    if len(target_size) == 2:
+        image_datagen = ImageDataGenerator(**aug_dict)
+        label_datagen = ImageDataGenerator(**aug_dict)
+    elif len(target_size) == 3:
+        image_datagen = generator_3d.ChunkDataGenerator(**aug_dict)
+        label_datagen = generator_3d.ChunkDataGenerator(**aug_dict)
 
     image_generator = image_datagen.flow_from_directory(
         train_path,
