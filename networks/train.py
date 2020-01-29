@@ -10,7 +10,7 @@ import os
 import tensorflow as tf
 
 # setting network constants.
-NETWORK = 'unet'  # available: 'tiramisu', 'unet', 'unet_3d'
+NETWORK = 'unet_3d'  # available: 'tiramisu', 'unet', 'unet_3d'
 FILENAME = f'larson_{NETWORK}.hdf5'
 BATCH_SIZE = 1
 
@@ -34,7 +34,7 @@ SUBFOLDER_LABEL = 'label'
 
 EPOCHS = 10
 STEPS_PER_EPOCH = int(TRAINING_IMAGES // BATCH_SIZE)
-STEPS_VALIDATION = int(VALIDATION_IMAGES // BATCH_SIZE)
+VALIDATION_STEPS = int(VALIDATION_IMAGES // BATCH_SIZE)
 
 # augmentation arguments
 FILL_MODE = 'nearest'
@@ -99,7 +99,7 @@ with mirrored_strategy.scope():
                         steps_per_epoch=STEPS_PER_EPOCH,
                         epochs=EPOCHS,
                         validation_data=valid_gen,
-                        validation_steps=STEPS_VALIDATION,
+                        validation_steps=VALIDATION_STEPS,
                         verbose=1,
                         callbacks=[checkpoint])
 
