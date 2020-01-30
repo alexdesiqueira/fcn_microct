@@ -3,3 +3,9 @@
 
 # ignoring Jupyter checkpoints.
 **/.ipynb_checkpoints
+
+# ignoring HDF5 coefficient files (too heavy!)
+**/*.hdf5
+
+# ignoring output files (in some cases, heavy!)
+**/output.*.py
