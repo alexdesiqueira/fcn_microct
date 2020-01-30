@@ -1,6 +1,6 @@
 from tensorflow.keras import layers
 from tensorflow.keras.models import Model
-from tensorflow.keras.optimizers import Adam
+from tensorflow.keras.optimizers import RMSprop
 
 
 def tiramisu(input_size=(512, 512, 1), preset_model='FC-DenseNet103',
@@ -98,7 +98,7 @@ def tiramisu(input_size=(512, 512, 1), preset_model='FC-DenseNet103',
     output = sigmoid_layer(stack, n_classes=1)
     model = Model(inputs, output)
 
-    model.compile(optimizer=Adam(learning_rate=1e-5),  # was : 1e-4
+    model.compile(optimizer=RMSprop(learning_rate=1e-5),  # was : 1e-4
                   loss='binary_crossentropy',
                   metrics=['accuracy'])
 
