@@ -1,6 +1,5 @@
 from models.tiramisu import tiramisu, tiramisu_3d
-from models.unet import unet
-from models.unet_3d import unet_3d
+from models.unet import unet, unet_3d
 from tensorflow.keras.callbacks import ModelCheckpoint
 
 import constants as const
