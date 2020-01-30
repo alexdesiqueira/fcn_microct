@@ -156,14 +156,14 @@ def _aux_label_visualize(image, color_dict, num_class=2):
     return output / 255
 
 
-def _aux_network(network='unet', window_shape=(288, 288), n_class=1):
+def _aux_network(network='unet', window_shape=(288, 288), n_class=1, preset_model='tiramisu-67'):
     """
     """
     available_nets = {}
     if network in ('tiramisu', 'unet'):
         available_nets = {
             'tiramisu': tiramisu(input_size=(*window_shape, n_class),
-                                 preset_model='FC-DenseNet67'),
+                                 preset_model=preset_model),
             'unet': unet(input_size=(*window_shape, n_class)),
         }
     elif network in ('unet_3d'):
