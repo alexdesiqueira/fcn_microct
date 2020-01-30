@@ -1,5 +1,6 @@
-from models.unet import unet
 from models.tiramisu import tiramisu
+from models.unet import unet
+from models.unet_3d import unet_3d
 from skimage import color, io, util
 
 import csv
@@ -44,16 +45,44 @@ def overlap_predictions(image, prediction):
         raise
 
     overlap = util.img_as_ubyte(color.gray2rgb(image))
-    overlap[:, :, 0] = util.img_as_ubyte(prediction > 0.5)
+    overlap[..., 0] = util.img_as_ubyte(prediction > 0.5)
 
     return overlap
 
 
-def predict_on_image(image, weights, pad_width=16, window_shape=(288, 288),
-                     step=256):
+def predict_on_chunk(data, weights, model='unet_3d', n_class=1, pad_width=4,
+                     window_shape=(40, 40, 40), step=32):
     """
     """
-    model = unet(input_size=(*window_shape, 1))
+    model = _aux_model(model, input_size=(*window_shape, 1))
+    if model is None:
+        raise('Model not available.')
+
+    model.load_weights(weights)
+
+    data = np.pad(data, pad_width=pad_width)
+    chunk_crop = np.vstack(np.hstack(
+        util.view_as_windows(data,
+                             window_shape=window_shape,
+                             step=step)
+    ))
+
+    chunk_gen = _aux_generator(chunk_crop)
+
+    results = model.predict(chunk_gen, steps=100, verbose=1)  # TODO: need to check the _actual_ amount of steps
+    prediction = _aux_predict(results)  # TODO: check the alterations needed on this
+
+    return prediction
+
+
+def predict_on_image(image, weights, model='unet', n_class=1, pad_width=16,
+                     window_shape=(288, 288), step=256):
+    """
+    """
+    model = _aux_model(model, input_size=(*window_shape, 1))
+    if model is None:
+        raise('Model not available.')
+
     model.load_weights(weights)
 
     image = np.pad(image, pad_width=pad_width)
@@ -121,12 +150,23 @@ def _aux_generator(images, multichannel=False):
 def _aux_label_visualize(image, color_dict, num_class=2):
     """
     """
-    if len(image.shape) == 3:
-        image = image[:, :, 0]
+    if np.ndim(image) == 3:
+        image = image[..., 0]
     output = np.zeros(image.shape + (3,))
     for num in range(num_class):
         output[image == num, :] = color_dict[num]
     return output / 255
+
+
+def _aux_model(model='unet', input_size=(288, 288), n_class=1):
+    """
+    """
+    available_models = {
+        'tiramisu': tiramisu(input_size=(*input_size, n_class)),
+        'unet': unet(input_size=(*input_size, n_class)),
+        'unet_3d': unet_3d(input_size=(*input_size, n_class)),
+    }
+    return available_models.get(model, None)
 
 
 def _aux_predict(predictions, pad_width=16, grid_shape=(10, 10),
@@ -134,6 +174,8 @@ def _aux_predict(predictions, pad_width=16, grid_shape=(10, 10),
     """
     """
     depth, rows, cols, colors = predictions.shape
+    # helps to crop the interest part of the prediction
+    aux_slice = len(grid_shape) * [slice(pad_width, -pad_width)]
 
     if multichannel:
         output = np.zeros((depth, rows-2*pad_width, cols-2*pad_width, colors))
@@ -141,15 +183,20 @@ def _aux_predict(predictions, pad_width=16, grid_shape=(10, 10),
             aux_pred = _aux_label_visualize(image=pred,
                                             num_class=num_class,
                                             color_dict=COLOR_DICT)
-            output[idx] = aux_pred[pad_width:-pad_width,
-                                   pad_width:-pad_width,
-                                   :]
+            # OLD CODE.
+            # output[idx] = aux_pred[pad_width:-pad_width,
+            #                        pad_width:-pad_width,
+            #                        :]
+            # NEW CODE.
+            output[idx] = aux_pred[(*aux_slice, slice(None))]
     else:
-        # output = np.zeros((depth, rows-2*pad_width, cols-2*pad_width))
-        output = predictions[:,
-                             pad_width:-pad_width,
-                             pad_width:-pad_width,
-                             0]
+        # OLD CODE.
+        # output = predictions[:,
+        #                      pad_width:-pad_width,
+        #                      pad_width:-pad_width,
+        #                      0]
+        # NEW CODE.
+        output = predictions[(slice(None), *aux_slice, 0)]
 
     output = util.montage(output,
                           fill=0,
