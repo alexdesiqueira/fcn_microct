@@ -1,4 +1,4 @@
-from models.tiramisu import tiramisu
+from models.tiramisu import tiramisu, tiramisu_3d
 from models.unet import unet
 from models.unet_3d import unet_3d
 from tensorflow.keras.callbacks import ModelCheckpoint
@@ -13,7 +13,7 @@ import utils
 # setting network constants.
 NETWORK = 'tiramisu'  # available: 'tiramisu', 'unet', 'unet_3d'
 FILENAME = f'larson_{NETWORK}.hdf5'
-TIRAMISU_MODEL = 'FC-DenseNet56'
+TIRAMISU_MODEL = 'tiramisu-67'  # available: 'tiramisu-56', 'tiramisu-67'
 BATCH_SIZE = 2
 
 if NETWORK in ('tiramisu', 'unet'):
@@ -83,7 +83,7 @@ valid_gen = data.train_generator(batch_size=BATCH_SIZE,
 
 print('# Processing')
 with mirrored_strategy.scope():
-    model = utils._aux_network(NETWORK, input_size=(*TARGET_SIZE, 1))
+    model = utils._aux_network(NETWORK, window_shape=TARGET_SIZE)
     if model is None:
         raise('Model not available.')
 
