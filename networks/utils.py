@@ -50,14 +50,13 @@ def overlap_predictions(image, prediction):
     return overlap
 
 
-def predict_on_chunk(data, weights, model='unet_3d', n_class=1, pad_width=4,
+def predict_on_chunk(data, weights, network='unet_3d', n_class=1, pad_width=4,
                      window_shape=(40, 40, 40), step=32):
     """
     """
-    model = _aux_model(model, input_size=(*window_shape, 1))
-    if model is None:
-        raise('Model not available.')
-
+    model = _aux_network(network, window_shape=window_shape, n_class=n_class)
+    if network is None:
+        raise(f'Network {network} not available.')
     model.load_weights(weights)
 
     data = np.pad(data, pad_width=pad_width)
@@ -75,14 +74,13 @@ def predict_on_chunk(data, weights, model='unet_3d', n_class=1, pad_width=4,
     return prediction
 
 
-def predict_on_image(image, weights, model='unet', n_class=1, pad_width=16,
+def predict_on_image(image, weights, network='unet', n_class=1, pad_width=16,
                      window_shape=(288, 288), step=256):
     """
     """
-    model = _aux_model(model, input_size=(*window_shape, 1))
-    if model is None:
-        raise('Model not available.')
-
+    model = _aux_network(network, window_shape=window_shape, n_class=n_class)
+    if network is None:
+        raise(f'Network {network} not available.')
     model.load_weights(weights)
 
     image = np.pad(image, pad_width=pad_width)
@@ -158,15 +156,21 @@ def _aux_label_visualize(image, color_dict, num_class=2):
     return output / 255
 
 
-def _aux_model(model='unet', input_size=(288, 288), n_class=1):
+def _aux_network(network='unet', window_shape=(288, 288), n_class=1):
     """
     """
-    available_models = {
-        'tiramisu': tiramisu(input_size=(*input_size, n_class)),
-        'unet': unet(input_size=(*input_size, n_class)),
-        'unet_3d': unet_3d(input_size=(*input_size, n_class)),
-    }
-    return available_models.get(model, None)
+    available_nets = {}
+    if network in ('tiramisu', 'unet'):
+        available_nets = {
+            'tiramisu': tiramisu(input_size=(*window_shape, n_class),
+                                 preset_model='FC-DenseNet67'),
+            'unet': unet(input_size=(*window_shape, n_class)),
+        }
+    elif network in ('unet_3d'):
+        available_nets = {
+            'unet_3d': unet_3d(input_size=(*window_shape, n_class)),
+        }
+    return available_nets.get(network, None)
 
 
 def _aux_predict(predictions, pad_width=16, grid_shape=(10, 10),

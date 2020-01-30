@@ -3,7 +3,7 @@ from tensorflow.keras.models import Model
 from tensorflow.keras.optimizers import Adam
 
 
-def unet(pretrained_weights=None, input_size=(512, 512, 1)):
+def unet(input_size=(512, 512, 1)):
     """Implements the U-Net dense neural network.
     """
     inputs = layers.Input(input_size)
@@ -129,8 +129,5 @@ def unet(pretrained_weights=None, input_size=(512, 512, 1)):
     model.compile(optimizer=Adam(learning_rate=1e-5),  # was : 1e-4
                   loss='binary_crossentropy',
                   metrics=['accuracy'])
-
-    if pretrained_weights:
-        model.load_weights(pretrained_weights)
 
     return model

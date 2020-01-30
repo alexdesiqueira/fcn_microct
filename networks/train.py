@@ -8,10 +8,12 @@ import data
 import misc
 import os
 import tensorflow as tf
+import utils
 
 # setting network constants.
-NETWORK = 'unet_3d'  # available: 'tiramisu', 'unet', 'unet_3d'
+NETWORK = 'tiramisu'  # available: 'tiramisu', 'unet', 'unet_3d'
 FILENAME = f'larson_{NETWORK}.hdf5'
+TIRAMISU_MODEL = 'FC-DenseNet56'
 BATCH_SIZE = 2
 
 if NETWORK in ('tiramisu', 'unet'):
@@ -81,14 +83,9 @@ valid_gen = data.train_generator(batch_size=BATCH_SIZE,
 
 print('# Processing')
 with mirrored_strategy.scope():
-    if NETWORK == 'tiramisu':
-        model = tiramisu(input_size=(*TARGET_SIZE, 1))
-    elif NETWORK == 'unet':
-        model = unet(input_size=(*TARGET_SIZE, 1))
-    elif NETWORK == 'unet_3d':
-        model = unet_3d(input_size=(*TARGET_SIZE, 1))
-    else:
-        raise ValueError(f'Model {NETWORK} is not available.')
+    model = utils._aux_network(NETWORK, input_size=(*TARGET_SIZE, 1))
+    if model is None:
+        raise('Model not available.')
 
     checkpoint = ModelCheckpoint(filepath=FILENAME,
                                  monitor='val_loss',
