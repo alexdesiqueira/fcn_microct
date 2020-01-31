@@ -1,14 +1,15 @@
 from tensorflow.keras.callbacks import ModelCheckpoint
 
+import auxiliar
 import constants as const
 import data
 import misc
 import os
 import tensorflow as tf
-import utils
 
 # setting network constants.
-NETWORK = 'tiramisu'  # available: 'tiramisu', 'unet', 'unet_3d'
+# available networks: 'tiramisu', 'tiramisu_3d', 'unet', 'unet_3d'
+NETWORK = 'tiramisu_3d'
 TIRAMISU_MODEL = 'tiramisu-67'  # available: 'tiramisu-56', 'tiramisu-67'
 if NETWORK in ('tiramisu', 'tiramisu_3d'):
     FILENAME = f'larson_{NETWORK}{TIRAMISU_MODEL[8:]}.hdf5'
@@ -23,7 +24,7 @@ if NETWORK in ('tiramisu', 'unet'):
     # training and validation images.
     TRAINING_IMAGES = 70000
     VALIDATION_IMAGES = 29800
-elif NETWORK in ('unet_3d'):
+elif NETWORK in ('tiramisu_3d', 'unet_3d'):
     TARGET_SIZE = const.WINDOW_SHAPE_3D  # (40, 40, 40)
     FOLDER_TRAIN = os.path.join(const.FOLDER_TRAINING_CROP_3D, 'train')
     FOLDER_VALIDATE = os.path.join(const.FOLDER_TRAINING_CROP_3D, 'validate')
@@ -83,7 +84,7 @@ valid_gen = data.train_generator(batch_size=BATCH_SIZE,
 
 print('# Processing')
 with mirrored_strategy.scope():
-    model = utils._aux_network(NETWORK, window_shape=TARGET_SIZE)
+    model = auxiliar._aux_network(NETWORK, window_shape=TARGET_SIZE)
     if model is None:
         raise('Model not available.')
 

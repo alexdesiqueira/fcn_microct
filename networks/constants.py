@@ -78,8 +78,9 @@ INTERVAL_VAL_CURED = [860, 1010]
 INTERVAL_VAL_WET = [1010, 1158]  # a total of 298 validation images
 
 # our prediction folders.
-FOLDER_PRED_UNET = os.path.join(FOLDER_BASE, 'data_prediction/unet')
 FOLDER_PRED_TIRAMISU = os.path.join(FOLDER_BASE, 'data_prediction/tiramisu')
+FOLDER_PRED_TIRAMISU_3D = os.path.join(FOLDER_BASE, 'data_prediction/tiramisu_3d')
+FOLDER_PRED_UNET = os.path.join(FOLDER_BASE, 'data_prediction/unet')
 FOLDER_PRED_UNET3D = os.path.join(FOLDER_BASE, 'data_prediction/unet_3d')
 SUBFOLDER_PRED = 'predict'
 SUBFOLDER_OVER = 'overlap'

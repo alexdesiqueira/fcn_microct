@@ -1,5 +1,5 @@
 from models.unet import unet, unet_3d
-from models.tiramisu import tiramisu
+from models.tiramisu import tiramisu, tiramisu_3d
 from skimage import io, util
 
 import constants as const
@@ -53,8 +53,10 @@ def _aux_network(network='unet', window_shape=(288, 288), n_class=1,
                                  preset_model=preset_model),
             'unet': unet(input_size=(*window_shape, n_class)),
         }
-    elif network in ('unet_3d'):
+    elif network in ('tiramisu_3d', 'unet_3d'):
         available_nets = {
+            'tiramisu_3d': tiramisu_3d(input_size=(*window_shape, n_class),
+                                       preset_model=preset_model),
             'unet_3d': unet_3d(input_size=(*window_shape, n_class)),
         }
     return available_nets.get(network, None)
@@ -103,6 +105,7 @@ def _aux_prediction_folder(network='unet'):
     """
     available_folders = {
         'tiramisu': const.FOLDER_PRED_TIRAMISU,
+        'tiramisu_3d': const.FOLDER_PRED_TIRAMISU_3D,
         'unet': const.FOLDER_PRED_UNET,
         'unet_3d': const.FOLDER_PRED_UNET3D,
     }
@@ -121,7 +124,7 @@ def _aux_process_sample(folder, data, weights):
             os.makedirs(aux)
 
     for idx, image in enumerate(data):
-        fname = '%04d.png' % (idx)
+        fname = '%06d.png' % (idx)
         # predicting and saving the results.
         prediction = utils.predict_on_image(image, weights=weights)
         io.imsave(os.path.join(FOLDER_PRED, fname),
