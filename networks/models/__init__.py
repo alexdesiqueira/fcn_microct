@@ -1,1 +1,2 @@
-__all__ = ['tiramisu', 'unet', 'unet_3d']
+
+__all__ = ['tiramisu', 'unet']

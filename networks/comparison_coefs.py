@@ -1,9 +1,9 @@
+import constants as const
+import  misc
+import utils
 from skimage import io
 
-import constants as const
-import misc
 import os
-import utils
 
 
 NETWORK = 'unet'  # available: 'unet', 'tiramisu'
@@ -51,6 +51,7 @@ def _aux_read_data(sample, folder_prediction=NETWORK_FOLDER[NETWORK],
     data_goldstd = io.ImageCollection(load_pattern=folder_goldstd,
                                       load_func=utils._imread_goldstd)
     return data_prediction, data_goldstd
+
 
 # using io.ImageCollection to read prediction and gold standard images.
 for pred_folder, gold_folder in zip(pred_folders, gold_folders):
