@@ -1,5 +1,21 @@
+import numpy as np
 import os
 
+
+# defining a color dict with each class.
+CLASS_0 = [0, 0, 0]
+CLASS_1 = [128, 128, 128]
+CLASS_2 = [128, 0, 0]
+CLASS_3 = [192, 192, 128]
+CLASS_4 = [128, 64, 128]
+CLASS_5 = [60, 40, 222]
+CLASS_6 = [128, 128, 0]
+CLASS_7 = [192, 128, 128]
+CLASS_8 = [64, 64, 128]
+CLASS_9 = [64, 0, 128]
+
+COLOR_DICT = np.array([CLASS_0, CLASS_1, CLASS_2, CLASS_3, CLASS_4,
+                       CLASS_5, CLASS_6, CLASS_7, CLASS_8, CLASS_9])
 
 # defining folder structure.
 # base folder
@@ -14,9 +30,10 @@ EXT_SAMPLE = '.tiff'
 # — for the registered stacks — as well.
 FOLDER_GOLDSTD = os.path.join(FOLDER_BASE, 'Seg/Bunch2/')
 SUBFOLDER_GOLDSTD = '19_Gray_image'
-SUBFOLDER_GOLDSTD_REG = 'Registered/19_Gray_image'
-SUBFOLDER_REG = 'Registered/Bunch2WoPR'
 EXT_GOLDSTD = '.tif'
+SUBFOLDER_REG = 'Registered/Bunch2WoPR'
+SUBFOLDER_GOLDSTD_REG = 'Registered/19_Gray_image'
+EXT_REG = '.tif'
 
 # setting image constants.
 PAD_WIDTH = 16
@@ -63,7 +80,7 @@ INTERVAL_VAL_WET = [1010, 1158]  # a total of 298 validation images
 # our prediction folders.
 FOLDER_PRED_UNET = os.path.join(FOLDER_BASE, 'data_prediction/unet')
 FOLDER_PRED_TIRAMISU = os.path.join(FOLDER_BASE, 'data_prediction/tiramisu')
-FOLDER_PRED_3DUNET = os.path.join(FOLDER_BASE, 'data_prediction/unet_3d')
+FOLDER_PRED_UNET3D = os.path.join(FOLDER_BASE, 'data_prediction/unet_3d')
 SUBFOLDER_PRED = 'predict'
 SUBFOLDER_OVER = 'overlap'
 EXT_PRED = '.png'

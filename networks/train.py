@@ -1,5 +1,3 @@
-from models.tiramisu import tiramisu, tiramisu_3d
-from models.unet import unet, unet_3d
 from tensorflow.keras.callbacks import ModelCheckpoint
 
 import constants as const
@@ -11,9 +9,11 @@ import utils
 
 # setting network constants.
 NETWORK = 'tiramisu'  # available: 'tiramisu', 'unet', 'unet_3d'
-FILENAME = f'larson_{NETWORK}.hdf5'
 TIRAMISU_MODEL = 'tiramisu-67'  # available: 'tiramisu-56', 'tiramisu-67'
-BATCH_SIZE = 2
+if NETWORK in ('tiramisu', 'tiramisu_3d'):
+    FILENAME = f'larson_{NETWORK}{TIRAMISU_MODEL[8:]}.hdf5'
+elif NETWORK in ('unet', 'unet_3d'):
+    FILENAME = f'larson_{NETWORK}.hdf5'
 
 if NETWORK in ('tiramisu', 'unet'):
     TARGET_SIZE = const.WINDOW_SHAPE  # (288, 288)
@@ -33,6 +33,7 @@ elif NETWORK in ('unet_3d'):
 SUBFOLDER_IMAGE = 'image'
 SUBFOLDER_LABEL = 'label'
 
+BATCH_SIZE = 2
 EPOCHS = 10
 STEPS_PER_EPOCH = int(TRAINING_IMAGES // BATCH_SIZE)
 VALIDATION_STEPS = int(VALIDATION_IMAGES // BATCH_SIZE)

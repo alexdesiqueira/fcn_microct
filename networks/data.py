@@ -1,4 +1,4 @@
-from skimage import io, transform, util
+from skimage import io, transform
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
 import generator_3d
