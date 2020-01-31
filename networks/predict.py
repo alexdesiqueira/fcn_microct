@@ -6,9 +6,9 @@ import os
 import tensorflow as tf
 
 
-NETWORK = 'unet'
+NETWORK = 'tiramisu'
 SAMPLES = const.SAMPLES_BUNCH2
-WEIGHTS = 'larson_unet.hdf5'
+WEIGHTS = '../coefficients/larson2019_tiramisu-67/larson_tiramisu-67.hdf5'
 
 
 for sample in SAMPLES:
@@ -17,8 +17,12 @@ for sample in SAMPLES:
     data_sample = io.ImageCollection(load_pattern=pattern)
 
     print('# Processing...')
-    folder = auxiliar._aux_prediction_folder(network=NETWORK)
-    auxiliar._aux_process_sample(folder, data=data_sample, weights=WEIGHTS)
+    folder = os.path.join(auxiliar._aux_prediction_folder(network=NETWORK),
+                          sample['folder'])
+    auxiliar._aux_process_sample(folder,
+                                 data=data_sample,
+                                 weights=WEIGHTS,
+                                 network=NETWORK)
 
     tf.keras.backend.clear_session()  # resetting session state
 
@@ -28,8 +32,11 @@ for sample in SAMPLES:
         data_sample = io.ImageCollection(load_pattern=pattern)
 
         print('# Processing registered sample...')
-        folder = auxiliar._aux_prediction_folder(network=NETWORK)
-        folder_reg = folder + '_REG'
-        auxiliar._aux_process_sample(folder_reg,
+        folder = os.path.join(auxiliar._aux_prediction_folder(network=NETWORK),
+                              sample['folder'] + '_REG')
+        auxiliar._aux_process_sample(folder,
                                      data=data_sample,
-                                     weights=WEIGHTS)
+                                     weights=WEIGHTS,
+                                     network=NETWORK)
+
+        tf.keras.backend.clear_session()  # resetting session state

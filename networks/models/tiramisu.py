@@ -138,7 +138,7 @@ def tiramisu_3d(input_size=(32, 32, 32, 1), preset_model='tiramisu-67',
                                 n_filters=growth_rate,
                                 dropout_perc=dropout_perc)
         upsample_block.append(layer)
-        stack = layers.concatenate(upsample_block)
+        stack = layers.concatenate([stack, layer])
     upsample_block = layers.concatenate(upsample_block)
 
     # upsampling path.
@@ -245,6 +245,7 @@ def transition_up(skip_connection, block_to_upsample, filters_to_keep):
     layer = layers.concatenate([layer, skip_connection], axis=-1)
     return layer
 
+
 def transition_up_3d(skip_connection, block_to_upsample, filters_to_keep):
     '''Performs upsampling on block_to_upsample by a factor 2 and
     concatenates it with the skip_connection'''
@@ -258,12 +259,6 @@ def transition_up_3d(skip_connection, block_to_upsample, filters_to_keep):
                                    )
     layer = layers.concatenate([layer, skip_connection], axis=-1)
     return layer
-
-def _check_list_input(layers_per_block, pool):
-    """Check if the layers list has the correct size."""
-    assert len(layers_per_block) == 2 * pool + 1
-
-
 
 
 def bn_relu_conv_3d(inputs, n_filters, filter_size=3, dropout_perc=0.2):

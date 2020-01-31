@@ -112,9 +112,9 @@ def _aux_prediction_folder(network='unet'):
     return available_folders.get(network, None)
 
 
-def _aux_process_sample(folder, data, weights):
+def _aux_process_sample(folder, data, weights, network='unet'):
     """Auxiliar function. Process the sample and overlaps the original
-    sample with the results.
+    image with the results.
     """
     FOLDER_PRED = os.path.join(folder, const.SUBFOLDER_PRED)
     FOLDER_OVER = os.path.join(folder, const.SUBFOLDER_OVER)
@@ -126,7 +126,9 @@ def _aux_process_sample(folder, data, weights):
     for idx, image in enumerate(data):
         fname = '%06d.png' % (idx)
         # predicting and saving the results.
-        prediction = utils.predict_on_image(image, weights=weights)
+        prediction = utils.predict_on_image(image,
+                                            weights=weights,
+                                            network=network)
         io.imsave(os.path.join(FOLDER_PRED, fname),
                   util.img_as_ubyte(prediction))
 
