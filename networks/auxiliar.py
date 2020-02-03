@@ -1,6 +1,7 @@
 from models.unet import unet, unet_3d
 from models.tiramisu import tiramisu, tiramisu_3d
 from skimage import io, util
+from tensorflow.keras.backend import clear_session
 
 import constants as const
 import numpy as np
@@ -16,6 +17,7 @@ def _aux_generator(images, multichannel=False):
         if not multichannel:
             image = np.reshape(image, image.shape+(1,))
         image = np.reshape(image, (1,)+image.shape)
+
         yield image
 
 
@@ -136,4 +138,6 @@ def _aux_process_sample(folder, data, weights, network='unet'):
         overlap = utils.overlap_predictions(image, prediction)
         io.imsave(os.path.join(FOLDER_OVER, fname),
                   util.img_as_ubyte(overlap))
+
+        clear_session()  # resetting TensorFlow session state
     return None

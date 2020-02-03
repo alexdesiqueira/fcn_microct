@@ -3,7 +3,6 @@ from skimage import io
 import auxiliar
 import constants as const
 import os
-import tensorflow as tf
 
 
 NETWORK = 'tiramisu'
@@ -24,8 +23,6 @@ for sample in SAMPLES:
                                  weights=WEIGHTS,
                                  network=NETWORK)
 
-    tf.keras.backend.clear_session()  # resetting session state
-
     if sample['registered_path']:
         pattern = os.path.join(sample['registered_path'],
                                '*' + const.EXT_REG)
@@ -38,5 +35,3 @@ for sample in SAMPLES:
                                      data=data_sample,
                                      weights=WEIGHTS,
                                      network=NETWORK)
-
-        tf.keras.backend.clear_session()  # resetting session state
