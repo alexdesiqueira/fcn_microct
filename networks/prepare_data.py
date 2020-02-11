@@ -1,15 +1,15 @@
-from utils import process_gt_images
+from utils import process_goldstd_images
 from skimage import io, util
 
 import constants as const
-import misc
 import numpy as np
 import os
 import shutil
+import utils
 
 
 def _imread_goldstd(image):
-    return util.img_as_ubyte(process_gt_images(io.imread(image)))
+    return util.img_as_ubyte(process_goldstd_images(io.imread(image)))
 
 
 def copy_training_samples():
@@ -78,75 +78,6 @@ def copy_training_samples():
     return None
 
 
-def crop_training_images():
-    """
-    """
-    # checking if folders exist.
-    for folder in [const.FOLDER_TRAIN_IMAGE_CROP,
-                   const.FOLDER_TRAIN_LABEL_CROP,
-                   const.FOLDER_VAL_IMAGE_CROP,
-                   const.FOLDER_VAL_LABEL_CROP]:
-        if not os.path.isdir(folder):
-            os.makedirs(folder)
-
-    # reading training images and its labels.
-    aux = [os.path.join(const.FOLDER_TRAIN_IMAGE_ORIG, '*' + const.EXT_SAMPLE),
-           os.path.join(const.FOLDER_TRAIN_IMAGE_ORIG, '*' + const.EXT_GOLDSTD)]
-    data_image = io.ImageCollection(load_pattern=':'.join(aux))
-
-    aux = [os.path.join(const.FOLDER_TRAIN_LABEL_ORIG, '*' + const.EXT_SAMPLE),
-           os.path.join(const.FOLDER_TRAIN_LABEL_ORIG, '*' + const.EXT_GOLDSTD)]
-    data_label = io.ImageCollection(load_pattern=':'.join(aux),
-                                    load_func=_imread_goldstd)
-
-    print(f'* Training images: {len(data_image)}; labels: {len(data_label)}')
-
-    for idx, (image, label) in enumerate(zip(data_image, data_label)):
-        image = np.pad(image, pad_width=const.PAD_WIDTH)
-        label = np.pad(label, pad_width=const.PAD_WIDTH)
-
-        misc.save_cropped_image(image,
-                                index=idx,
-                                window_shape=const.WINDOW_SHAPE,
-                                step=const.STEP,
-                                folder=const.FOLDER_TRAIN_IMAGE_CROP)
-
-        misc.save_cropped_image(label,
-                                index=idx,
-                                window_shape=const.WINDOW_SHAPE,
-                                step=const.STEP,
-                                folder=const.FOLDER_TRAIN_LABEL_CROP)
-
-    # reading validation images and their labels.
-    aux = [os.path.join(const.FOLDER_VAL_IMAGE_ORIG, '*' + const.EXT_SAMPLE),
-           os.path.join(const.FOLDER_VAL_IMAGE_ORIG, '*' + const.EXT_GOLDSTD)]
-    data_image = io.ImageCollection(load_pattern=':'.join(aux))
-
-    aux = [os.path.join(const.FOLDER_VAL_LABEL_ORIG, '*' + const.EXT_SAMPLE),
-           os.path.join(const.FOLDER_VAL_LABEL_ORIG, '*' + const.EXT_GOLDSTD)]
-    data_label = io.ImageCollection(load_pattern=':'.join(aux),
-                                    load_func=_imread_goldstd)
-
-    print(f'* Validation images: {len(data_image)}; labels: {len(data_label)}')
-
-    for idx, (image, label) in enumerate(zip(data_image, data_label)):
-        image = np.pad(image, pad_width=const.PAD_WIDTH)
-        label = np.pad(label, pad_width=const.PAD_WIDTH)
-
-        misc.save_cropped_image(image,
-                                index=idx,
-                                window_shape=const.WINDOW_SHAPE,
-                                step=const.STEP,
-                                folder=const.FOLDER_VAL_IMAGE_CROP)
-
-        misc.save_cropped_image(label,
-                                index=idx,
-                                window_shape=const.WINDOW_SHAPE,
-                                step=const.STEP,
-                                folder=const.FOLDER_VAL_LABEL_CROP)
-    return None
-
-
 def crop_training_chunks():
     """
     """
@@ -176,15 +107,15 @@ def crop_training_chunks():
     data_image = np.pad(data_image, pad_width=const.PAD_WIDTH_3D)
     data_label = np.pad(data_label, pad_width=const.PAD_WIDTH_3D)
 
-    misc.save_cropped_chunk(data_image,
-                            window_shape=const.WINDOW_SHAPE_3D,
-                            step=const.STEP_3D,
-                            folder=const.FOLDER_TRAIN_IMAGE_CROP_3D)
+    utils.save_cropped_chunk(data_image,
+                             window_shape=const.WINDOW_SHAPE_3D,
+                             step=const.STEP_3D,
+                             folder=const.FOLDER_TRAIN_IMAGE_CROP_3D)
 
-    misc.save_cropped_chunk(data_label,
-                            window_shape=const.WINDOW_SHAPE_3D,
-                            step=const.STEP_3D,
-                            folder=const.FOLDER_TRAIN_LABEL_CROP_3D)
+    utils.save_cropped_chunk(data_label,
+                             window_shape=const.WINDOW_SHAPE_3D,
+                             step=const.STEP_3D,
+                             folder=const.FOLDER_TRAIN_LABEL_CROP_3D)
 
     # reading validation images and their labels.
     aux = [os.path.join(const.FOLDER_VAL_IMAGE_ORIG, '*' + const.EXT_SAMPLE),
@@ -203,13 +134,82 @@ def crop_training_chunks():
     data_image = np.pad(data_image, pad_width=const.PAD_WIDTH_3D)
     data_label = np.pad(data_label, pad_width=const.PAD_WIDTH_3D)
 
-    misc.save_cropped_chunk(data_image,
-                            window_shape=const.WINDOW_SHAPE_3D,
-                            step=const.STEP_3D,
-                            folder=const.FOLDER_VAL_IMAGE_CROP_3D)
+    utils.save_cropped_chunk(data_image,
+                             window_shape=const.WINDOW_SHAPE_3D,
+                             step=const.STEP_3D,
+                             folder=const.FOLDER_VAL_IMAGE_CROP_3D)
 
-    misc.save_cropped_chunk(data_label,
-                            window_shape=const.WINDOW_SHAPE_3D,
-                            step=const.STEP_3D,
-                            folder=const.FOLDER_VAL_LABEL_CROP_3D)
+    utils.save_cropped_chunk(data_label,
+                             window_shape=const.WINDOW_SHAPE_3D,
+                             step=const.STEP_3D,
+                             folder=const.FOLDER_VAL_LABEL_CROP_3D)
+    return None
+
+
+def crop_training_images():
+    """
+    """
+    # checking if folders exist.
+    for folder in [const.FOLDER_TRAIN_IMAGE_CROP,
+                   const.FOLDER_TRAIN_LABEL_CROP,
+                   const.FOLDER_VAL_IMAGE_CROP,
+                   const.FOLDER_VAL_LABEL_CROP]:
+        if not os.path.isdir(folder):
+            os.makedirs(folder)
+
+    # reading training images and their labels.
+    aux = [os.path.join(const.FOLDER_TRAIN_IMAGE_ORIG, '*' + const.EXT_SAMPLE),
+           os.path.join(const.FOLDER_TRAIN_IMAGE_ORIG, '*' + const.EXT_GOLDSTD)]
+    data_image = io.ImageCollection(load_pattern=':'.join(aux))
+
+    aux = [os.path.join(const.FOLDER_TRAIN_LABEL_ORIG, '*' + const.EXT_SAMPLE),
+           os.path.join(const.FOLDER_TRAIN_LABEL_ORIG, '*' + const.EXT_GOLDSTD)]
+    data_label = io.ImageCollection(load_pattern=':'.join(aux),
+                                    load_func=_imread_goldstd)
+
+    print(f'* Training images: {len(data_image)}; labels: {len(data_label)}')
+
+    for idx, (image, label) in enumerate(zip(data_image, data_label)):
+        image = np.pad(image, pad_width=const.PAD_WIDTH)
+        label = np.pad(label, pad_width=const.PAD_WIDTH)
+
+        utils.save_cropped_image(image,
+                                 index=idx,
+                                 window_shape=const.WINDOW_SHAPE,
+                                 step=const.STEP,
+                                 folder=const.FOLDER_TRAIN_IMAGE_CROP)
+
+        utils.save_cropped_image(label,
+                                 index=idx,
+                                 window_shape=const.WINDOW_SHAPE,
+                                 step=const.STEP,
+                                 folder=const.FOLDER_TRAIN_LABEL_CROP)
+
+    # reading validation images and their labels.
+    aux = [os.path.join(const.FOLDER_VAL_IMAGE_ORIG, '*' + const.EXT_SAMPLE),
+           os.path.join(const.FOLDER_VAL_IMAGE_ORIG, '*' + const.EXT_GOLDSTD)]
+    data_image = io.ImageCollection(load_pattern=':'.join(aux))
+
+    aux = [os.path.join(const.FOLDER_VAL_LABEL_ORIG, '*' + const.EXT_SAMPLE),
+           os.path.join(const.FOLDER_VAL_LABEL_ORIG, '*' + const.EXT_GOLDSTD)]
+    data_label = io.ImageCollection(load_pattern=':'.join(aux),
+                                    load_func=_imread_goldstd)
+
+    print(f'* Validation images: {len(data_image)}; labels: {len(data_label)}')
+
+    for idx, (image, label) in enumerate(zip(data_image, data_label)):
+        image = np.pad(image, pad_width=const.PAD_WIDTH)
+        label = np.pad(label, pad_width=const.PAD_WIDTH)
+
+        utils.save_cropped_image(image,
+                                 index=idx,
+                                 window_shape=const.WINDOW_SHAPE,
+                                 step=const.STEP,
+                                 folder=const.FOLDER_VAL_IMAGE_CROP)
+
+        utils.save_cropped_image(label,
+                                 index=idx,
+                                 window_shape=const.WINDOW_SHAPE,
+                                 step=const.STEP,
+                                 folder=const.FOLDER_VAL_LABEL_CROP)
     return None
