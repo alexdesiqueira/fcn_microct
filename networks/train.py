@@ -1,11 +1,10 @@
 from tensorflow.keras.callbacks import ModelCheckpoint
 
-import auxiliar
 import constants as const
 import data
-import misc
 import os
 import tensorflow as tf
+import utils
 
 # setting network constants.
 # available networks: 'tiramisu', 'tiramisu_3d', 'unet', 'unet_3d'
@@ -84,7 +83,7 @@ valid_gen = data.train_generator(batch_size=BATCH_SIZE,
 
 print('# Processing')
 with mirrored_strategy.scope():
-    model = auxiliar._aux_network(NETWORK, window_shape=TARGET_SIZE)
+    model = utils.network_models(NETWORK, window_shape=TARGET_SIZE)
     if model is None:
         raise('Model not available.')
 
@@ -102,4 +101,4 @@ with mirrored_strategy.scope():
                         callbacks=[checkpoint])
 
 print('# Saving indicators')
-misc.save_callbacks_csv(history, filename_base=FILENAME)
+utils.save_callbacks_csv(history, filename_base=FILENAME)
