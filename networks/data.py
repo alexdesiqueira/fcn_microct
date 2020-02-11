@@ -34,7 +34,9 @@ def adjust_data(image, labels, num_class=2, multichannel=False):
 
 
 def test_generator(test_path, target_size=(256, 256), pad_width=16,
-                   multichannel=False, as_gray=True):
+                   multichannel=False):
+    """
+    """
     images = io.ImageCollection(os.path.join(test_path, '*.png'))
     for image in images:
         image = image / 255
@@ -45,6 +47,7 @@ def test_generator(test_path, target_size=(256, 256), pad_width=16,
         if not multichannel:
             image = np.reshape(image, image.shape+(1,))
         image = np.reshape(image, (1,)+image.shape)
+
         yield image
 
 
@@ -68,7 +71,7 @@ def train_generator(batch_size, train_path, image_folder, label_folder,
         image_datagen = generator_3d.ChunkDataGenerator(**aug_dict)
         label_datagen = generator_3d.ChunkDataGenerator(**aug_dict)
 
-    image_generator = image_datagen.flow_from_directory(
+    image_gen = image_datagen.flow_from_directory(
         train_path,
         classes=[image_folder],
         class_mode=None,
@@ -79,7 +82,7 @@ def train_generator(batch_size, train_path, image_folder, label_folder,
         save_prefix=image_save_prefix,
         seed=seed)
 
-    label_generator = label_datagen.flow_from_directory(
+    label_gen = label_datagen.flow_from_directory(
         train_path,
         classes=[label_folder],
         class_mode=None,
@@ -90,8 +93,8 @@ def train_generator(batch_size, train_path, image_folder, label_folder,
         save_prefix=label_save_prefix,
         seed=seed)
 
-    train_generator = zip(image_generator, label_generator)
+    train_gen = zip(image_gen, label_gen)
 
-    for (image, label) in train_generator:
+    for (image, label) in train_gen:
         image, label = adjust_data(image, label, num_class, multichannel)
         yield (image, label)

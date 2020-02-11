@@ -4,13 +4,6 @@ import numpy as np
 import utils
 
 
-def _assert_compatible(image_1, image_2):
-    """Raise an error if the shape and dtype do not match."""
-    if not image_1.shape == image_2.shape:
-        raise ValueError('Input images do not have the same dimensions.')
-    return None
-
-
 def confusion_matrix(data_true, data_test):
     """Compares reference and test data to generate a confusion matrix.
 
@@ -75,7 +68,7 @@ def difference_bin_gt(data_test, data_true):
     img_diff : ndarray
     """
     data_test = util.img_as_bool(data_test)
-    data_true = utils.process_gt_images(data_true)
+    data_true = utils.process_goldstd_images(data_true)
 
     data_diff = data_test ^ data_true
 
@@ -108,7 +101,19 @@ def generate_heatmap(data_test, data_gt):
 
 
 def measure_dice(conf_matrix):
-    """
+    """Calculate the Dice correlation coefficient for a confusion matrix.
+
+    Parameters
+    ----------
+    conf_matrix : array
+        Matrix containing the number of true positives, false positives,
+    false_negatives, and true negatives.
+
+    Returns
+    -------
+    coef_dice : float
+        Dice correlation index for the input confusion matrix.
+
     """
     tr_pos, fl_pos, fl_neg, _ = conf_matrix.ravel()
     coef_dice = (2 * tr_pos) / (2 * tr_pos + fl_pos + fl_neg)
@@ -116,7 +121,7 @@ def measure_dice(conf_matrix):
 
 
 def measure_matthews(conf_matrix):
-    """Calculate the Matthews' correlation coefficient for a confusion matrix.
+    """Calculate the Matthews correlation coefficient for a confusion matrix.
 
     Parameters
     ----------
@@ -127,7 +132,7 @@ def measure_matthews(conf_matrix):
     Returns
     -------
     coef_matthews : float
-        Matthews' correlation index for the input confusion matrix.
+        Matthews correlation index for the input confusion matrix.
 
     Notes
     -----
@@ -158,3 +163,10 @@ def measure_matthews(conf_matrix):
         np.sqrt((tr_pos + fl_pos) * (tr_pos + fl_neg) *
                 (tr_neg + fl_pos) * (tr_neg + fl_neg))
     return coef_matthews
+
+
+def _assert_compatible(image_1, image_2):
+    """Raise an error if the shape and dtype do not match."""
+    if not image_1.shape == image_2.shape:
+        raise ValueError('Input images do not have the same dimensions.')
+    return None
