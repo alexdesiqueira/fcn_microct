@@ -131,7 +131,7 @@ SAMPLE_232p3_cured = {
     'path_goldstd': os.path.join(FOLDER_GOLDSTD,
                                  FOLDER_232p3_cured,
                                  SUBFOLDER_GOLDSTD_REG),
-    'segmentation_interval': [0, 1000],  # [159, 1159],
+    'segmentation_interval': [159, 1159],  # [0, 1000]
     'registered_path': os.path.join(FOLDER_GOLDSTD,
                                     FOLDER_232p3_cured,
                                     SUBFOLDER_REG)
@@ -145,7 +145,8 @@ SAMPLE_232p3_wet = {
     'path_goldstd': os.path.join(FOLDER_GOLDSTD,
                                  FOLDER_232p3_wet,
                                  SUBFOLDER_GOLDSTD),
-    'segmentation_interval': [159, 1159],  # [0, 1000],
+    'segmentation_interval': [0, 1000],
+    # was [159, 1159], but we have only 1000 slices in the sample
     'registered_path': None
 }
 
