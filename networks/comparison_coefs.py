@@ -19,17 +19,23 @@ def read_data(sample, folder_prediction=NETWORK_FOLDER[NETWORK],
               is_registered=False):
     """
     """
-    folder_pred = os.path.join(folder_prediction,
-                               sample['folder'],
-                               const.SUBFOLDER_PRED,
-                               '*' + const.EXT_PRED)
     if is_registered:
+        folder_pred = os.path.join(folder_prediction,
+                                   sample['folder'] + '_REG',
+                                   const.SUBFOLDER_PRED,
+                                   '*' + const.EXT_PRED)
         folder_goldstd = os.path.join(const.FOLDER_GOLDSTD,
-                                      const.SUBFOLDER_GOLDSTD,
+                                      sample['folder'],
+                                      const.SUBFOLDER_GOLDSTD_REG,
                                       '*' + const.EXT_GOLDSTD)
     else:
+        folder_pred = os.path.join(folder_prediction,
+                                   sample['folder'],
+                                   const.SUBFOLDER_PRED,
+                                   '*' + const.EXT_PRED)
         folder_goldstd = os.path.join(const.FOLDER_GOLDSTD,
-                                      const.SUBFOLDER_GOLDSTD_REG,
+                                      sample['folder'],
+                                      const.SUBFOLDER_GOLDSTD,
                                       '*' + const.EXT_GOLDSTD)
 
     data_prediction = io.ImageCollection(load_pattern=folder_pred,
@@ -41,6 +47,7 @@ def read_data(sample, folder_prediction=NETWORK_FOLDER[NETWORK],
 
 for sample in const.SAMPLES_BUNCH2:
     if sample['has_goldstd']:
+        print(f"Now processing {sample['folder']}.")
         if sample['registered_path']:
             data_prediction, data_goldstd = read_data(sample, is_registered=True)
         else:
