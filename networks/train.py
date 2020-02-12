@@ -24,11 +24,11 @@ if NETWORK in ('tiramisu', 'unet'):
     TRAINING_IMAGES = 70000
     VALIDATION_IMAGES = 29800
 elif NETWORK in ('tiramisu_3d', 'unet_3d'):
-    TARGET_SIZE = const.WINDOW_SHAPE_3D  # (40, 40, 40)
+    TARGET_SIZE = const.WINDOW_SHAPE_3D  # (32, 32, 32)
     FOLDER_TRAIN = os.path.join(const.FOLDER_TRAINING_CROP_3D, 'train')
     FOLDER_VALIDATE = os.path.join(const.FOLDER_TRAINING_CROP_3D, 'validate')
-    TRAINING_IMAGES = 134400
-    VALIDATION_IMAGES = 57600
+    TRAINING_IMAGES = 325844
+    VALIDATION_IMAGES = 134832
 
 SUBFOLDER_IMAGE = 'image'
 SUBFOLDER_LABEL = 'label'
