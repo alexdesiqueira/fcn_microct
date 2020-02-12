@@ -192,7 +192,7 @@ SAMPLE_244p1_cured = {
                                  SUBFOLDER_GOLDSTD_REG),
     'segmentation_interval': [150, 1150],
     'registered_path': os.path.join(FOLDER_GOLDSTD,
-                                    FOLDER_235p4_cured,
+                                    FOLDER_244p1_cured,
                                     SUBFOLDER_REG)
 }
 
