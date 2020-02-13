@@ -5,14 +5,23 @@ from skimage import io
 import os
 
 
-NETWORK = 'unet'  # available: 'unet', 'tiramisu'
-NETWORK_FOLDER = {'tiramisu': const.FOLDER_PRED_TIRAMISU,
+NETWORK = 'tiramisu'  # available: 'unet', 'tiramisu'
+TIRAMISU_MODEL = 'tiramisu-67'  # available: 'tiramisu-56', 'tiramisu-67'
+TIRAMISU_LAYERS = TIRAMISU_MODEL[8:]
+NETWORK_FOLDER = {'tiramisu': const.FOLDER_PRED_TIRAMISU + TIRAMISU_LAYERS,
                   'unet': const.FOLDER_PRED_UNET,
-                  'tiramisu_3d': const.FOLDER_PRED_TIRAMISU_3D,
+                  'tiramisu_3d': const.FOLDER_PRED_TIRAMISU_3D + TIRAMISU_LAYERS,
                   'unet_3d': const.FOLDER_PRED_UNET_3D}
 
-if not os.path.isdir(const.FOLDER_COMP_COEF):
-    os.makedirs(const.FOLDER_COMP_COEF)
+if NETWORK in ('tiramisu', 'tiramisu_3d'):
+    PATH_COEFFICIENTS = os.path.join(const.FOLDER_COMP_COEF,
+                                     NETWORK + TIRAMISU_LAYERS)
+else:
+    PATH_COEFFICIENTS = os.path.join(const.FOLDER_COMP_COEF,
+                                     NETWORK)
+
+if not os.path.isdir(PATH_COEFFICIENTS):
+    os.makedirs(PATH_COEFFICIENTS)
 
 
 def read_data(sample, folder_prediction=NETWORK_FOLDER[NETWORK],
@@ -56,7 +65,7 @@ for sample in const.SAMPLES_BUNCH2:
         data_prediction = data_prediction[slice(*sample['segmentation_interval'])]
 
         # coefficients will receive the folder name as a filename.
-        filename = f"{const.FOLDER_COMP_COEF}/{sample['folder']}-{NETWORK}_coefs.csv"
+        filename = f"{PATH_COEFFICIENTS}/{sample['folder']}-{NETWORK}_coefs.csv"
 
         _, _ = utils.measure_all_coefficients(data_prediction,
                                               data_goldstd,
