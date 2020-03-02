@@ -18,7 +18,9 @@ def adjust_data(image, labels, num_class=2, multichannel=False):
         if multichannel:
             batch, rows, cols, classes = aux_labels.shape
             aux_labels = np.reshape(aux_labels,
-                                    (batch, rows*cols, classes))
+                                    (batch,
+                                     rows*cols,
+                                     classes))
         else:
             rows, cols, classes = aux_labels.shape
             aux_labels = np.reshape(aux_labels, (rows*cols, classes))

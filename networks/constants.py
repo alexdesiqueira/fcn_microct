@@ -2,6 +2,10 @@ import numpy as np
 import os
 
 
+# available networks.
+AVAILABLE_2D_NETS = ('tiramisu', 'unet')
+AVAILABLE_3D_NETS = ('tiramisu_3d', 'unet_3d', 'unet_3d_3')
+
 # defining a color dict with each class.
 CLASS_0 = [0, 0, 0]
 CLASS_1 = [128, 128, 128]
@@ -41,9 +45,9 @@ ROWS, COLS = (256, 256)
 STEP = 256
 WINDOW_SHAPE = (ROWS + 2*PAD_WIDTH, COLS + 2*PAD_WIDTH)
 
-PAD_WIDTH_3D = 4
-PLANES_3D, ROWS_3D, COLS_3D = (24, 24, 24)
-STEP_3D = 24
+PAD_WIDTH_3D = 16
+PLANES_3D, ROWS_3D, COLS_3D = (32, 32, 32)
+STEP_3D = 32
 WINDOW_SHAPE_3D = (PLANES_3D + 2*PAD_WIDTH_3D,
                    ROWS_3D + 2*PAD_WIDTH_3D,
                    COLS_3D + 2*PAD_WIDTH_3D)

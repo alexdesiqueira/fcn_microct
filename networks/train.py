@@ -7,24 +7,24 @@ import tensorflow as tf
 import utils
 
 # setting network constants.
-# available networks: 'tiramisu', 'tiramisu_3d', 'unet', 'unet_3d'
+# available networks in const.AVAILABLE_2D_NETS and const.AVAILABLE_3D_NETS
 NETWORK = 'tiramisu_3d'
 TIRAMISU_MODEL = 'tiramisu-67'  # available: 'tiramisu-56', 'tiramisu-67'
 if NETWORK in ('tiramisu', 'tiramisu_3d'):
     FILENAME = f'larson_{NETWORK}{TIRAMISU_MODEL[8:]}.hdf5'
-elif NETWORK in ('unet', 'unet_3d'):
+else:
     FILENAME = f'larson_{NETWORK}.hdf5'
 
-if NETWORK in ('tiramisu', 'unet'):
-    TARGET_SIZE = const.WINDOW_SHAPE  # (288, 288)
+if NETWORK in const.AVAILABLE_2D_NETS:
+    TARGET_SIZE = const.WINDOW_SHAPE
     # image and label folders.
     FOLDER_TRAIN = os.path.join(const.FOLDER_TRAINING_CROP, 'train')
     FOLDER_VALIDATE = os.path.join(const.FOLDER_TRAINING_CROP, 'validate')
     # training and validation images.
     TRAINING_IMAGES = 70000
     VALIDATION_IMAGES = 29800
-elif NETWORK in ('tiramisu_3d', 'unet_3d'):
-    TARGET_SIZE = const.WINDOW_SHAPE_3D  # (32, 32, 32)
+elif NETWORK in const.AVAILABLE_3D_NETS:
+    TARGET_SIZE = const.WINDOW_SHAPE_3D
     FOLDER_TRAIN = os.path.join(const.FOLDER_TRAINING_CROP_3D, 'train')
     FOLDER_VALIDATE = os.path.join(const.FOLDER_TRAINING_CROP_3D, 'validate')
     TRAINING_IMAGES = 325844

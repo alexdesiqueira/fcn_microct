@@ -1,6 +1,6 @@
-from models.unet import unet, unet_3d
+from models.unet import unet, unet_3d, unet_3d_3
 from models.tiramisu import tiramisu, tiramisu_3d
-from skimage import color, io, util
+from skimage import color, exposure, io, util
 from tensorflow.keras.backend import clear_session
 
 import constants as const
@@ -111,24 +111,159 @@ def measure_all_coefficients(data_test, data_gt,
     return all_matthews, all_dice
 
 
+def montage_3d(array_input, fill='mean', rescale_intensity=False,
+               grid_shape=(1, 80, 80), padding_width=0, multichannel=False):
+    """Create a montage of several single- or multichannel cubes.
+
+    Create a polygonal montage from an input array representing an ensemble
+    of equally shaped single- (gray) or multichannel (color) images.
+
+    For example, ``montage(array_input)`` called with the following `array_input`
+
+    +---+---+---+
+    | 1 | 2 | 3 |
+    +---+---+---+
+
+    will return
+
+    +---+---+
+    | 1 | 2 |
+    +---+---+
+    | 3 | * |
+    +---+---+
+
+    where the '*' patch will be determined by the `fill` parameter.
+
+    Parameters
+    ----------
+    array_input : (K, M, N, P[, C]) ndarray
+        An array representing an ensemble of `K` cubes of equal shape.
+    fill : float or array-like of floats or 'mean', optional
+        Value to fill the padding areas and/or the extra tiles in
+        the output array. Has to be `float` for single channel collections.
+        For multichannel collections has to be an array-like of shape of
+        number of channels. If `mean`, uses the mean value over all images.
+    rescale_intensity : bool, optional
+        Whether to rescale the intensity of each image to [0, 1].
+    grid_shape : tuple, optional
+        The desired grid shape for the montage `(ntiles_row, ntiles_column)`.
+        The default aspect ratio is square.
+    padding_width : int, optional
+        The size of the spacing between the tiles and between the tiles and
+        the borders. If non-zero, makes the boundaries of individual images
+        easier to perceive.
+    multichannel : boolean, optional
+        If True, the last `array_input` dimension is threated as a color channel,
+        otherwise as spatial.
+
+    Returns
+    -------
+    array_out : (?, K*(M+p)+p, K*(N+p)+p[, C]) ndarray  # TODO: figure output out
+        Output array with input images glued together (including padding `p`).
+
+    Examples
+    --------
+    >>> import numpy as np
+    >>> from skimage.util import montage
+    >>> array_input = np.arange(3 * 2 * 2).reshape(3, 2, 2)
+    >>> array_input  # doctest: +NORMALIZE_WHITESPACE
+    array([[[ 0,  1],
+            [ 2,  3]],
+           [[ 4,  5],
+            [ 6,  7]],
+           [[ 8,  9],
+            [10, 11]]])
+    >>> array_out = montage(array_input)
+    >>> array_out.shape
+    (4, 4)
+    >>> array_out
+    array([[ 0,  1,  4,  5],
+           [ 2,  3,  6,  7],
+           [ 8,  9,  5,  5],
+           [10, 11,  5,  5]])
+    >>> array_input.mean()
+    5.5
+    >>> array_out_nonsquare = montage(array_input, grid_shape=(1, 3))
+    >>> array_out_nonsquare
+    array([[ 0,  1,  4,  5,  8,  9],
+           [ 2,  3,  6,  7, 10, 11]])
+    >>> array_out_nonsquare.shape
+    (2, 6)
+    """
+    if multichannel:
+        array_input = np.asarray(array_input)
+    else:
+        array_input = np.asarray(array_input)[..., np.newaxis]
+
+    if array_input.ndim != 5:
+        raise ValueError('Input array has to be either 4- or 5-dimensional')
+
+    n_images, n_planes, n_rows, n_cols, n_chan = array_input.shape
+
+    if grid_shape:
+        ntiles_plane, ntiles_row, ntiles_col = [int(s) for s in grid_shape]
+    else:
+        ntiles_plane = ntiles_row = ntiles_col = int(np.ceil(np.sqrt(n_images)))
+
+    # Rescale intensity if necessary
+    if rescale_intensity:
+        for i in range(n_images):
+            array_input[i] = exposure.rescale_intensity(array_input[i])
+
+    # Calculate the fill value
+    if fill == 'mean':
+        fill = array_input.mean(axis=(0, 1, 2, 3))
+    fill = np.atleast_1d(fill).astype(array_input.dtype)
+
+    # Pre-allocate an array with padding for montage
+    n_pad = padding_width
+    array_out = np.empty((
+        (n_planes + n_pad) * ntiles_plane + n_pad,
+        (n_rows + n_pad) * ntiles_row + n_pad,
+        (n_cols + n_pad) * ntiles_col + n_pad,
+        n_chan),
+                         dtype=array_input.dtype)
+    for idx_chan in range(n_chan):
+        array_out[..., idx_chan] = fill[idx_chan]
+
+    slices_plane = [slice(n_pad + (n_planes + n_pad) * n,
+                          n_pad + (n_planes + n_pad) * n + n_planes)
+                    for n in range(ntiles_plane)]
+    slices_row = [slice(n_pad + (n_rows + n_pad) * n,
+                        n_pad + (n_rows + n_pad) * n + n_rows)
+                  for n in range(ntiles_row)]
+    slices_col = [slice(n_pad + (n_cols + n_pad) * n,
+                        n_pad + (n_cols + n_pad) * n + n_cols)
+                  for n in range(ntiles_col)]
+
+    # Copy the data to the output array
+    for idx_image, image in enumerate(array_input):
+        idx_sp = idx_image % ntiles_plane
+        idx_sr = idx_image // ntiles_col
+        idx_sc = idx_image % ntiles_col
+        array_out[slices_plane[idx_sp], slices_row[idx_sr], slices_col[idx_sc], :] = image
+
+    if multichannel:
+        return array_out
+    else:
+        return array_out[..., 0]
+
+
 def network_models(network='unet', window_shape=(288, 288), n_class=1,
                    preset_model='tiramisu-67'):
     """
     """
-    available_nets = {}
-    if network in ('tiramisu', 'unet'):
-        available_nets = {
-            'tiramisu': tiramisu(input_size=(*window_shape, n_class),
-                                 preset_model=preset_model),
-            'unet': unet(input_size=(*window_shape, n_class)),
-        }
-    elif network in ('tiramisu_3d', 'unet_3d'):
-        available_nets = {
-            'tiramisu_3d': tiramisu_3d(input_size=(*window_shape, n_class),
-                                       preset_model=preset_model),
-            'unet_3d': unet_3d(input_size=(*window_shape, n_class)),
-        }
-    return available_nets.get(network, None)
+    if network in const.AVAILABLE_2D_NETS:
+        model = _available_2d_nets(network,
+                                   window_shape,
+                                   n_class,
+                                   preset_model)
+    elif network in const.AVAILABLE_3D_NETS:
+        model = _available_3d_nets(network,
+                                   window_shape,
+                                   n_class,
+                                   preset_model)
+    return model
 
 
 def overlap_predictions(image, prediction):
@@ -158,8 +293,8 @@ def overlap_predictions(image, prediction):
     return overlap
 
 
-def predict_on_chunk(data, weights, network='unet_3d', n_class=1, pad_width=4,
-                     window_shape=(40, 40, 40), step=32):
+def predict_on_chunk(data, weights, network='unet_3d', n_class=1, pad_width=8,
+                     window_shape=(32, 32, 32), step=24):
     """
     """
     model = network_models(network,
@@ -169,16 +304,17 @@ def predict_on_chunk(data, weights, network='unet_3d', n_class=1, pad_width=4,
         raise(f'Network {network} not available.')
     model.load_weights(weights)
 
+    # TODO we need to deal with the size of the data here. How to do that?
     data = np.pad(data, pad_width=pad_width)
     chunk_crop = np.vstack(np.hstack(
         util.view_as_windows(data,
                              window_shape=window_shape,
                              step=step)
     ))
-
+    crop_steps = chunk_crop.shape[0]
     chunk_gen = tensor_generator(chunk_crop)
 
-    results = model.predict(chunk_gen, steps=100, verbose=1)  # TODO: need to check the _actual_ amount of steps
+    results = model.predict(chunk_gen, steps=crop_steps, verbose=1)
     prediction = _aux_predict(results)  # TODO: check the alterations needed on this
 
     return prediction
@@ -199,9 +335,10 @@ def predict_on_image(image, weights, network='unet', n_class=1, pad_width=16,
     image_crop = np.vstack(util.view_as_windows(image,
                                                 window_shape=window_shape,
                                                 step=step))
+    crop_steps = image_crop.shape[0]
     image_gen = tensor_generator(image_crop)
 
-    results = model.predict(image_gen, steps=100, verbose=1)
+    results = model.predict(image_gen, steps=crop_steps, verbose=1)
     prediction = _aux_predict(results)
 
     return prediction
@@ -239,10 +376,10 @@ def process_sample(folder, data, weights, network='unet'):
         if not os.path.isdir(aux):
             os.makedirs(aux)
 
-    # if network in ('tiramisu_3d', 'unet_3d'):
+    # if network in const.AVAILABLE_3D_NETS:
     #     prediction = predict_on_chunk()
 
-    if network in ('tiramisu', 'unet'):
+    if network in const.AVAILABLE_2D_NETS:
         for idx, image in enumerate(data):
             filename = '%06d.png' % (idx)
             # if file doesn't exist, predicts and saves the results.
@@ -269,7 +406,12 @@ def read_csv_coefficients(filename):
     csv_file = csv.reader(open(filename, 'r'))
     for row in csv_file:
         coefs.append(row)
-    return coefs
+
+    coefs_matthews, coefs_dice = coefs
+    matthews = np.asarray(coefs_matthews[1:], dtype='float')
+    dice = np.asarray(coefs_dice[1:], dtype='float')
+
+    return matthews, dice
 
 
 def regroup_image(image_set, grid_shape=None, pad_width=32,
@@ -394,8 +536,9 @@ def save_predictions(save_folder, predictions, multichannel=False,
                                           color_dict=const.COLOR_DICT)
         else:
             output = pred[:, :, 0]
-        io.imsave(os.path.join(save_folder, '%03d_predict.png' % (idx)),
-                  util.img_as_ubyte(output))
+        io.imsave(os.path.join(save_folder,
+                               '%03d_predict.png' % (idx)),
+                 util.img_as_ubyte(output))
     return None
 
 
@@ -447,12 +590,12 @@ def _aux_predict(predictions, pad_width=16, grid_shape=(10, 10),
                  num_class=2, multichannel=False):
     """
     """
-    depth, rows, cols, colors = predictions.shape
-    # helps to crop the interest part of the prediction
     aux_slice = len(grid_shape) * [slice(pad_width, -pad_width)]
-
     if multichannel:
-        output = np.zeros((depth, rows-2*pad_width, cols-2*pad_width, colors))
+        # multiply pad_width with everyone, except depth and colors
+        output = np.zeros((predictions.shape[0],
+                           *np.asarray(predictions.shape[1:-1])-2*pad_width,
+                           predictions.shape[-1]))
         for idx, pred in enumerate(predictions):
             aux_pred = _aux_label_visualize(image=pred,
                                             num_class=num_class,
@@ -461,12 +604,36 @@ def _aux_predict(predictions, pad_width=16, grid_shape=(10, 10),
     else:
         output = predictions[(slice(None), *aux_slice, 0)]
 
-    output = util.montage(output,
-                          fill=0,
-                          grid_shape=grid_shape,
-                          multichannel=multichannel)
-
+    if output.ndim == 3:
+        output = util.montage(output,
+                              fill=0,
+                              grid_shape=grid_shape,
+                              multichannel=multichannel)
+    elif output.ndim == 4:
+        output = montage_3d(output,
+                            fill=0,
+                            grid_shape=grid_shape,
+                            multichannel=multichannel)
     return output
+
+
+def _available_2d_nets(network, window_shape, n_class, preset_model):
+    available_nets = {
+        'tiramisu': tiramisu(input_size=(*window_shape, n_class),
+                             preset_model=preset_model),
+        'unet': unet(input_size=(*window_shape, n_class)),
+    }
+    return available_nets.get(network, None)
+
+
+def _available_3d_nets(network, window_shape, n_class, preset_model):
+    available_nets = {
+        'tiramisu_3d': tiramisu_3d(input_size=(*window_shape, n_class),
+                                   preset_model=preset_model),
+        'unet_3d': unet_3d(input_size=(*window_shape, n_class)),
+        'unet_3d_3': unet_3d_3(input_size=(*window_shape, n_class))
+    }
+    return available_nets.get(network, None)
 
 
 def _folder_samples(base_ref, subfolder_ref):
