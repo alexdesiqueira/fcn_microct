@@ -5,9 +5,9 @@ import os
 import utils
 
 
-NETWORK = 'unet_3d'
+NETWORK = 'unet_3d_3'
 SAMPLES = const.SAMPLES_BUNCH2
-WEIGHTS = '../coefficients/larson2019_unet_3d/larson_unet_3d.hdf5'
+WEIGHTS = '../coefficients/larson2019_unet_3d_3/larson_unet_3d_3.hdf5'
 
 
 for sample in SAMPLES:

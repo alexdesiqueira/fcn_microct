@@ -86,6 +86,8 @@ FOLDER_PRED_TIRAMISU = os.path.join(FOLDER_BASE, 'data_prediction/tiramisu')
 FOLDER_PRED_TIRAMISU_3D = os.path.join(FOLDER_BASE, 'data_prediction/tiramisu_3d')
 FOLDER_PRED_UNET = os.path.join(FOLDER_BASE, 'data_prediction/unet')
 FOLDER_PRED_UNET_3D = os.path.join(FOLDER_BASE, 'data_prediction/unet_3d')
+FOLDER_PRED_UNET_3D_3LAYERS = os.path.join(FOLDER_BASE, 'data_prediction/unet_3d_3layers')
+
 SUBFOLDER_PRED = 'predict'
 SUBFOLDER_OVER = 'overlap'
 EXT_PRED = '.png'
