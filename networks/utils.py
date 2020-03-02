@@ -214,7 +214,7 @@ def prediction_folder(network='unet'):
         'tiramisu': const.FOLDER_PRED_TIRAMISU,
         'tiramisu_3d': const.FOLDER_PRED_TIRAMISU_3D,
         'unet': const.FOLDER_PRED_UNET,
-        'unet_3d': const.FOLDER_PRED_UNET3D,
+        'unet_3d': const.FOLDER_PRED_UNET_3D,
     }
     return available_folders.get(network, None)
 

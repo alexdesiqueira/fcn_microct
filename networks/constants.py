@@ -81,11 +81,14 @@ INTERVAL_VAL_WET = [1010, 1158]  # a total of 298 validation images
 FOLDER_PRED_TIRAMISU = os.path.join(FOLDER_BASE, 'data_prediction/tiramisu')
 FOLDER_PRED_TIRAMISU_3D = os.path.join(FOLDER_BASE, 'data_prediction/tiramisu_3d')
 FOLDER_PRED_UNET = os.path.join(FOLDER_BASE, 'data_prediction/unet')
-FOLDER_PRED_UNET3D = os.path.join(FOLDER_BASE, 'data_prediction/unet_3d')
+FOLDER_PRED_UNET_3D = os.path.join(FOLDER_BASE, 'data_prediction/unet_3d')
 SUBFOLDER_PRED = 'predict'
 SUBFOLDER_OVER = 'overlap'
 EXT_PRED = '.png'
 EXT_OVER = '.png'
+
+# setting the folder to store comparison coefficients.
+FOLDER_COMP_COEF = os.path.join(FOLDER_BASE, 'comp_coefficients')
 
 # defining sample folder names.
 FOLDER_232p1_wet = 'rec20160324_055424_232p1_wet_1cm_cont_4097im_1500ms_17keV_13_a.h5'
@@ -128,7 +131,7 @@ SAMPLE_232p3_cured = {
     'path_goldstd': os.path.join(FOLDER_GOLDSTD,
                                  FOLDER_232p3_cured,
                                  SUBFOLDER_GOLDSTD_REG),
-    'segmentation_interval': [159, 1159],  # [0, 1000],
+    'segmentation_interval': [159, 1159],  # [0, 1000]
     'registered_path': os.path.join(FOLDER_GOLDSTD,
                                     FOLDER_232p3_cured,
                                     SUBFOLDER_REG)
@@ -142,7 +145,8 @@ SAMPLE_232p3_wet = {
     'path_goldstd': os.path.join(FOLDER_GOLDSTD,
                                  FOLDER_232p3_wet,
                                  SUBFOLDER_GOLDSTD),
-    'segmentation_interval': [159, 1159],  # [0, 1000],
+    'segmentation_interval': [0, 1000],
+    # was [159, 1159], but we have only 1000 slices in the sample
     'registered_path': None
 }
 
@@ -188,7 +192,7 @@ SAMPLE_244p1_cured = {
                                  SUBFOLDER_GOLDSTD_REG),
     'segmentation_interval': [150, 1150],
     'registered_path': os.path.join(FOLDER_GOLDSTD,
-                                    FOLDER_235p4_cured,
+                                    FOLDER_244p1_cured,
                                     SUBFOLDER_REG)
 }
 
