@@ -116,14 +116,12 @@ def montage_3d(array_input, grid_shape=(1, 80, 80)):
     """
     ntiles_plane, ntiles_row, ntiles_col = [int(s) for s in grid_shape]
 
-    n_images, n_planes, n_rows, n_cols = array_input.shape
-    print(n_images, n_planes, n_rows, n_cols)
+    _, n_planes, n_rows, n_cols = array_input.shape
     array_out = np.empty((n_planes * ntiles_plane,
                           n_rows * ntiles_row,
                           n_cols * ntiles_col),
                          dtype=array_input.dtype)
 
-    print(array_out.shape)
     slices_plane = [slice(n_planes * n,
                           n_planes * n + n_planes)
                     for n in range(ntiles_plane)]
@@ -134,7 +132,6 @@ def montage_3d(array_input, grid_shape=(1, 80, 80)):
                         n_cols * n + n_cols)
                   for n in range(ntiles_col)]
 
-    print(array_input.shape)
     for idx_image, image in enumerate(array_input):
         idx_sp = idx_image % ntiles_plane
         idx_sr = idx_image // ntiles_col
@@ -278,18 +275,17 @@ def process_sample(folder, data, weights, network='unet'):
         data = data.concatenate()[:last_plane]
         data = np.split(data,
                         indices_or_sections=sections)
-        for idx, chunk in enumerate(data):
-            filename = '%06d.png' % (idx)
-            # if file doesn't exist, predicts and saves the results.
-            if not os.path.isfile(os.path.join(FOLDER_PRED, filename)):
-                prediction = predict_on_chunk(chunk,
-                                              weights=weights,
-                                              network=network,
-                                              pad_width=const.PAD_WIDTH_3D,
-                                              window_shape=const.WINDOW_SHAPE_3D)
+        for chunk in data:
+            prediction = predict_on_chunk(chunk,
+                                          weights=weights,
+                                          network=network,
+                                          pad_width=const.PAD_WIDTH_3D,
+                                          window_shape=const.WINDOW_SHAPE_3D)
+            for idx, image in enumerate(chunk):
+                filename = '%06d.png' % (idx)
                 io.imsave(os.path.join(FOLDER_PRED, filename),
                           util.img_as_ubyte(prediction))
-                clear_session()  # resetting TensorFlow session state.
+            clear_session()  # resetting TensorFlow session state.
 
     elif network in const.AVAILABLE_2D_NETS:
         for idx, image in enumerate(data):
