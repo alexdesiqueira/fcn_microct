@@ -284,7 +284,9 @@ def process_sample(folder, data, weights, network='unet'):
             if not os.path.isfile(os.path.join(FOLDER_PRED, filename)):
                 prediction = predict_on_chunk(chunk,
                                               weights=weights,
-                                              network=network)
+                                              network=network,
+                                              pad_width=const.PAD_WIDTH_3D,
+                                              window_shape=const.WINDOW_SHAPE_3D)
                 io.imsave(os.path.join(FOLDER_PRED, filename),
                           util.img_as_ubyte(prediction))
                 clear_session()  # resetting TensorFlow session state.
@@ -295,7 +297,9 @@ def process_sample(folder, data, weights, network='unet'):
             if not os.path.isfile(os.path.join(FOLDER_PRED, filename)):
                 prediction = predict_on_image(image,
                                               weights=weights,
-                                              network=network)
+                                              network=network,
+                                              pad_width=const.PAD_WIDTH,
+                                              window_shape=const.WINDOW_SHAPE)
                 io.imsave(os.path.join(FOLDER_PRED, filename),
                           util.img_as_ubyte(prediction))
 
