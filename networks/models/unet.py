@@ -133,7 +133,7 @@ def unet(input_size=(256, 256, 1)):
     return model
 
 
-def unet_3d(input_size=(32, 32, 32, 1)):
+def unet_3d(input_size=(64, 64, 64, 1)):
     """Implements the 3D U-Net dense neural network.
 
     Notes
@@ -273,7 +273,7 @@ def unet_3d(input_size=(32, 32, 32, 1)):
     return model
 
 
-def unet_3d_3(input_size=(128, 128, 128, 1)):
+def unet_3d_3(input_size=(64, 64, 64, 1)):
     """Implements the 3D U-Net dense neural network.
 
     Notes
