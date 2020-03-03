@@ -281,10 +281,10 @@ def process_sample(folder, data, weights, network='unet'):
                                           network=network,
                                           pad_width=const.PAD_WIDTH_3D,
                                           window_shape=const.WINDOW_SHAPE_3D)
-            for idx, image in enumerate(chunk):
+            for idx, image in enumerate(prediction):
                 filename = '%06d.png' % (idx)
                 io.imsave(os.path.join(FOLDER_PRED, filename),
-                          util.img_as_ubyte(prediction))
+                          util.img_as_ubyte(image))
             clear_session()  # resetting TensorFlow session state.
 
     elif network in const.AVAILABLE_2D_NETS:
