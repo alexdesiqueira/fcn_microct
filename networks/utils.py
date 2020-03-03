@@ -198,8 +198,13 @@ def predict_on_chunk(data, weights, network='unet_3d', n_class=1, pad_width=16,
 
     # TODO we need to deal with the size of the data here. How to do that?
     data = np.pad(data, pad_width=pad_width)
-    crop_steps = data.shape[0]
-    chunk_gen = tensor_generator_3d(data)
+    data_crop = np.vstack(np.hstack(
+        util.view_as_windows(data,
+                             window_shape=window_shape,
+                             step=step)
+    ))
+    crop_steps = data_crop.shape[0]
+    chunk_gen = tensor_generator(data_crop)
 
     results = model.predict(chunk_gen, steps=crop_steps, verbose=1)
     prediction = _aux_predict(results)  # TODO: check the alterations needed on this
@@ -265,8 +270,11 @@ def process_sample(folder, data, weights, network='unet'):
             os.makedirs(aux)
 
     if network in const.AVAILABLE_3D_NETS:
-        data = data.concatenate()[:640]
-        data = np.split(data, indices_or_sections=40)
+        last_plane = 640
+        sections = last_plane / const.STEP_3D
+        data = data.concatenate()[:last_plane]
+        data = np.split(data,
+                        indices_or_sections=sections)
         for idx, chunk in enumerate(data):
             filename = '%06d.png' % (idx)
             # if file doesn't exist, predicts and saves the results.
@@ -276,6 +284,7 @@ def process_sample(folder, data, weights, network='unet'):
                                               network=network)
                 io.imsave(os.path.join(FOLDER_PRED, filename),
                           util.img_as_ubyte(prediction))
+                clear_session()  # resetting TensorFlow session state.
 
     elif network in const.AVAILABLE_2D_NETS:
         for idx, image in enumerate(data):
@@ -449,17 +458,6 @@ def tensor_generator(images, multichannel=False):
         image = np.reshape(image, (1,)+image.shape)
 
         yield image
-
-
-def tensor_generator_3d(data, multichannel=False):
-    """
-    """
-    data = data / 255
-    if not multichannel:
-        data = np.reshape(data, data.shape+(1,))
-    data = np.reshape(data, (1,)+data.shape)
-
-    yield data
 
 
 def _assert_compatible(image_1, image_2):
