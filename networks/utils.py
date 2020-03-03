@@ -117,11 +117,13 @@ def montage_3d(array_input, grid_shape=(1, 80, 80)):
     ntiles_plane, ntiles_row, ntiles_col = [int(s) for s in grid_shape]
 
     n_images, n_planes, n_rows, n_cols = array_input.shape
+    print(n_images, n_planes, n_rows, n_cols)
     array_out = np.empty((n_planes * ntiles_plane,
                           n_rows * ntiles_row,
                           n_cols * ntiles_col),
                          dtype=array_input.dtype)
 
+    print(array_out.shape)
     slices_plane = [slice(n_planes * n,
                           n_planes * n + n_planes)
                     for n in range(ntiles_plane)]
@@ -132,6 +134,7 @@ def montage_3d(array_input, grid_shape=(1, 80, 80)):
                         n_cols * n + n_cols)
                   for n in range(ntiles_col)]
 
+    print(array_input.shape)
     for idx_image, image in enumerate(array_input):
         idx_sp = idx_image % ntiles_plane
         idx_sr = idx_image // ntiles_col
@@ -196,7 +199,6 @@ def predict_on_chunk(data, weights, network='unet_3d', n_class=1, pad_width=16,
         raise(f'Network {network} not available.')
     model.load_weights(weights)
 
-    # TODO we need to deal with the size of the data here. How to do that?
     data = np.pad(data, pad_width=pad_width)
     data_crop = np.vstack(np.hstack(
         util.view_as_windows(data,
@@ -207,7 +209,8 @@ def predict_on_chunk(data, weights, network='unet_3d', n_class=1, pad_width=16,
     chunk_gen = tensor_generator(data_crop)
 
     results = model.predict(chunk_gen, steps=crop_steps, verbose=1)
-    prediction = _aux_predict(results)  # TODO: check the alterations needed on this
+    prediction = _aux_predict(results,
+                              grid_shape=(1, 80, 80))
 
     return prediction
 
@@ -517,7 +520,7 @@ def _aux_predict(predictions, pad_width=16, grid_shape=(10, 10),
                               multichannel=multichannel)
     elif output.ndim == 4:
         output = montage_3d(output,
-                            grid_shape=(1, 80, 80))
+                            grid_shape=grid_shape)
     return output
 
 
