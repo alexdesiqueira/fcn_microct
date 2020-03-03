@@ -198,6 +198,7 @@ def predict_on_chunk(data, weights, network='unet_3d', n_class=1, pad_width=16,
 
     # TODO we need to deal with the size of the data here. How to do that?
     data = np.pad(data, pad_width=pad_width)
+    print(data.shape, window_shape, step)
     chunk_crop = np.vstack(np.hstack(
         util.view_as_windows(data,
                              window_shape=window_shape,
@@ -270,7 +271,9 @@ def process_sample(folder, data, weights, network='unet'):
             os.makedirs(aux)
 
     if network in const.AVAILABLE_3D_NETS:
-        for idx, chunk in enumerate(data[:, :, const.STEP_3D]):
+        data = data.concatenate()[:1280]
+        data = np.split(data, indices_or_sections=40)
+        for idx, chunk in enumerate(data):
             filename = '%06d.png' % (idx)
             # if file doesn't exist, predicts and saves the results.
             if not os.path.isfile(os.path.join(FOLDER_PRED, filename)):
@@ -511,9 +514,7 @@ def _aux_predict(predictions, pad_width=16, grid_shape=(10, 10),
                               multichannel=multichannel)
     elif output.ndim == 4:
         output = montage_3d(output,
-                            fill=0,
-                            grid_shape=grid_shape,
-                            multichannel=multichannel)
+                            grid_shape=(1, 80, 80))
     return output
 
 

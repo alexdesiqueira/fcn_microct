@@ -1,4 +1,4 @@
-from skimage import io, transform, util
+from skimage import io, transform
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
 import generator_3d
@@ -8,7 +8,7 @@ import os
 
 def adjust_data(image, labels, num_class=2, multichannel=False):
     if multichannel:
-        image = util.img_as_float32(image)  # was: image / 255
+        image = image / 255
         labels = labels[..., 0]
         aux_labels = np.zeros(labels.shape + (num_class,))
 
@@ -26,9 +26,9 @@ def adjust_data(image, labels, num_class=2, multichannel=False):
             aux_labels = np.reshape(aux_labels, (rows*cols, batch))
         labels = aux_labels
 
-    elif image.dtype != 'float32':
-        image = util.img_as_float32(image)  # was: image / 255
-        labels = util.img_as_float32(labels)  # was: labels / 255
+    elif image.max() > 1:  # terrible, but I have no options anymore
+        image = image / 255
+        labels = labels / 255
         labels[labels > 0.5] = 1
         labels[labels <= 0.5] = 0
 
@@ -41,7 +41,7 @@ def test_generator(test_path, target_size=(256, 256), pad_width=16,
     """
     images = io.ImageCollection(os.path.join(test_path, '*.png'))
     for image in images:
-        image = util.img_as_float32(image)  # was: image / 255
+        image = image / 255
         if image.shape != target_size:
             image = transform.resize(image, target_size)
         # padding image to correct slicing after
