@@ -270,35 +270,39 @@ def process_sample(folder, data, weights, network='unet'):
             os.makedirs(aux)
 
     if network in const.AVAILABLE_3D_NETS:
-        saving_counter = 0
+        last_original_plane = None
         data = data.concatenate()
 
         n_planes, n_rows, n_cols = data.shape
-        # setting data to be divisible by const.STEP_3D.
+        # data should be divisible by const.STEP_3D.
         if n_rows > n_planes:
+            last_original_plane = n_planes
             data_complete = np.zeros((n_rows - n_planes, n_rows, n_cols),
                                      dtype='bool')
+            # filling data if necessary, to ensure np.split works.
             data = np.concatenate((data, data_complete))
             n_planes, n_rows, n_cols = data.shape
 
         sections = n_planes / const.STEP_3D
         data = np.split(data,
                         indices_or_sections=sections)
-        for chunk in data:
+        for idc, chunk in enumerate(data):
             prediction = predict_on_chunk(chunk,
                                           weights=weights,
                                           network=network,
                                           pad_width=const.PAD_WIDTH_3D,
                                           window_shape=const.WINDOW_SHAPE_3D)
             for idx, plane in enumerate(prediction):
-                filename = '%06d.png' % (idx + saving_counter)
-                io.imsave(os.path.join(FOLDER_PRED, filename),
-                          util.img_as_ubyte(plane))
-
-                overlap = overlap_predictions(chunk[idx], plane)
-                io.imsave(os.path.join(FOLDER_OVER, filename),
-                          util.img_as_ubyte(overlap))
-            saving_counter += prediction.shape[0]
+                current_plane = idx + idc*const.STEP_3D
+                # avoiding to save auxiliary slices with no info.
+                if last_original_plane and last_original_plane > current_plane:
+                    filename = '%06d.png' % (current_plane)
+                    if not os.path.isfile(os.path.join(FOLDER_PRED, filename)):
+                        io.imsave(os.path.join(FOLDER_PRED, filename),
+                                  util.img_as_ubyte(plane))
+                        overlap = overlap_predictions(chunk[idx], plane)
+                        io.imsave(os.path.join(FOLDER_OVER, filename),
+                                  util.img_as_ubyte(overlap))
             clear_session()  # resetting TensorFlow session state.
 
     elif network in const.AVAILABLE_2D_NETS:
