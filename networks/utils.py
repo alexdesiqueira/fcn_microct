@@ -286,10 +286,10 @@ def process_sample(folder, data, weights, network='unet'):
         sections = n_planes / const.STEP_3D
         data = np.split(data,
                         indices_or_sections=sections)
-        for idc, chunk in enumerate(data):
+        for idx_chunk, chunk in enumerate(data):
             # generating a list of possible filenames...
             filenames = []
-            for num in range(idx*const.STEP_3D):
+            for num in range(idx_chunk*const.STEP_3D):
                 filenames.append('%06d.png' % num)
 
             # ... then checking if the files exist, before processing a chunk.
@@ -302,8 +302,8 @@ def process_sample(folder, data, weights, network='unet'):
                                               network=network,
                                               pad_width=const.PAD_WIDTH_3D,
                                               window_shape=const.WINDOW_SHAPE_3D)
-                for idx, plane in enumerate(prediction):
-                    current_plane = idx + idc*const.STEP_3D
+                for idx_plane, plane in enumerate(prediction):
+                    current_plane = idx_plane + idx_chunk*const.STEP_3D
                     # avoiding to save auxiliary slices with no info.
                     if last_original_plane and last_original_plane > current_plane:
                         filename = '%06d.png' % (current_plane)
