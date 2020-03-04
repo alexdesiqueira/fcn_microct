@@ -290,12 +290,11 @@ def process_sample(folder, data, weights, network='unet'):
             # generating a list of possible filenames...
             filenames = []
             for num in range(idx_chunk*const.STEP_3D):
-                filenames.append('%06d.png' % num)
+                if num <= last_original_plane:
+                    filenames.append('%06d.png' % num)
 
             # ... then checking if the files exist, before processing a chunk.
-            all_files_exist = all(
-                [os.path.isfile(os.path.join(FOLDER_PRED, filename)) for filename in filenames]
-                )
+            all_files_exist = all([os.path.isfile(os.path.join(FOLDER_PRED, filename)) for filename in filenames])
             if not all_files_exist:
                 prediction = predict_on_chunk(chunk,
                                               weights=weights,
@@ -310,7 +309,7 @@ def process_sample(folder, data, weights, network='unet'):
 
                         io.imsave(os.path.join(FOLDER_PRED, filename),
                                   util.img_as_ubyte(plane))
-                        overlap = overlap_predictions(chunk[idx], plane)
+                        overlap = overlap_predictions(chunk[idx_plane], plane)
                         io.imsave(os.path.join(FOLDER_OVER, filename),
                                   util.img_as_ubyte(overlap))
             clear_session()  # resetting TensorFlow session state.
