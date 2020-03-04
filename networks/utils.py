@@ -294,7 +294,7 @@ def process_sample(folder, data, weights, network='unet'):
 
             # ... then checking if the files exist, before processing a chunk.
             all_files_exist = all(
-                [os.path.isfile(os.path.join(FOLDER_PRED, filename) for filename in filenames]
+                [os.path.isfile(os.path.join(FOLDER_PRED, filename)) for filename in filenames]
                 )
             if not all_files_exist:
                 prediction = predict_on_chunk(chunk,
