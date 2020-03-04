@@ -287,17 +287,27 @@ def process_sample(folder, data, weights, network='unet'):
         data = np.split(data,
                         indices_or_sections=sections)
         for idc, chunk in enumerate(data):
-            prediction = predict_on_chunk(chunk,
-                                          weights=weights,
-                                          network=network,
-                                          pad_width=const.PAD_WIDTH_3D,
-                                          window_shape=const.WINDOW_SHAPE_3D)
-            for idx, plane in enumerate(prediction):
-                current_plane = idx + idc*const.STEP_3D
-                # avoiding to save auxiliary slices with no info.
-                if last_original_plane and last_original_plane > current_plane:
-                    filename = '%06d.png' % (current_plane)
-                    if not os.path.isfile(os.path.join(FOLDER_PRED, filename)):
+            # generating a list of possible filenames...
+            filenames = []
+            for num in range(idx*const.STEP_3D):
+                filenames.append('%06d.png' % num)
+
+            # ... then checking if the files exist, before processing a chunk.
+            all_files_exist = all(
+                [os.path.isfile(os.path.join(FOLDER_PRED, filename) for filename in filenames]
+                )
+            if not all_files_exist:
+                prediction = predict_on_chunk(chunk,
+                                              weights=weights,
+                                              network=network,
+                                              pad_width=const.PAD_WIDTH_3D,
+                                              window_shape=const.WINDOW_SHAPE_3D)
+                for idx, plane in enumerate(prediction):
+                    current_plane = idx + idc*const.STEP_3D
+                    # avoiding to save auxiliary slices with no info.
+                    if last_original_plane and last_original_plane > current_plane:
+                        filename = '%06d.png' % (current_plane)
+
                         io.imsave(os.path.join(FOLDER_PRED, filename),
                                   util.img_as_ubyte(plane))
                         overlap = overlap_predictions(chunk[idx], plane)
