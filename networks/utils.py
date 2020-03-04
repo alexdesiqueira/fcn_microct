@@ -290,7 +290,7 @@ def process_sample(folder, data, weights, network='unet'):
             # generating a list of possible filenames...
             filenames = []
             for num in range(idx_chunk*const.STEP_3D):
-                if num <= last_original_plane:
+                if num < last_original_plane:
                     filenames.append('%06d.png' % num)
 
             # ... then checking if the files exist, before processing a chunk.
