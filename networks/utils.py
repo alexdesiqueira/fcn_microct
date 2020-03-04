@@ -279,6 +279,7 @@ def process_sample(folder, data, weights, network='unet'):
             data_complete = np.zeros((n_rows - n_planes, n_rows, n_cols),
                                      dtype='bool')
             data = np.concatenate((data, data_complete))
+            n_planes, n_rows, n_cols = data.shape
 
         sections = n_planes / const.STEP_3D
         data = np.split(data,
