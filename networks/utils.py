@@ -275,9 +275,8 @@ def process_sample(folder, data, weights, network='unet'):
 
         n_planes, n_rows, n_cols = data.shape
         # setting data to be divisible by const.STEP_3D.
-        missing_planes = n_planes % const.STEP_3D
-        if missing_planes != 0:
-            data_complete = np.zeros((missing_planes, n_rows, n_cols),
+        if n_rows > n_planes:
+            data_complete = np.zeros((n_rows - n_planes, n_rows, n_cols),
                                      dtype='bool')
             data = np.concatenate((data, data_complete))
 
