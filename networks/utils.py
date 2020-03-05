@@ -291,12 +291,12 @@ def process_sample(folder, data, weights, network='unet'):
             filenames = []
             for num in range(idx_chunk*const.STEP_3D):
                 if num < last_original_plane:
-                    filenames.append('%06d.png' % num)
+                    filenames.append('%06d.png' % (num))
 
             # ... then checking if the files exist, before processing a chunk.
             all_files_exist = all([os.path.isfile(
-                os.path.join(FOLDER_PRED, filename))
-                                   for filename in filenames])
+                os.path.join(FOLDER_PRED, aux_file))
+                                   for aux_file in filenames])
             if not all_files_exist:
                 prediction = predict_on_chunk(chunk,
                                               weights=weights,
