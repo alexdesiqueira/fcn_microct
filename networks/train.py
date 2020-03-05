@@ -8,7 +8,7 @@ import utils
 
 # setting network constants.
 # available networks in const.AVAILABLE_2D_NETS and const.AVAILABLE_3D_NETS
-NETWORK = 'unet_3d_3'
+NETWORK = 'unet_3d'
 TIRAMISU_MODEL = 'tiramisu-67'  # available: 'tiramisu-56', 'tiramisu-67'
 if NETWORK in ('tiramisu', 'tiramisu_3d'):
     FILENAME = f'larson_{NETWORK}{TIRAMISU_MODEL[8:]}.hdf5'
@@ -34,7 +34,7 @@ SUBFOLDER_IMAGE = 'image'
 SUBFOLDER_LABEL = 'label'
 
 BATCH_SIZE = 2
-EPOCHS = 1
+EPOCHS = 5
 STEPS_PER_EPOCH = int(TRAINING_IMAGES // BATCH_SIZE)
 VALIDATION_STEPS = int(VALIDATION_IMAGES // BATCH_SIZE)
 
