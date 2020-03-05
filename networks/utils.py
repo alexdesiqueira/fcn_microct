@@ -307,14 +307,14 @@ def process_sample(folder, data, weights, network='unet'):
                     current_plane = idx_plane + idx_chunk*const.STEP_3D
                     filename = '%06d.png' % (current_plane)
                     # avoiding to save auxiliary slices with no info.
-                    if num < last_original_plane:
-                        if not os.path.isfile(os.path.join(FOLDER_PRED, filename)):
-                            io.imsave(os.path.join(FOLDER_PRED, filename),
-                                      util.img_as_ubyte(plane))
-                        if not os.path.isfile(os.path.join(FOLDER_OVER, filename)):
-                            overlap = overlap_predictions(chunk[idx_plane], plane)
-                            io.imsave(os.path.join(FOLDER_OVER, filename),
-                                      util.img_as_ubyte(overlap))
+                    if current_plane < last_original_plane:
+                        _check_and_save_prediction(folder=FOLDER_PRED,
+                                                   prediction=plane,
+                                                   filename=filename)
+                        _check_and_save_overlap(folder=FOLDER_OVER,
+                                                data_original=chunk[idx_plane],
+                                                prediction=plane,
+                                                filename=filename)
             clear_session()  # resetting TensorFlow session state.
 
     elif network in const.AVAILABLE_2D_NETS:
@@ -326,18 +326,35 @@ def process_sample(folder, data, weights, network='unet'):
                                               network=network,
                                               pad_width=const.PAD_WIDTH,
                                               window_shape=const.WINDOW_SHAPE)
-                io.imsave(os.path.join(FOLDER_PRED, filename),
-                          util.img_as_ubyte(prediction))
+                _check_and_save_prediction(folder=FOLDER_PRED,
+                                           prediction=prediction,
+                                           filename=filename)
 
-            # if file doesn't exist, overlaps the results on the original.
-            if not os.path.isfile(os.path.join(FOLDER_OVER, filename)):
-                overlap = overlap_predictions(image, prediction)
-                io.imsave(os.path.join(FOLDER_OVER, filename),
-                          util.img_as_ubyte(overlap))
+                # if file doesn't exist, overlaps the results on the original.
+                _check_and_save_overlap(folder=FOLDER_OVER,
+                                        data_original=image,
+                                        prediction=prediction,
+                                        filename=filename)
 
             clear_session()  # resetting TensorFlow session state.
     return None
 
+
+def _check_and_save_prediction(folder, prediction, filename):
+    """"""
+    if not os.path.isfile(os.path.join(folder, filename)):
+        io.imsave(os.path.join(folder, filename),
+                  util.img_as_ubyte(prediction))
+    return None
+
+
+def _check_and_save_overlap(folder, data_original, prediction, filename):
+    """"""
+    if not os.path.isfile(os.path.join(folder, filename)):
+        overlap = overlap_predictions(data_original, prediction)
+        io.imsave(os.path.join(folder, filename),
+                  util.img_as_ubyte(overlap))
+    return None
 
 def read_csv_coefficients(filename):
     """Reads csv coefficients saved in a file."""
