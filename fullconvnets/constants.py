@@ -4,7 +4,7 @@ import os
 
 # available networks.
 AVAILABLE_2D_NETS = ('tiramisu', 'unet')
-AVAILABLE_3D_NETS = ('tiramisu_3d', 'unet_3d', 'unet_3d_3')
+AVAILABLE_3D_NETS = ('tiramisu_3d', 'unet_3d')
 
 # defining a color dict with each class.
 CLASS_0 = [0, 0, 0]
@@ -86,7 +86,6 @@ FOLDER_PRED_TIRAMISU = os.path.join(FOLDER_BASE, 'data_prediction/tiramisu')
 FOLDER_PRED_TIRAMISU_3D = os.path.join(FOLDER_BASE, 'data_prediction/tiramisu_3d')
 FOLDER_PRED_UNET = os.path.join(FOLDER_BASE, 'data_prediction/unet')
 FOLDER_PRED_UNET_3D = os.path.join(FOLDER_BASE, 'data_prediction/unet_3d')
-FOLDER_PRED_UNET_3D_3LAYERS = os.path.join(FOLDER_BASE, 'data_prediction/unet_3d_3layers')
 
 SUBFOLDER_PRED = 'predict'
 SUBFOLDER_OVER = 'overlap'
