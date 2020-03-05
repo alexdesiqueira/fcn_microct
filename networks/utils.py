@@ -292,8 +292,6 @@ def process_sample(folder, data, weights, network='unet'):
             for num in range((idx_chunk)*const.STEP_3D, (idx_chunk+1)*const.STEP_3D):
                 if num < last_original_plane:
                     filenames.append('%06d.png' % (num))
-            print(f'idx_chunk: {idx_chunk}')
-            print(f'filenames: {filenames}')
 
             # ... then checking if the files exist, before processing a chunk.
             all_files_exist = all([os.path.isfile(
