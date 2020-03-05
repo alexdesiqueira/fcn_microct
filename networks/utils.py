@@ -305,14 +305,16 @@ def process_sample(folder, data, weights, network='unet'):
                                               window_shape=const.WINDOW_SHAPE_3D)
                 for idx_plane, plane in enumerate(prediction):
                     current_plane = idx_plane + idx_chunk*const.STEP_3D
-                    # avoiding to save auxiliary slices with no info.
                     filename = '%06d.png' % (current_plane)
-                    if filename in filenames:
-                        io.imsave(os.path.join(FOLDER_PRED, filename),
-                                  util.img_as_ubyte(plane))
-                        overlap = overlap_predictions(chunk[idx_plane], plane)
-                        io.imsave(os.path.join(FOLDER_OVER, filename),
-                                  util.img_as_ubyte(overlap))
+                    # avoiding to save auxiliary slices with no info.
+                    if num < last_original_plane:
+                        if not os.path.isfile(os.path.join(FOLDER_PRED, filename)):
+                            io.imsave(os.path.join(FOLDER_PRED, filename),
+                                      util.img_as_ubyte(plane))
+                        if not os.path.isfile(os.path.join(FOLDER_OVER, filename)):
+                            overlap = overlap_predictions(chunk[idx_plane], plane)
+                            io.imsave(os.path.join(FOLDER_OVER, filename),
+                                      util.img_as_ubyte(overlap))
             clear_session()  # resetting TensorFlow session state.
 
     elif network in const.AVAILABLE_2D_NETS:
