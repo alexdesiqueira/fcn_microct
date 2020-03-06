@@ -25,7 +25,7 @@ def tiramisu(input_size=(256, 256, 1), preset_model='tiramisu-67',
     Returns
     -------
     model : model class
-        A Keras model class with its methods.
+        A Keras model class.
 
     Notes
     -----
@@ -150,7 +150,7 @@ def tiramisu_3d(input_size=(32, 32, 32, 1), preset_model='tiramisu-67',
     Returns
     -------
     model : model class
-        A Keras model class with its methods.
+        A Keras model class.
 
     Notes
     -----
@@ -158,8 +158,7 @@ def tiramisu_3d(input_size=(32, 32, 32, 1), preset_model='tiramisu-67',
     for example, indicates that the model expects images with 32 planes,
     32 rows, 32 columns, and one channel.
 
-    This model is compiled with the optimizer RMSprop, according to _[1],
-    and written only to one channel.
+    This model is compiled with the optimizer RMSprop, according to _[1].
 
     References
     ----------
@@ -331,7 +330,7 @@ def _tiramisu_parameters(preset_model='tiramisu-67'):
 
 
 def _transition_down(inputs, n_filters, dropout_perc=0.2):
-    """ Apply a BN-ReLU-conv layer with filter size 1, and a max pooling."""
+    """Apply a BN-ReLU-conv layer with filter size 1, and a max pooling."""
     layer = _bn_relu_conv(inputs,
                           n_filters,
                           filter_size=1,
@@ -344,9 +343,8 @@ def _transition_down(inputs, n_filters, dropout_perc=0.2):
 
 
 def _transition_up(skip_connection, block_to_upsample, filters_to_keep):
-    '''Performs upsampling on block_to_upsample by a factor 2 and
-    concatenates it with the skip_connection'''
-    # Upsample and concatenate with skip connection
+    """Performs upsampling on block_to_upsample by a factor 2 and
+    concatenates it with skip_connection."""
     layer = layers.Conv2DTranspose(filters_to_keep,
                                    kernel_size=3,
                                    strides=2,
@@ -359,9 +357,8 @@ def _transition_up(skip_connection, block_to_upsample, filters_to_keep):
 
 
 def _transition_up_3d(skip_connection, block_to_upsample, filters_to_keep):
-    '''Performs upsampling on block_to_upsample by a factor 2 and
-    concatenates it with the skip_connection'''
-    # Upsample and concatenate with skip connection
+    """3D version of _transition_up. Performs upsampling on block_to_upsample
+    by a factor 2 and concatenates it with skip_connection."""
     layer = layers.Conv3DTranspose(filters_to_keep,
                                    kernel_size=3,
                                    strides=2,
