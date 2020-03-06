@@ -1,4 +1,4 @@
-from models.unet import unet, unet_3d, unet_3d_3
+from models.unet import unet, unet_3d
 from models.tiramisu import tiramisu, tiramisu_3d
 from skimage import color, exposure, io, util
 from tensorflow.keras.backend import clear_session
@@ -244,7 +244,6 @@ def prediction_folder(network='unet'):
         'tiramisu_3d': const.FOLDER_PRED_TIRAMISU_3D,
         'unet': const.FOLDER_PRED_UNET,
         'unet_3d': const.FOLDER_PRED_UNET_3D,
-        'unet_3d_3': const.FOLDER_PRED_UNET_3D_3LAYERS,
     }
     return available_folders.get(network, None)
 
@@ -585,7 +584,6 @@ def _available_3d_nets(network, window_shape, n_class, preset_model):
         'tiramisu_3d': tiramisu_3d(input_size=(*window_shape, n_class),
                                    preset_model=preset_model),
         'unet_3d': unet_3d(input_size=(*window_shape, n_class)),
-        'unet_3d_3': unet_3d_3(input_size=(*window_shape, n_class))
     }
     return available_nets.get(network, None)
 
