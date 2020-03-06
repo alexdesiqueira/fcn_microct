@@ -115,7 +115,7 @@ def tiramisu(input_size=(256, 256, 1), preset_model='tiramisu-67',
         upsample_block = layers.concatenate(upsample_block)
 
     # applying the sigmoid layer.
-    output = _last_layer_activation(stack, n_classes=1)
+    output = _last_layer_activation(stack, n_classes=n_classes)
     model = Model(inputs, output)
 
     if n_classes == 1:
@@ -240,7 +240,7 @@ def tiramisu_3d(input_size=(32, 32, 32, 1), preset_model='tiramisu-67',
         upsample_block = layers.concatenate(upsample_block)
 
     # applying the last layer.
-    output = _last_layer_activation(stack, n_classes=1)
+    output = _last_layer_activation(stack, n_classes=n_classes)
     model = Model(inputs, output)
 
     if n_classes == 1:
