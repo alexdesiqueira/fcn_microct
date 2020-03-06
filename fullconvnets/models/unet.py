@@ -203,7 +203,7 @@ def unet(input_size=(256, 256, 1)):
                                     kernel_size=1,
                                     activation='sigmoid')(conv_up_1)
     else:
-        conv_output = layers.Conv2D(filters=1,
+        conv_output = layers.Conv2D(filters=n_classes,
                                     kernel_size=1,
                                     activation='softmax')(conv_up_1)
 
@@ -241,11 +241,11 @@ def unet_3d(input_size=(64, 64, 64, 1)):
     -----
     The implementation follows Çiçek et al. _[1]:
 
-    N -> 32 -> 64  ===============================================================================>>  64+128 -> 64 -> 64 ~> N
-                \                                                                                     /
-                64 -> 64 -> 128  =============================================>>  128+256 -> 128 -> 128
-                              \                                                   /
-                              128 -> 128 -> 256  =========>>  256+512 -> 256 -> 256
+    N -> 32 -> 64  ====================================================================>>  64+128 -> 64 -> 64 ~> N
+                \                                                                           /
+                64 -> 64 -> 128  ======================================>>  128+256 -> 128 -> 128
+                              \                                              /
+                              128 -> 128 -> 256  =======>>  256+512 -> 256 -> 256
                                               \               /
                                               256 -> 256 -> 512
 
@@ -396,7 +396,7 @@ def unet_3d(input_size=(64, 64, 64, 1)):
                                     kernel_size=1,
                                     activation='sigmoid')(conv_up_1)
     else:
-        conv_output = layers.Conv3D(filters=1,
+        conv_output = layers.Conv3D(filters=n_classes,
                                     kernel_size=1,
                                     activation='softmax')(conv_up_1)
 
