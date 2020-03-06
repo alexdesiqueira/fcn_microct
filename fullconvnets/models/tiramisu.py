@@ -6,9 +6,10 @@ from tensorflow.keras.optimizers import RMSprop
 
 def tiramisu(input_size=(256, 256, 1), preset_model='tiramisu-67',
              dropout_perc=0.2):
-    """Implements the One Hundred Layers Tiramisu dense neural network.
+    """Implements two-dimensional version of the One Hundred Layers
+    Tiramisu dense neural network.
 
-    Tiramisu is a full convolutional network based on DenseNets, for
+    Tiramisu is a fully convolutional network based on DenseNets, for
     applications on semantic segmentation.
 
     Parameters
@@ -133,7 +134,7 @@ def tiramisu_3d(input_size=(32, 32, 32, 1), preset_model='tiramisu-67',
     """Implements the three-dimensional version of the One Hundred
     Layers Tiramisu dense neural network.
 
-    Tiramisu is a full convolutional network based on DenseNets, for
+    Tiramisu is a fully convolutional network based on DenseNets, for
     applications on semantic segmentation.
 
     Parameters
