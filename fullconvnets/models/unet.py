@@ -18,7 +18,7 @@ def unet(input_size=(256, 256, 1)):
     Returns
     -------
     model : model class
-        A Keras model class with its methods.
+        A Keras model class.
 
     Notes
     -----
@@ -34,6 +34,7 @@ def unet(input_size=(256, 256, 1)):
            Networks for Biomedical Image Segmentation,” in Medical Image
            Computing and Computer-Assisted Intervention – MICCAI 2015,
            Cham, 2015, pp. 234–241, doi: 10.1007/978-3-319-24574-4_28.
+    .. [2] https://github.com/zhixuhao/unet
 
     Examples
     --------
@@ -42,131 +43,169 @@ def unet(input_size=(256, 256, 1)):
     """
     n_classes = input_size[-1]
     inputs = layers.Input(input_size)
-    conv1 = layers.Conv2D(filters=64,
-                          kernel_size=3,
-                          activation='relu',
-                          padding='same',
-                          kernel_initializer='he_normal')(inputs)
-    conv1 = layers.Conv2D(filters=64,
-                          kernel_size=3,
-                          activation='relu',
-                          padding='same',
-                          kernel_initializer='he_normal')(conv1)
-    pool1 = layers.MaxPooling2D(pool_size=(2, 2))(conv1)
-    conv2 = layers.Conv2D(128, 3,
-                          activation='relu',
-                          padding='same',
-                          kernel_initializer='he_normal')(pool1)
-    conv2 = layers.Conv2D(128, 3,
-                          activation='relu',
-                          padding='same',
-                          kernel_initializer='he_normal')(conv2)
-    pool2 = layers.MaxPooling2D(pool_size=(2, 2))(conv2)
-    conv3 = layers.Conv2D(256, 3,
-                          activation='relu',
-                          padding='same',
-                          kernel_initializer='he_normal')(pool2)
-    conv3 = layers.Conv2D(256, 3,
-                          activation='relu',
-                          padding='same',
-                          kernel_initializer='he_normal')(conv3)
-    pool3 = layers.MaxPooling2D(pool_size=(2, 2))(conv3)
-    conv4 = layers.Conv2D(512, 3,
-                          activation='relu',
-                          padding='same',
-                          kernel_initializer='he_normal')(pool3)
-    conv4 = layers.Conv2D(512, 3,
-                          activation='relu',
-                          padding='same',
-                          kernel_initializer='he_normal')(conv4)
-    drop4 = layers.Dropout(0.5)(conv4)
-    pool4 = layers.MaxPooling2D(pool_size=(2, 2))(drop4)
 
-    conv5 = layers.Conv2D(1024, 3,
-                          activation='relu',
-                          padding='same',
-                          kernel_initializer='he_normal')(pool4)
-    conv5 = layers.Conv2D(1024, 3,
-                          activation='relu',
-                          padding='same',
-                          kernel_initializer='he_normal')(conv5)
-    drop5 = layers.Dropout(0.5)(conv5)
+    # level 1 - down
+    conv_down_1 = layers.Conv2D(filters=64,
+                                kernel_size=3,
+                                activation='relu',
+                                padding='same',
+                                kernel_initializer='he_normal')(inputs)
+    conv_down_1 = layers.Conv2D(filters=64,
+                                kernel_size=3,
+                                activation='relu',
+                                padding='same',
+                                kernel_initializer='he_normal')(conv_down_1)
+    max_pool_1 = layers.MaxPooling2D(pool_size=(2, 2))(conv_down_1)
 
-    up6 = layers.Conv2D(512, 2,
-                        activation='relu',
-                        padding='same',
-                        kernel_initializer='he_normal'
-                        )(layers.UpSampling2D(size=(2, 2))(drop5))
-    merge6 = layers.concatenate([drop4, up6], axis=3)
-    conv6 = layers.Conv2D(512, 3,
-                          activation='relu',
-                          padding='same',
-                          kernel_initializer='he_normal')(merge6)
-    conv6 = layers.Conv2D(512, 3,
-                          activation='relu',
-                          padding='same',
-                          kernel_initializer='he_normal')(conv6)
+    # level 2 - down
+    conv_down_2 = layers.Conv2D(filters=128,
+                                kernel_size=3,
+                                activation='relu',
+                                padding='same',
+                                kernel_initializer='he_normal')(max_pool_1)
+    conv_down_2 = layers.Conv2D(filters=128,
+                                kernel_size=3,
+                                activation='relu',
+                                padding='same',
+                                kernel_initializer='he_normal')(conv_down_2)
+    max_pool_2 = layers.MaxPooling2D(pool_size=(2, 2))(conv_down_2)
 
-    up7 = layers.Conv2D(256, 2,
-                        activation='relu',
-                        padding='same',
-                        kernel_initializer='he_normal')(
-                            layers.UpSampling2D(size=(2, 2))(conv6)
-                        )
-    merge7 = layers.concatenate([conv3, up7], axis=3)
-    conv7 = layers.Conv2D(256, 3,
-                          activation='relu',
-                          padding='same',
-                          kernel_initializer='he_normal')(merge7)
-    conv7 = layers.Conv2D(256, 3,
-                          activation='relu',
-                          padding='same',
-                          kernel_initializer='he_normal')(conv7)
+    # level 3 - down
+    conv_down_3 = layers.Conv2D(filters=256,
+                                kernel_size=3,
+                                activation='relu',
+                                padding='same',
+                                kernel_initializer='he_normal')(max_pool_2)
+    conv_down_3 = layers.Conv2D(filters=256,
+                                kernel_size=3,
+                                activation='relu',
+                                padding='same',
+                                kernel_initializer='he_normal')(conv_down_3)
+    max_pool_3 = layers.MaxPooling2D(pool_size=(2, 2))(conv_down_3)
 
-    up8 = layers.Conv2D(128, 2,
-                        activation='relu',
-                        padding='same',
-                        kernel_initializer='he_normal'
-                        )(layers.UpSampling2D(size=(2, 2))(conv7))
-    merge8 = layers.concatenate([conv2, up8], axis=3)
-    conv8 = layers.Conv2D(128, 3,
-                          activation='relu',
-                          padding='same',
-                          kernel_initializer='he_normal')(merge8)
-    conv8 = layers.Conv2D(128, 3,
-                          activation='relu',
-                          padding='same',
-                          kernel_initializer='he_normal')(conv8)
+    # level 4 - down
+    conv_down_4 = layers.Conv2D(filters=512,
+                                kernel_size=3,
+                                activation='relu',
+                                padding='same',
+                                kernel_initializer='he_normal')(max_pool_3)
+    conv_down_4 = layers.Conv2D(filters=512,
+                                kernel_size=3,
+                                activation='relu',
+                                padding='same',
+                                kernel_initializer='he_normal')(conv_down_4)
+    dropout_4 = layers.Dropout(0.5)(conv_down_4)
+    max_pool_4 = layers.MaxPooling2D(pool_size=(2, 2))(dropout_4)
 
-    up9 = layers.Conv2D(64, 2,
-                        activation='relu',
-                        padding='same',
-                        kernel_initializer='he_normal'
-                        )(layers.UpSampling2D(size=(2, 2))(conv8))
-    merge9 = layers.concatenate([conv1, up9], axis=3)
-    conv9 = layers.Conv2D(64, 3,
-                          activation='relu',
-                          padding='same',
-                          kernel_initializer='he_normal')(merge9)
-    conv9 = layers.Conv2D(64, 3,
-                          activation='relu',
-                          padding='same',
-                          kernel_initializer='he_normal')(conv9)
-    conv9 = layers.Conv2D(2, 3,
-                          activation='relu',
-                          padding='same',
-                          kernel_initializer='he_normal')(conv9)
+    # level 5 - down
+    conv_down_5 = layers.Conv2D(filters=1024,
+                                kernel_size=3,
+                                activation='relu',
+                                padding='same',
+                                kernel_initializer='he_normal')(max_pool_4)
+    conv_down_5 = layers.Conv2D(filters=1024,
+                                kernel_size=3,
+                                activation='relu',
+                                padding='same',
+                                kernel_initializer='he_normal')(conv_down_5)
+    dropout_5 = layers.Dropout(0.5)(conv_down_5)
+
+    # level 4 - up
+    conv_up_4 = layers.Conv2D(filters=512,
+                              kernel_size=2,
+                              activation='relu',
+                              padding='same',
+                              kernel_initializer='he_normal')(
+                                  layers.UpSampling2D(size=(2, 2))(dropout_5)
+                              )
+    merge_4 = layers.concatenate([dropout_4, conv_up_4], axis=3)
+    conv_up_4 = layers.Conv2D(filters=512,
+                              kernel_size=3,
+                              activation='relu',
+                              padding='same',
+                              kernel_initializer='he_normal')(merge_4)
+    conv_up_4 = layers.Conv2D(filters=512,
+                              kernel_size=3,
+                              activation='relu',
+                              padding='same',
+                              kernel_initializer='he_normal')(conv_up_4)
+
+    # level 3 - up
+    conv_up_3 = layers.Conv2D(filters=256,
+                              kernel_size=2,
+                              activation='relu',
+                              padding='same',
+                              kernel_initializer='he_normal')(
+                                  layers.UpSampling2D(size=(2, 2))(conv_up_4)
+                              )
+    merge_3 = layers.concatenate([conv_down_3, conv_up_3], axis=3)
+    conv_up_3 = layers.Conv2D(filters=256,
+                              kernel_size=3,
+                              activation='relu',
+                              padding='same',
+                              kernel_initializer='he_normal')(merge_3)
+    conv_up_3 = layers.Conv2D(filters=256,
+                              kernel_size=3,
+                              activation='relu',
+                              padding='same',
+                              kernel_initializer='he_normal')(conv_up_3)
+
+    # level 2 - up
+    conv_up_2 = layers.Conv2D(filters=128,
+                              kernel_size=2,
+                              activation='relu',
+                              padding='same',
+                              kernel_initializer='he_normal')(
+                                  layers.UpSampling2D(size=(2, 2))(conv_up_3)
+                              )
+    merge_2 = layers.concatenate([conv_down_2, conv_up_2], axis=3)
+    conv_up_2 = layers.Conv2D(filters=128,
+                              kernel_size=3,
+                              activation='relu',
+                              padding='same',
+                              kernel_initializer='he_normal')(merge_2)
+    conv_up_2 = layers.Conv2D(filters=128,
+                              kernel_size=3,
+                              activation='relu',
+                              padding='same',
+                              kernel_initializer='he_normal')(conv_up_2)
+
+    # level 1 - up
+    conv_up_1 = layers.Conv2D(filters=64,
+                              kernel_size=2,
+                              activation='relu',
+                              padding='same',
+                              kernel_initializer='he_normal')(
+                                  layers.UpSampling2D(size=(2, 2))(conv_up_2)
+                              )
+    merge_1 = layers.concatenate([conv_down_1, conv_up_1], axis=3)
+    conv_up_1 = layers.Conv2D(filters=64,
+                              kernel_size=3,
+                              activation='relu',
+                              padding='same',
+                              kernel_initializer='he_normal')(merge_1)
+    conv_up_1 = layers.Conv2D(filters=64,
+                              kernel_size=3,
+                              activation='relu',
+                              padding='same',
+                              kernel_initializer='he_normal')(conv_up_1)
+
+    # output segmentation map
+    conv_up_1 = layers.Conv2D(filters=2,
+                              kernel_size=3,
+                              activation='relu',
+                              padding='same',
+                              kernel_initializer='he_normal')(conv_up_1)
 
     # defining last convolution.
     if n_classes == 1:
         conv_output = layers.Conv2D(filters=1,
                                     kernel_size=1,
-                                    activation='sigmoid')(conv9)
-
+                                    activation='sigmoid')(conv_up_1)
     else:
-        conv_output = layers.Conv2D(filters=1,
+        conv_output = layers.Conv2D(filters=n_classes,
                                     kernel_size=1,
-                                    activation='softmax')(conv9)
+                                    activation='softmax')(conv_up_1)
 
     model = Model(inputs, conv_output)
 
@@ -202,11 +241,11 @@ def unet_3d(input_size=(64, 64, 64, 1)):
     -----
     The implementation follows Çiçek et al. _[1]:
 
-    N -> 32 -> 64  ===============================================================================>>  64+128 -> 64 -> 64 ~> N
-                \                                                                                     /
-                64 -> 64 -> 128  =============================================>>  128+256 -> 128 -> 128
-                              \                                                   /
-                              128 -> 128 -> 256  =========>>  256+512 -> 256 -> 256
+    N -> 32 -> 64  ====================================================================>>  64+128 -> 64 -> 64 ~> N
+                \                                                                           /
+                64 -> 64 -> 128  ======================================>>  128+256 -> 128 -> 128
+                              \                                              /
+                              128 -> 128 -> 256  =======>>  256+512 -> 256 -> 256
                                               \               /
                                               256 -> 256 -> 512
 
@@ -297,12 +336,17 @@ def unet_3d(input_size=(64, 64, 64, 1)):
                                   layers.UpSampling3D(size=(2, 2, 2))
                                   (conv_down_4)
                               )
-    merge_3 = layers.concatenate([conv_down_3, conv_up_3], axis=-1)  # was: axis=4
+    merge_3 = layers.concatenate([conv_down_3, conv_up_3], axis=-1)
     conv_up_3 = layers.Conv3D(filters=256,
                               kernel_size=3,
                               activation='relu',
                               padding='same',
                               kernel_initializer='he_normal')(merge_3)
+    conv_up_3 = layers.Conv3D(filters=256,
+                              kernel_size=3,
+                              activation='relu',
+                              padding='same',
+                              kernel_initializer='he_normal')(conv_up_3)
 
     # level 2 - up
     conv_up_2 = layers.Conv3D(filters=256,
@@ -319,6 +363,11 @@ def unet_3d(input_size=(64, 64, 64, 1)):
                               activation='relu',
                               padding='same',
                               kernel_initializer='he_normal')(merge_2)
+    conv_up_2 = layers.Conv3D(filters=128,
+                              kernel_size=3,
+                              activation='relu',
+                              padding='same',
+                              kernel_initializer='he_normal')(conv_up_2)
 
     # level 1 - up
     conv_up_1 = layers.Conv3D(filters=128,
@@ -346,9 +395,8 @@ def unet_3d(input_size=(64, 64, 64, 1)):
         conv_output = layers.Conv3D(filters=1,
                                     kernel_size=1,
                                     activation='sigmoid')(conv_up_1)
-
     else:
-        conv_output = layers.Conv3D(filters=1,
+        conv_output = layers.Conv3D(filters=n_classes,
                                     kernel_size=1,
                                     activation='softmax')(conv_up_1)
 
