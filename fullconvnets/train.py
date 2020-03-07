@@ -48,7 +48,7 @@ RANGE_SHEAR = 0.05
 RANGE_WIDTH_SHIFT = 0.05
 RANGE_ZOOM = 0.05
 
-# preparing TensorFlow
+# preparing TensorFlow to operate in all avaliable GPUs.
 GPUS = ['/gpu:0', '/gpu:1', '/gpu:2', '/gpu:3', '/gpu:4',
         '/gpu:5', '/gpu:6', '/gpu:7', '/gpu:8', '/gpu:9']
 
@@ -67,19 +67,19 @@ DATA_GEN_ARGS = dict(rotation_range=RANGE_ROTATION,
 
 train_gen = data.train_generator(batch_size=BATCH_SIZE,
                                  train_path=FOLDER_TRAIN,
-                                 image_folder=SUBFOLDER_IMAGE,
-                                 label_folder=SUBFOLDER_LABEL,
-                                 aug_dict=DATA_GEN_ARGS,
+                                 subfolders=(SUBFOLDER_IMAGE,
+                                             SUBFOLDER_LABEL),
+                                 augmentation_dict=DATA_GEN_ARGS,
                                  target_size=TARGET_SIZE,
-                                 save_to_dir=None)
+                                 save_to_folder=None)
 
 valid_gen = data.train_generator(batch_size=BATCH_SIZE,
                                  train_path=FOLDER_VALIDATE,
-                                 image_folder=SUBFOLDER_IMAGE,
-                                 label_folder=SUBFOLDER_LABEL,
-                                 aug_dict=DATA_GEN_ARGS,
+                                 subfolders=(SUBFOLDER_IMAGE,
+                                             SUBFOLDER_LABEL),
+                                 augmentation_dict=DATA_GEN_ARGS,
                                  target_size=TARGET_SIZE,
-                                 save_to_dir=None)
+                                 save_to_folder=None)
 
 print('# Processing')
 with mirrored_strategy.scope():
