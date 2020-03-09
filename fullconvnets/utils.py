@@ -10,6 +10,23 @@ import numpy as np
 import os
 
 
+def check_path(pathname):
+    """Check if the input path exists. If not, create it.
+
+    Parameters
+    ----------
+    pathname : str
+        The input path.
+
+    Returns
+    -------
+    None
+    """
+    if not os.path.isdir(pathname):
+        os.makedirs(pathname)
+    return None
+
+
 def folders_to_process(folder_base, folder_pred, subfolder_pred,
                        folder_gold_std, subfolder_gold_std):
     """Returns lists of folders with correspondents in both prediction and gold
@@ -339,6 +356,35 @@ def process_sample(folder, data, weights, network='unet'):
     return None
 
 
+def read_data(sample, folder_prediction, is_registered=False):
+    """
+    """
+    if is_registered:
+        folder_pred = os.path.join(folder_prediction,
+                                   sample['folder'] + '_REG',
+                                   const.SUBFOLDER_PRED,
+                                   '*' + const.EXT_PRED)
+        folder_goldstd = os.path.join(const.FOLDER_GOLDSTD,
+                                      sample['folder'],
+                                      const.SUBFOLDER_GOLDSTD_REG,
+                                      '*' + const.EXT_GOLDSTD)
+    else:
+        folder_pred = os.path.join(folder_prediction,
+                                   sample['folder'],
+                                   const.SUBFOLDER_PRED,
+                                   '*' + const.EXT_PRED)
+        folder_goldstd = os.path.join(const.FOLDER_GOLDSTD,
+                                      sample['folder'],
+                                      const.SUBFOLDER_GOLDSTD,
+                                      '*' + const.EXT_GOLDSTD)
+
+    data_prediction = io.ImageCollection(load_pattern=folder_pred,
+                                         load_func=imread_prediction)
+    data_goldstd = io.ImageCollection(load_pattern=folder_goldstd,
+                                      load_func=imread_goldstd)
+    return data_prediction, data_goldstd
+
+
 def _check_and_save_prediction(folder, prediction, filename):
     """"""
     if not os.path.isfile(os.path.join(folder, filename)):
@@ -354,6 +400,7 @@ def _check_and_save_overlap(folder, data_original, prediction, filename):
         io.imsave(os.path.join(folder, filename),
                   util.img_as_ubyte(overlap))
     return None
+
 
 def read_csv_coefficients(filename):
     """Reads csv coefficients saved in a file."""
