@@ -73,32 +73,26 @@ def compare(network, tiramisu_model=None):
 
     tiramisu_model can receive the values 'tiramisu-56' and 'tiramisu-67'.
     """
-    if tiramisu_model is not None:
-        tiramisu_layers = tiramisu_model[8:]
-    else:
-        tiramisu_layers = ''
-    NETWORK_FOLDER = {'tiramisu': f'{const.FOLDER_PRED_TIRAMISU}{tiramisu_layers}',
-                      'tiramisu_3d': f'{const.FOLDER_PRED_TIRAMISU_3D}{tiramisu_layers}',
-                      'unet': const.FOLDER_PRED_UNET,
-                      'unet_3d': const.FOLDER_PRED_UNET_3D}
-
-    PATH_COEFFICIENTS = os.path.join(const.FOLDER_COMP_COEF,
+    tiramisu_layers = utils.check_tiramisu_layers(tiramisu_model)
+    network_folder = utils.prediction_folder(network=network,
+                                             tiramisu_model=tiramisu_model)
+    path_coefficients = os.path.join(const.FOLDER_COMP_COEF,
                                      f'{network}{tiramisu_layers}')
 
-    utils.check_path(pathname=PATH_COEFFICIENTS)
+    utils.check_path(pathname=path_coefficients)
 
     for sample in const.SAMPLES_BUNCH2:
         if sample['has_goldstd']:
             print(f"Now processing {sample['folder']}.")
             is_registered = sample['registered_path'] is not None
             data_prediction, data_goldstd = utils.read_data(sample,
-                                                            folder_prediction=NETWORK_FOLDER[network],
+                                                            folder_prediction=network_folder,
                                                             is_registered=is_registered)
 
             data_prediction = data_prediction[slice(*sample['segmentation_interval'])]
 
             # coefficients will receive the folder name as a filename.
-            filename = f"{PATH_COEFFICIENTS}/{sample['folder']}-{network}_coefs.csv"
+            filename = f"{path_coefficients}/{sample['folder']}-{network}_coefs.csv"
 
             _, _ = utils.measure_all_coefficients(data_prediction,
                                                   data_goldstd,
