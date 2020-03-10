@@ -13,7 +13,6 @@ import utils
 
 def main():
     """Main function for train.py. Receives arguments and starts train()."""
-    # help strings.
     help_description = """Train available neural networks on Larson et al
     samples."""
     help_networks = """convolutional network to be used in the
@@ -36,7 +35,7 @@ def main():
                         help=help_networks)
     parser.add_argument('-t',
                         '--tiramisu_model',
-                        type=int,
+                        type=str,
                         required=False,
                         help=help_tiramisu_model)
     parser.add_argument('-b',
@@ -57,11 +56,11 @@ def main():
     if not epochs:
         epochs = 5
 
-    # checking if a tiramisu network was provided with a tiramisu model.
+    # checking if a tiramisu network was provided with a correct model.
     no_tiramisu_but_tiramisu_model = (('tiramisu' not in network) and
-                                      (tiramisu_model is not None))
+                                      (tiramisu_model in const.AVAILABLE_TIRAMISU_MODELS))
     tiramisu_but_no_tiramisu_model = (('tiramisu' in network) and
-                                      (tiramisu_model is None))
+                                      (tiramisu_model not in const.AVAILABLE_TIRAMISU_MODELS))
     if no_tiramisu_but_tiramisu_model or tiramisu_but_no_tiramisu_model:
         parser.print_help()
         sys.exit(0)
@@ -187,16 +186,20 @@ def _training_variables(network):
     if network in const.AVAILABLE_2D_NETS:
         train_vars = {
             'target_size': const.WINDOW_SHAPE,
-            'folder_train': os.path.join(const.FOLDER_TRAINING_CROP, 'train'),
-            'folder_validate': os.path.join(const.FOLDER_TRAINING_CROP, 'validate'),
+            'folder_train': os.path.join(const.FOLDER_TRAINING_CROP,
+                                         const.SUBFOLDER_TRAIN),
+            'folder_validate': os.path.join(const.FOLDER_TRAINING_CROP,
+                                            const.SUBFOLDER_VALIDATE),
             'training_images': 70000,
             'validation_images': 29800
         }
     elif network in const.AVAILABLE_3D_NETS:
         train_vars = {
             'target_size': const.WINDOW_SHAPE_3D,
-            'folder_train': os.path.join(const.FOLDER_TRAINING_CROP_3D, 'train'),
-            'folder_validate': os.path.join(const.FOLDER_TRAINING_CROP_3D, 'validate'),
+            'folder_train': os.path.join(const.FOLDER_TRAINING_CROP_3D,
+                                         const.SUBFOLDER_TRAIN),
+            'folder_validate': os.path.join(const.FOLDER_TRAINING_CROP_3D,
+                                            const.SUBFOLDER_VALIDATE),
             'training_images': 325844,
             'validation_images': 134832
         }

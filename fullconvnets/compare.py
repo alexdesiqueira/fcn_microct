@@ -10,7 +10,6 @@ import utils
 def main():
     """Main function for compare.py. Receives arguments and starts
     compare()."""
-    # help strings.
     help_description = """Compare segmentation results between a fully
     convolutional network and the gold standard for Larson et al samples."""
     help_networks = """convolutional network to be used in the
