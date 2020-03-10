@@ -6,6 +6,9 @@ import os
 AVAILABLE_2D_NETS = ('tiramisu', 'unet')
 AVAILABLE_3D_NETS = ('tiramisu_3d', 'unet_3d')
 
+# available Tiramisu models.
+AVAILABLE_TIRAMISU_MODELS = ('tiramisu-56', 'tiramisu-67')
+
 # defining a color dict with each class.
 CLASS_0 = [0, 0, 0]
 CLASS_1 = [128, 128, 128]
