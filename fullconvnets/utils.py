@@ -181,6 +181,29 @@ def montage_3d(array_input, grid_shape=(1, 80, 80)):
 def network_models(network='unet', window_shape=(288, 288), n_class=1,
                    preset_model='tiramisu-67'):
     """
+
+    Parameters
+    ----------
+    network : str (default : 'unet')
+        Name of the network.
+    window_shape : 2D or 3D array_like (default : (288, 288))
+        Size of the window used on the network.
+    n_class : int (default : 1)
+        Number of classes.
+    preset_model : str (default : 'tiramisu-67')
+        Tiramisu preset model.
+
+    Returns
+    -------
+    model : Keras model
+        A Keras model defined according to the parameters.
+
+    Notes
+    -----
+    window_shape receives two-dimensional and three-dimensional inputs,
+    chosen to match the network.
+
+    preset_model can receive  tiramisu-56 and tiramisu-67.
     """
     if network in const.AVAILABLE_2D_NETS:
         model = _available_2d_nets(network,
@@ -379,24 +402,21 @@ def process_sample(folder, data, weights, network='unet'):
 def read_data(sample, folder_prediction, is_registered=False):
     """
     """
+    aux_folder = sample['folder']
     if is_registered:
-        folder_pred = os.path.join(folder_prediction,
-                                   sample['folder'] + '_REG',
-                                   const.SUBFOLDER_PRED,
-                                   '*' + const.EXT_PRED)
-        folder_goldstd = os.path.join(const.FOLDER_GOLDSTD,
-                                      sample['folder'],
-                                      const.SUBFOLDER_GOLDSTD_REG,
-                                      '*' + const.EXT_GOLDSTD)
+        aux_folder += '_REG'
+        aux_subfolder = const.SUBFOLDER_GOLDSTD_REG
     else:
-        folder_pred = os.path.join(folder_prediction,
-                                   sample['folder'],
-                                   const.SUBFOLDER_PRED,
-                                   '*' + const.EXT_PRED)
-        folder_goldstd = os.path.join(const.FOLDER_GOLDSTD,
-                                      sample['folder'],
-                                      const.SUBFOLDER_GOLDSTD,
-                                      '*' + const.EXT_GOLDSTD)
+        aux_subfolder = const.SUBFOLDER_GOLDSTD
+
+    folder_pred = os.path.join(folder_prediction,
+                               aux_folder,
+                               const.SUBFOLDER_PRED,
+                               f'*{const.EXT_PRED}')
+    folder_goldstd = os.path.join(const.FOLDER_GOLDSTD,
+                                  sample['folder'],
+                                  aux_subfolder,
+                                  f'*{const.EXT_GOLDSTD}')
 
     data_prediction = io.ImageCollection(load_pattern=folder_pred,
                                          load_func=imread_prediction)
