@@ -112,31 +112,31 @@ def train_generator(batch_size, train_path, subfolders, augmentation_dict,
         yield (image, label)
 
 
-def _adjust_data(image, labels, n_classes=2, multichannel=False):
+def _adjust_data(image, label, n_classes=2, multichannel=False):
     """Helps set data according to its channels, classes, and labels."""
     if multichannel:
         image = image / 255
-        labels = labels[..., 0]
-        aux_labels = np.zeros(labels.shape + (n_classes,))
+        label = label[..., 0]
+        aux_label = np.zeros(label.shape + (n_classes,))
 
         for num in range(n_classes):
-            aux_labels[labels == num, num] = 1
+            aux_label[label == num, num] = 1
 
         if multichannel:
-            batch, rows, cols, classes = aux_labels.shape
-            aux_labels = np.reshape(aux_labels,
-                                    (batch,
-                                     rows*cols,
-                                     classes))
+            batch, rows, cols, classes = aux_label.shape
+            aux_label = np.reshape(aux_label,
+                                   (batch,
+                                    rows*cols,
+                                    classes))
         else:
-            rows, cols, batch = aux_labels.shape
-            aux_labels = np.reshape(aux_labels, (rows*cols, batch))
-        labels = aux_labels
+            rows, cols, batch = aux_label.shape
+            aux_label = np.reshape(aux_label, (rows*cols, batch))
+        label = aux_label
 
     elif image.max() > 1:
         image = image / 255
-        labels = labels / 255
-        labels[labels > 0.5] = 1
-        labels[labels <= 0.5] = 0
+        label = label / 255
+        label[label > 0.5] = 1
+        label[label <= 0.5] = 0
 
-    return (image, labels)
+    return (image, label)
