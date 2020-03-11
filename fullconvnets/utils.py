@@ -593,7 +593,7 @@ def tensor_generator(images, multichannel=False):
             image = np.reshape(image, image.shape+(1,))
         image = np.reshape(image, (1,)+image.shape)
 
-        yield image
+        yield np.asarray(image, dtype='float32')
 
 
 def _assert_compatible(image_1, image_2):
