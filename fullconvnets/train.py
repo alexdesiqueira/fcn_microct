@@ -145,7 +145,7 @@ def train(network, tiramisu_model=None, batch_size=2, epochs=5):
                                                  const.SUBFOLDER_LABEL),
                                      augmentation_dict=DATA_GEN_ARGS,
                                      target_size=train_vars['target_size'],
-                                     save_to_folder=None)
+                                     save_to_dir=None)
 
     valid_gen = data.train_generator(batch_size=batch_size,
                                      train_path=train_vars['folder_validate'],
@@ -153,7 +153,7 @@ def train(network, tiramisu_model=None, batch_size=2, epochs=5):
                                                  const.SUBFOLDER_LABEL),
                                      augmentation_dict=DATA_GEN_ARGS,
                                      target_size=train_vars['target_size'],
-                                     save_to_folder=None)
+                                     save_to_dir=None)
 
     print('# Processing')
     with mirrored_strategy.scope():

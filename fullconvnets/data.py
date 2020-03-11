@@ -8,7 +8,7 @@ import os
 
 def train_generator(batch_size, train_path, subfolders, augmentation_dict,
                     color_mode=('grayscale', 'grayscale'), n_classes=2,
-                    target_size=(256, 256), save_to_folder=None,
+                    target_size=(256, 256), save_to_dir=None,
                     save_prefix=('image', 'label'), seed=1,
                     multichannel=False):
     """A generator to train fully convolutional networks.
@@ -30,11 +30,11 @@ def train_generator(batch_size, train_path, subfolders, augmentation_dict,
         Number of classes contained in labels.
     target_size : array_like (default : (256, 256))
         Size of the desired training windows.
-    save_to_folder : str or None (default : None)
+    save_to_dir : str or None (default : None)
         If not None, the system path where the augmented images and labels
         will be stored.
     save_prefix : str (default : ('image', 'label'))
-        names of image and label subfolders, used when save_to_folder is not
+        names of image and label subfolders, used when save_to_dir is not
         None.
     seed : int (default : 1)
         Seed used to generate augmentations on image and label.
@@ -72,7 +72,7 @@ def train_generator(batch_size, train_path, subfolders, augmentation_dict,
                                                                 horizontal_flip=True,
                                                                 vertical_flip=True),
                                          target_size=(128, 128),
-                                         save_to_folder=None)
+                                         save_to_dir=None)
     """
     if len(target_size) == 2:
         image_datagen = ImageDataGenerator(**augmentation_dict)
@@ -89,7 +89,7 @@ def train_generator(batch_size, train_path, subfolders, augmentation_dict,
         color_mode=color_mode[0],
         target_size=target_size,
         batch_size=batch_size,
-        save_to_folder=save_to_folder,
+        save_to_dir=save_to_dir,
         save_prefix=save_prefix[0],
         seed=seed)
 
@@ -101,7 +101,7 @@ def train_generator(batch_size, train_path, subfolders, augmentation_dict,
         color_mode=color_mode[1],
         target_size=target_size,
         batch_size=batch_size,
-        save_to_folder=save_to_folder,
+        save_to_dir=save_to_dir,
         save_prefix=save_prefix[1],
         seed=seed)
 
