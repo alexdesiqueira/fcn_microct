@@ -85,7 +85,7 @@ FOLDER_VAL_LABEL_ORIG = os.path.join(FOLDER_TRAINING_ORIG,
                                      SUBFOLDER_LABEL)
 
 FOLDER_TRAINING_CROP = os.path.join(FOLDER_BASE,
-                                    SUBFOLDER_TRAIN,
+                                    SUBFOLDER_DATA_TRAIN,
                                     'cropped')
 FOLDER_TRAIN_IMAGE_CROP = os.path.join(FOLDER_TRAINING_CROP,
                                        SUBFOLDER_TRAIN,
@@ -101,7 +101,7 @@ FOLDER_VAL_LABEL_CROP = os.path.join(FOLDER_TRAINING_CROP,
                                      SUBFOLDER_LABEL)
 
 FOLDER_TRAINING_CROP_3D = os.path.join(FOLDER_BASE,
-                                       SUBFOLDER_TRAIN,
+                                       SUBFOLDER_DATA_TRAIN,
                                        'cropped_3d')
 FOLDER_TRAIN_IMAGE_CROP_3D = os.path.join(FOLDER_TRAINING_CROP_3D,
                                           SUBFOLDER_TRAIN,
