@@ -6,6 +6,9 @@ import os
 AVAILABLE_2D_NETS = ('tiramisu', 'unet')
 AVAILABLE_3D_NETS = ('tiramisu_3d', 'unet_3d')
 
+# available Tiramisu models.
+AVAILABLE_TIRAMISU_MODELS = ('tiramisu-56', 'tiramisu-67')
+
 # defining a color dict with each class.
 CLASS_0 = [0, 0, 0]
 CLASS_1 = [128, 128, 128]
@@ -52,28 +55,66 @@ WINDOW_SHAPE_3D = (PLANES_3D + 2*PAD_WIDTH_3D,
                    ROWS_3D + 2*PAD_WIDTH_3D,
                    COLS_3D + 2*PAD_WIDTH_3D)
 
+# the main subfolders, and extensions.
+SUBFOLDER_DATA_TRAIN = 'data_training'
+SUBFOLDER_DATA_PRED = 'data_prediction'
+SUBFOLDER_TRAIN = 'train'
+SUBFOLDER_VALIDATE = 'validate'
+SUBFOLDER_IMAGE = 'image'
+SUBFOLDER_LABEL = 'label'
+SUBFOLDER_PRED = 'predict'
+SUBFOLDER_OVER = 'overlap'
+EXT_PRED = '.png'
+EXT_OVER = '.png'
+
 # the training folders and its subfolders.
-FOLDER_TRAINING_ORIG = os.path.join(FOLDER_BASE, 'data_training/original')
-FOLDER_TRAIN_IMAGE_ORIG = os.path.join(FOLDER_TRAINING_ORIG, 'train/image/')
-FOLDER_TRAIN_LABEL_ORIG = os.path.join(FOLDER_TRAINING_ORIG, 'train/label/')
-FOLDER_VAL_IMAGE_ORIG = os.path.join(FOLDER_TRAINING_ORIG, 'validate/image/')
-FOLDER_VAL_LABEL_ORIG = os.path.join(FOLDER_TRAINING_ORIG, 'validate/label/')
+FOLDER_TRAINING_ORIG = os.path.join(FOLDER_BASE,
+                                    SUBFOLDER_DATA_TRAIN,
+                                    'original')
+FOLDER_TRAIN_IMAGE_ORIG = os.path.join(FOLDER_TRAINING_ORIG,
+                                       SUBFOLDER_TRAIN,
+                                       SUBFOLDER_IMAGE)
+FOLDER_TRAIN_LABEL_ORIG = os.path.join(FOLDER_TRAINING_ORIG,
+                                       SUBFOLDER_TRAIN,
+                                       SUBFOLDER_LABEL)
+FOLDER_VAL_IMAGE_ORIG = os.path.join(FOLDER_TRAINING_ORIG,
+                                     SUBFOLDER_VALIDATE,
+                                     SUBFOLDER_IMAGE)
+FOLDER_VAL_LABEL_ORIG = os.path.join(FOLDER_TRAINING_ORIG,
+                                     SUBFOLDER_VALIDATE,
+                                     SUBFOLDER_LABEL)
 
-FOLDER_TRAINING_CROP = os.path.join(FOLDER_BASE, 'data_training/cropped')
-FOLDER_TRAIN_IMAGE_CROP = os.path.join(FOLDER_TRAINING_CROP, 'train/image/')
-FOLDER_TRAIN_LABEL_CROP = os.path.join(FOLDER_TRAINING_CROP, 'train/label/')
-FOLDER_VAL_IMAGE_CROP = os.path.join(FOLDER_TRAINING_CROP, 'validate/image/')
-FOLDER_VAL_LABEL_CROP = os.path.join(FOLDER_TRAINING_CROP, 'validate/label/')
+FOLDER_TRAINING_CROP = os.path.join(FOLDER_BASE,
+                                    SUBFOLDER_TRAIN,
+                                    'cropped')
+FOLDER_TRAIN_IMAGE_CROP = os.path.join(FOLDER_TRAINING_CROP,
+                                       SUBFOLDER_TRAIN,
+                                       SUBFOLDER_IMAGE)
+FOLDER_TRAIN_LABEL_CROP = os.path.join(FOLDER_TRAINING_CROP,
+                                       SUBFOLDER_TRAIN,
+                                       SUBFOLDER_LABEL)
+FOLDER_VAL_IMAGE_CROP = os.path.join(FOLDER_TRAINING_CROP,
+                                     SUBFOLDER_VALIDATE,
+                                     SUBFOLDER_IMAGE)
+FOLDER_VAL_LABEL_CROP = os.path.join(FOLDER_TRAINING_CROP,
+                                     SUBFOLDER_VALIDATE,
+                                     SUBFOLDER_LABEL)
 
-FOLDER_TRAINING_CROP_3D = os.path.join(FOLDER_BASE, 'data_training/cropped_3d')
+FOLDER_TRAINING_CROP_3D = os.path.join(FOLDER_BASE,
+                                       SUBFOLDER_TRAIN,
+                                       'cropped_3d')
 FOLDER_TRAIN_IMAGE_CROP_3D = os.path.join(FOLDER_TRAINING_CROP_3D,
-                                          'train/image/')
+                                          SUBFOLDER_TRAIN,
+                                          SUBFOLDER_IMAGE)
 FOLDER_TRAIN_LABEL_CROP_3D = os.path.join(FOLDER_TRAINING_CROP_3D,
-                                          'train/label/')
+                                          SUBFOLDER_TRAIN,
+                                          SUBFOLDER_LABEL)
 FOLDER_VAL_IMAGE_CROP_3D = os.path.join(FOLDER_TRAINING_CROP_3D,
-                                        'validate/image/')
+                                        SUBFOLDER_VALIDATE,
+                                        SUBFOLDER_IMAGE)
 FOLDER_VAL_LABEL_CROP_3D = os.path.join(FOLDER_TRAINING_CROP_3D,
-                                        'validate/label/')
+                                        SUBFOLDER_VALIDATE,
+                                        SUBFOLDER_LABEL)
 
 # interval images used in the training.
 INTERVAL_TRAIN_CURED = [160, 510]
@@ -82,15 +123,18 @@ INTERVAL_VAL_CURED = [860, 1010]
 INTERVAL_VAL_WET = [1010, 1158]  # a total of 298 validation images
 
 # our prediction folders.
-FOLDER_PRED_TIRAMISU = os.path.join(FOLDER_BASE, 'data_prediction/tiramisu')
-FOLDER_PRED_TIRAMISU_3D = os.path.join(FOLDER_BASE, 'data_prediction/tiramisu_3d')
-FOLDER_PRED_UNET = os.path.join(FOLDER_BASE, 'data_prediction/unet')
-FOLDER_PRED_UNET_3D = os.path.join(FOLDER_BASE, 'data_prediction/unet_3d')
-
-SUBFOLDER_PRED = 'predict'
-SUBFOLDER_OVER = 'overlap'
-EXT_PRED = '.png'
-EXT_OVER = '.png'
+FOLDER_PRED_TIRAMISU = os.path.join(FOLDER_BASE,
+                                    SUBFOLDER_DATA_PRED,
+                                    'tiramisu')
+FOLDER_PRED_TIRAMISU_3D = os.path.join(FOLDER_BASE,
+                                       SUBFOLDER_DATA_PRED,
+                                       'tiramisu_3d')
+FOLDER_PRED_UNET = os.path.join(FOLDER_BASE,
+                                SUBFOLDER_DATA_PRED,
+                                'unet')
+FOLDER_PRED_UNET_3D = os.path.join(FOLDER_BASE,
+                                   SUBFOLDER_DATA_PRED,
+                                   'unet_3d')
 
 # setting the folder to store comparison coefficients.
 FOLDER_COMP_COEF = os.path.join(FOLDER_BASE, 'comp_coefficients')
@@ -114,7 +158,6 @@ Samples have their own folder and its path; they can have a gold standard
 We are interested also in some registered data, available for two of the cured
 samples with gold standards. Therefore we define a registered path as well.
 """
-# [TODO: CHECK IF FOLDERS MATCH THE SAMPLES!]
 
 SAMPLE_232p1_wet = {
     'folder': FOLDER_232p1_wet,

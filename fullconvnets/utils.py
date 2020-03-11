@@ -10,6 +10,43 @@ import numpy as np
 import os
 
 
+def check_path(pathname):
+    """Check if the input path exists. If not, create it.
+
+    Parameters
+    ----------
+    pathname : str
+        The input path.
+
+    Returns
+    -------
+    None
+    """
+    if not os.path.isdir(pathname):
+        os.makedirs(pathname)
+    return None
+
+
+def check_tiramisu_layers(tiramisu_model=None):
+    """Checks and returns the tiramisu layers on the tiramisu model string.
+
+    Parameters
+    ----------
+    tiramisu_model : str or None (default : None)
+
+    Returns
+    -------
+    tiramisu_layers : str
+        String with the amount of layers. Empty string if tiramisu_model is
+        None.
+    """
+    if tiramisu_model is not None:
+        tiramisu_layers = tiramisu_model[8:]
+    else:
+        tiramisu_layers = ''
+    return tiramisu_layers
+
+
 def folders_to_process(folder_base, folder_pred, subfolder_pred,
                        folder_gold_std, subfolder_gold_std):
     """Returns lists of folders with correspondents in both prediction and gold
@@ -236,12 +273,13 @@ def predict_on_image(image, weights, network='unet', n_class=1, pad_width=16,
     return prediction
 
 
-def prediction_folder(network='unet'):
-    """Returns the saving folder according to the network.
-    """
+def prediction_folder(network='unet', tiramisu_model=None):
+    """Returns the saving folder according to the network."""
+    tiramisu_layers = check_tiramisu_layers(tiramisu_model=tiramisu_model)
+
     available_folders = {
-        'tiramisu': const.FOLDER_PRED_TIRAMISU,
-        'tiramisu_3d': const.FOLDER_PRED_TIRAMISU_3D,
+        'tiramisu': f'{const.FOLDER_PRED_TIRAMISU}{tiramisu_layers}',
+        'tiramisu_3d': f'{const.FOLDER_PRED_TIRAMISU_3D}{tiramisu_layers}',
         'unet': const.FOLDER_PRED_UNET,
         'unet_3d': const.FOLDER_PRED_UNET_3D,
     }
@@ -265,8 +303,7 @@ def process_sample(folder, data, weights, network='unet'):
     FOLDER_OVER = os.path.join(folder, const.SUBFOLDER_OVER)
 
     for aux in [FOLDER_PRED, FOLDER_OVER]:
-        if not os.path.isdir(aux):
-            os.makedirs(aux)
+        check_path(pathname=aux)
 
     if network in const.AVAILABLE_3D_NETS:
         last_original_plane = None
@@ -339,6 +376,35 @@ def process_sample(folder, data, weights, network='unet'):
     return None
 
 
+def read_data(sample, folder_prediction, is_registered=False):
+    """
+    """
+    if is_registered:
+        folder_pred = os.path.join(folder_prediction,
+                                   sample['folder'] + '_REG',
+                                   const.SUBFOLDER_PRED,
+                                   '*' + const.EXT_PRED)
+        folder_goldstd = os.path.join(const.FOLDER_GOLDSTD,
+                                      sample['folder'],
+                                      const.SUBFOLDER_GOLDSTD_REG,
+                                      '*' + const.EXT_GOLDSTD)
+    else:
+        folder_pred = os.path.join(folder_prediction,
+                                   sample['folder'],
+                                   const.SUBFOLDER_PRED,
+                                   '*' + const.EXT_PRED)
+        folder_goldstd = os.path.join(const.FOLDER_GOLDSTD,
+                                      sample['folder'],
+                                      const.SUBFOLDER_GOLDSTD,
+                                      '*' + const.EXT_GOLDSTD)
+
+    data_prediction = io.ImageCollection(load_pattern=folder_pred,
+                                         load_func=imread_prediction)
+    data_goldstd = io.ImageCollection(load_pattern=folder_goldstd,
+                                      load_func=imread_goldstd)
+    return data_prediction, data_goldstd
+
+
 def _check_and_save_prediction(folder, prediction, filename):
     """"""
     if not os.path.isfile(os.path.join(folder, filename)):
@@ -354,6 +420,7 @@ def _check_and_save_overlap(folder, data_original, prediction, filename):
         io.imsave(os.path.join(folder, filename),
                   util.img_as_ubyte(overlap))
     return None
+
 
 def read_csv_coefficients(filename):
     """Reads csv coefficients saved in a file."""
