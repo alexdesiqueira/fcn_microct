@@ -114,3 +114,7 @@ def predict(network, tiramisu_model=None, weights=None):
                                  data=data_sample,
                                  weights=weights,
                                  network=network)
+
+
+if __name__ == '__main__':
+    main()
