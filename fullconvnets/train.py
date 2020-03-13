@@ -7,6 +7,7 @@ import argparse
 import constants as const
 import data
 import json
+import numpy as np
 import os
 import sys
 import tensorflow as tf
@@ -72,7 +73,7 @@ def main() -> None:
 
     # argument --output.
     help_output = """filename of the output containing training coefficients.
-                     Default: output_<network>.hdf5"""
+                     Default: output_<NETWORK>.hdf5"""
     parser.add_argument('-o',
                         '--output',
                         type=str,
@@ -244,6 +245,7 @@ def _read_training_variables(filename: str) -> Dict[str, int]:
         if (key not in train_vars.keys()) or (not train_vars[key]):
             raise RuntimeError(f'{key} is not defined in {filename}.')
 
+    train_vars['target_size'] = np.array(train_vars['target_size'])
     return train_vars
 
 
