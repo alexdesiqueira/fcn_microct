@@ -23,7 +23,6 @@ def main():
     return None
 
 
-
 def save_testing_images(data_image, data_label):
     """"""
     # adding necessary padding.
@@ -38,6 +37,7 @@ def save_testing_images(data_image, data_label):
 
     test_image = data_image[test_idx:]
     test_label = data_label[test_idx:]
+
 
     utils.save_cropped_chunk(test_image,
                              window_shape=const.WINDOW_SHAPE_3D,
@@ -78,6 +78,9 @@ def save_testing_images(data_image, data_label):
 
     return None
 
+
+# To train a 3D U-net on the test data, you'd use:
+# python train.py -n 'unet_3d' -v 'tests/beadpack_train.json' -o 'beadpack_unet_3d.hdf5'
 
 if __name__ == '__main__':
     main()
