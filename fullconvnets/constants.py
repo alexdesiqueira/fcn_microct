@@ -174,7 +174,7 @@ SAMPLE_232p1_wet = {
 SAMPLE_232p3_cured = {
     'folder': FOLDER_232p3_cured,
     'path': os.path.join(FOLDER_SAMPLE,
-                         FOLDER_232p1_wet),
+                         FOLDER_232p3_cured),
     'has_goldstd': True,
     'path_goldstd': os.path.join(FOLDER_GOLDSTD,
                                  FOLDER_232p3_cured,
