@@ -521,7 +521,13 @@ def save_cropped_chunk(image, window_shape=(32, 32, 32), step=32,
     Returns
     -------
         None
+
+    Notes
+    -----
+    Folder is created if it does not exist.
     """
+    check_path(folder)
+
     chunk_crop = np.vstack(np.hstack(
         util.view_as_windows(image,
                              window_shape=window_shape,
