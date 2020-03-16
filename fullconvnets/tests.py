@@ -7,9 +7,9 @@ import os
 import utils
 
 
-FOLDER_TRAIN = 'tests/data_training/cropped_3d/train'
-FOLDER_VALIDATE = 'tests/data_training/cropped_3d/validate'
-FOLDER_TEST = 'tests/data_training/cropped_3d/test'
+FOLDER_TRAIN = 'tests/data/cropped_3d/train'
+FOLDER_VALIDATE = 'tests/data/cropped_3d/validate'
+FOLDER_TEST = 'tests/data/cropped_3d/test'
 
 
 def main():
@@ -37,6 +37,13 @@ def save_testing_images(data_image, data_label):
 
     test_image = data_image[test_idx:]
     test_label = data_label[test_idx:]
+
+    for idx, (image, label) in enumerate(zip(test_image, test_label)):
+        filename = '%06d' % idx
+        io.imsave(fname=os.path.join(FOLDER_TEST, 'image', filename),
+                  arr=image)
+        io.imsave(fname=os.path.join(FOLDER_TEST, 'label', filename),
+                  arr=label)
 
 
     utils.save_cropped_chunk(test_image,
