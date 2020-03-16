@@ -2,6 +2,8 @@ from skimage import io
 
 import argparse
 import constants as const
+import json
+import numpy as np
 import os
 import sys
 import utils
@@ -9,38 +11,56 @@ import utils
 
 def main():
     """Main function for predict.py. Receives arguments and starts predict()."""
+    # creating parser and checking arguments.
     help_description = """Predict fibers on Larson et al samples using a
     chosen neural network."""
+    parser = argparse.ArgumentParser(description=help_description,
+                                     add_help=True)
+
+    # argument --network.
     help_networks = """convolutional network to be used in the
                        training. Available networks: 'tiramisu',
                        'tiramisu_3d', 'unet', 'unet_3d'"""
-    help_tiramisu_model = """when the used network is a tiramisu, the model to
-                             be used. Not necessary when using U-Nets.
-                             Available models: 'tiramisu-56', 'tiramisu-67'"""
-    help_weights = """file containing weight coefficients to be used on the
-                      prediction."""
-
-    # creating parser and checking arguments.
-    parser = argparse.ArgumentParser(description=help_description,
-                                     add_help=True)
     parser.add_argument('-n',
                         '--network',
                         type=str,
                         required=True,
                         help=help_networks)
+
+    # argument --tiramisu_model.
+    help_tiramisu_model = """when the used network is a tiramisu, the model to
+                             be used. Not necessary when using U-Nets.
+                             Available models: 'tiramisu-56', 'tiramisu-67'"""
     parser.add_argument('-t',
                         '--tiramisu_model',
                         type=str,
                         required=False,
                         help=help_tiramisu_model)
+
+    # argument --predict_vars.
+    help_predict_vars = """JSON file containing the variables 'folder', 'path',
+                           'has_goldstd', 'path_goldstd',
+                           'segmentation_interval', and 'registered_path'.
+                           Defaults: based on constants.py to train Larson
+                           et al samples"""
+    parser.add_argument('-v',
+                        '--predict_vars',
+                        type=str,
+                        required=False,
+                        help=help_predict_vars)
+
+    # argument --weights.
+    help_weights = """file containing weight coefficients to be used on the
+                      prediction."""
     parser.add_argument('-w',
                         '--weights',
                         type=str,
                         required=True,
                         help=help_weights)
+
     arguments = vars(parser.parse_args())
 
-    network, tiramisu_model, weights = list(arguments.values())
+    network, tiramisu_model, predict_vars, weights = list(arguments.values())
 
     # checking if a tiramisu network was provided with a correct model.
     no_tiramisu_but_tiramisu_model = (('tiramisu' not in network) and
@@ -52,7 +72,7 @@ def main():
         sys.exit(0)
 
     # starting predict().
-    predict(network, tiramisu_model, weights)
+    predict(network, tiramisu_model, predict_vars, weights)
 
     return None
 
@@ -115,6 +135,26 @@ def predict(network, tiramisu_model=None, weights=None):
                                  weights=weights,
                                  network=network)
 
+    return None
+
+
+def _read_prediction_variables(filename: str) -> Dict[str, int]:
+    """Reads train_vars from a JSON file."""
+    with open(filename) as file_json:
+        train_vars = json.load(file_json)
+
+    expected_keys = ('target_size',
+                     'folder_train',
+                     'folder_validate',
+                     'training_images',
+                     'validation_images')
+
+    for key in expected_keys:
+        if (key not in train_vars.keys()) or (not train_vars[key]):
+            raise RuntimeError(f'{key} is not defined in {filename}.')
+
+    train_vars['target_size'] = np.array(train_vars['target_size'])
+    return train_vars
 
 if __name__ == '__main__':
     main()
