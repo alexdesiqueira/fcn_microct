@@ -1,8 +1,8 @@
 {
     "folder": "test",
     "path": "tests/data/cropped_3d/test/image",
-    "has_goldstd": "True",
+    "has_goldstd": true,
     "path_goldstd": "tests/data/cropped_3d/test/label",
-    "segmentation_interval": "None",
-    "registered_path": "None"
+    "segmentation_interval": null,
+    "registered_path": null
 }
