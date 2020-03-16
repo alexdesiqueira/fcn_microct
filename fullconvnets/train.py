@@ -71,18 +71,18 @@ def main() -> None:
                         required=False,
                         help=help_epochs)
 
-    # argument --output.
-    help_output = """filename of the output containing training coefficients.
-                     Default: output_<NETWORK>.hdf5"""
-    parser.add_argument('-o',
-                        '--output',
+    # argument --weights.
+    help_weights = """output containing weight coefficients. Default:
+                      weights_<NETWORK>.hdf5"""
+    parser.add_argument('-w',
+                        '--weights',
                         type=str,
                         required=False,
-                        help=help_output)
+                        help=help_weights)
 
     arguments = vars(parser.parse_args())
 
-    network, tiramisu_model, train_vars, batch_size, epochs, output = list(arguments.values())
+    network, tiramisu_model, train_vars, batch_size, epochs, weights = list(arguments.values())
     # checking if batch_size and epochs are empty.
     if not batch_size:
         batch_size = 2
@@ -99,14 +99,14 @@ def main() -> None:
         sys.exit(0)
 
     # starting train().
-    train(network, tiramisu_model, train_vars, batch_size, epochs, output)
+    train(network, tiramisu_model, train_vars, batch_size, epochs, weights)
 
     return None
 
 
 def train(network: str, tiramisu_model: Union[str, None] = None,
           train_vars: Union[str, None] = None, batch_size: int = 2,
-          epochs: int = 5, output: Union[str, None] = None) -> None:
+          epochs: int = 5, weights: Union[str, None] = None) -> None:
     """Train a fully convolutional network to segment the samples using
     semantic segmentation.
 
@@ -125,9 +125,9 @@ def train(network: str, tiramisu_model: Union[str, None] = None,
         Size of the batches used in the training.
     epochs : int (default : 5)
         How many epochs are used in the training.
-    output : str or None (default : None)
-        Filename of the output containing training coefficients. If None,
-        saves the coefficients in `output_<network>.hdf5`.
+    weights : str or None (default : None)
+        Output containing weight coefficients. If None, saves the coefficients
+        in `weights_<network>.hdf5`.
 
     Returns
     -------
@@ -148,9 +148,9 @@ def train(network: str, tiramisu_model: Union[str, None] = None,
     else:
         tiramisu_layers = tiramisu_model[8:]
 
-    # checking if output is empty.
-    if output is None:
-        output = f'output_{network}{tiramisu_layers}.hdf5'
+    # checking if weights is empty.
+    if weights is None:
+        weights = f'weights_{network}{tiramisu_layers}.hdf5'
 
     # checking if train_vars needs to come from constants.py or the JSON file.
     if train_vars:
@@ -211,7 +211,7 @@ def train(network: str, tiramisu_model: Union[str, None] = None,
         if model is None:
             raise('Model not available.')
 
-        checkpoint = ModelCheckpoint(filepath=output,
+        checkpoint = ModelCheckpoint(filepath=weights,
                                      monitor='val_loss',
                                      verbose=1,
                                      save_best_only=True)
@@ -225,7 +225,7 @@ def train(network: str, tiramisu_model: Union[str, None] = None,
                             callbacks=[checkpoint])
 
     print('# Saving indicators')
-    utils.save_callbacks_csv(history, filename_base=output)
+    utils.save_callbacks_csv(history, filename_base=weights)
 
     return None
 
