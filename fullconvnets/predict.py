@@ -1,4 +1,5 @@
 from skimage import io
+from typing import Dict
 
 import argparse
 import constants as const
@@ -77,7 +78,7 @@ def main():
     return None
 
 
-def predict(network, tiramisu_model=None, weights=None):
+def predict(network, tiramisu_model=None, predict_vars=None, weights=None):
     """Predict fibers on Larson et al samples using a
     chosen neural network.
 
@@ -107,34 +108,43 @@ def predict(network, tiramisu_model=None, weights=None):
     >>> weights_unet_3d = '../coefficients/larson2019_unet_3d/larson_unet_3d.hdf5'
     >>> predict(network='unet_3d', weights=weights_unet_3d')
     """
-    for sample in const.SAMPLES_BUNCH2:
-        print(f"# Now reading sample {sample['path']}.")
-        pattern = os.path.join(sample['path'], f'*{const.EXT_SAMPLE}')
+    if predict_vars:
+        sample = _read_prediction_variables(predict_vars)
+        _predict_on_sample(sample, network, tiramisu_model, weights)
+    else:
+        samples = const.SAMPLES_BUNCH2
+        for sample in samples:
+            _predict_on_sample(sample, network, tiramisu_model, weights)
+
+    return None
+
+
+def _predict_on_sample(sample, network, tiramisu_model, weights):
+    print(f"# Now reading sample {sample['path']}.")
+    pattern = os.path.join(sample['path'], f'*{const.EXT_SAMPLE}')
+    data_sample = io.ImageCollection(load_pattern=pattern)
+
+    print('# Processing...')
+    folder = os.path.join(utils.prediction_folder(network,
+                                                  tiramisu_model),
+                          sample['folder'])
+    utils.process_sample(folder,
+                         data=data_sample,
+                         weights=weights,
+                         network=network)
+    if sample['registered_path']:
+        pattern = os.path.join(sample['registered_path'],
+                               '*' + const.EXT_REG)
         data_sample = io.ImageCollection(load_pattern=pattern)
 
-        print('# Processing...')
+        print('# Processing registered sample...')
         folder = os.path.join(utils.prediction_folder(network,
                                                       tiramisu_model),
-                              sample['folder'])
+                              f"{sample['folder']}_REG")
         utils.process_sample(folder,
                              data=data_sample,
                              weights=weights,
                              network=network)
-
-        if sample['registered_path']:
-            pattern = os.path.join(sample['registered_path'],
-                                   '*' + const.EXT_REG)
-            data_sample = io.ImageCollection(load_pattern=pattern)
-
-            print('# Processing registered sample...')
-            folder = os.path.join(utils.prediction_folder(network,
-                                                          tiramisu_model),
-                                  f"{sample['folder']}_REG")
-            utils.process_sample(folder,
-                                 data=data_sample,
-                                 weights=weights,
-                                 network=network)
-
     return None
 
 
@@ -143,17 +153,18 @@ def _read_prediction_variables(filename: str) -> Dict[str, int]:
     with open(filename) as file_json:
         train_vars = json.load(file_json)
 
-    expected_keys = ('target_size',
-                     'folder_train',
-                     'folder_validate',
-                     'training_images',
-                     'validation_images')
+    expected_keys = ('folder',
+                     'path',
+                     'has_goldstd',
+                     'path_goldstd',
+                     'segmentation_interval',
+                     'registered_path')
 
     for key in expected_keys:
-        if (key not in train_vars.keys()) or (not train_vars[key]):
+        # if (key not in train_vars.keys()) or (not train_vars[key]):
+        if (key not in train_vars.keys()):
             raise RuntimeError(f'{key} is not defined in {filename}.')
 
-    train_vars['target_size'] = np.array(train_vars['target_size'])
     return train_vars
 
 if __name__ == '__main__':
