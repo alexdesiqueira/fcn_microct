@@ -39,7 +39,7 @@ def save_testing_images(data_image, data_label):
     test_label = data_label[test_idx:]
 
     for idx, (image, label) in enumerate(zip(test_image, test_label)):
-        filename = '%06d' % idx
+        filename = '%06d.png' % idx
         io.imsave(fname=os.path.join(FOLDER_TEST, 'image', filename),
                   arr=image)
         io.imsave(fname=os.path.join(FOLDER_TEST, 'label', filename),
