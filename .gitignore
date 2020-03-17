@@ -9,3 +9,6 @@
 
 # ignoring output files (in some cases, heavy!)
 **/output.*.py
+
+# ignoring test files (you got the idea!)
+**/tests
