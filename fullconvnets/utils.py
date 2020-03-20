@@ -197,7 +197,7 @@ def montage_3d(array_input, fill='mean', rescale_intensity=False,
                   for n in range(ntiles_col)]
 
     for idx_image, image in enumerate(array_input):
-        idx_sp = idx_image // ntiles_plane
+        idx_sp = idx_image % ntiles_plane
         idx_sr = idx_image // ntiles_col
         idx_sc = idx_image % ntiles_col
         array_out[slices_plane[idx_sp], slices_row[idx_sr], slices_col[idx_sc], :] = image
@@ -689,7 +689,9 @@ def _aux_predict(predictions, pad_width=16, grid_shape=(10, 10),
                               multichannel=multichannel)
     elif output.ndim == 4:
         output = montage_3d(output,
-                            grid_shape=grid_shape)
+                            fill=0,
+                            grid_shape=grid_shape,
+                            multichannel=multichannel)
     return output
 
 
