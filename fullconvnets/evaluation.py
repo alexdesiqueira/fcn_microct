@@ -1,7 +1,7 @@
+from fullconvnets import utils
 from skimage import util
 
 import numpy as np
-import utils
 
 
 def confusion_matrix(data_true, data_test):
