@@ -1,11 +1,11 @@
-from models.unet import unet, unet_3d
-from models.tiramisu import tiramisu, tiramisu_3d
+from fullconvnets.models.unet import unet, unet_3d
+from fullconvnets.models.tiramisu import tiramisu, tiramisu_3d
+from fullconvnets import constants as const
+from fullconvnets import evaluation
 from skimage import color, exposure, io, util
 from tensorflow.keras.backend import clear_session
 
-import constants as const
 import csv
-import evaluation
 import numpy as np
 import os
 
@@ -148,16 +148,43 @@ def measure_all_coefficients(data_test, data_gt,
     return all_matthews, all_dice
 
 
-def montage_3d(array_input, grid_shape=(1, 80, 80)):
+def montage_3d(array_input, fill='mean', rescale_intensity=False,
+               grid_shape=None, padding_width=0, multichannel=False):
     """Create a montage of several single- or multichannel cubes.
     """
-    ntiles_plane, ntiles_row, ntiles_col = [int(s) for s in grid_shape]
+    if multichannel:
+        array_input = np.asarray(array_input)
+    else:
+        array_input = np.asarray(array_input)[..., np.newaxis]
 
-    _, n_planes, n_rows, n_cols = array_input.shape
-    array_out = np.empty((n_planes * ntiles_plane,
-                          n_rows * ntiles_row,
-                          n_cols * ntiles_col),
+    if array_input.ndim != 5:
+        raise ValueError('Input array has to be either 4- or 5-dimensional')
+
+    n_images, n_planes, n_rows, n_cols, n_channels = array_input.shape
+    if grid_shape:
+        ntiles_plane, ntiles_row, ntiles_col = [int(s) for s in grid_shape]
+    else:
+        ntiles_plane = ntiles_row = ntiles_col = int(np.ceil(np.sqrt(n_images)))
+
+    # Rescale intensity if necessary
+    if rescale_intensity:
+        for idx in range(n_images):
+            array_input[idx] = exposure.rescale_intensity(array_input[idx])
+
+    # Calculate the fill value
+    if fill == 'mean':
+        fill = array_input.mean(axis=(0, 1, 2, 3))
+    fill = np.atleast_1d(fill).astype(array_input.dtype)
+
+    array_out = np.empty((
+        (n_planes + padding_width) * ntiles_plane + padding_width,
+        (n_rows + padding_width) * ntiles_row + padding_width,
+        (n_cols + padding_width) * ntiles_col + padding_width,
+        n_channels),
                          dtype=array_input.dtype)
+
+    for idx_chan in range(n_channels):
+        array_out[..., idx_chan] = fill[idx_chan]
 
     slices_plane = [slice(n_planes * n,
                           n_planes * n + n_planes)
@@ -170,10 +197,13 @@ def montage_3d(array_input, grid_shape=(1, 80, 80)):
                   for n in range(ntiles_col)]
 
     for idx_image, image in enumerate(array_input):
-        idx_sp = idx_image % ntiles_plane
+        idx_sp = idx_image // ntiles_plane
         idx_sr = idx_image // ntiles_col
         idx_sc = idx_image % ntiles_col
-        array_out[slices_plane[idx_sp], slices_row[idx_sr], slices_col[idx_sc]] = image
+        array_out[slices_plane[idx_sp], slices_row[idx_sr], slices_col[idx_sc], :] = image
+
+    if not multichannel:
+        array_out = array_out[..., 0]
 
     return array_out
 
