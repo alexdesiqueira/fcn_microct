@@ -2,6 +2,6 @@
     "target_size": [64, 64, 64],
     "folder_train": "tests/data/cropped_3d/train",
     "folder_validate": "tests/data/cropped_3d/validate",
-    "training_images": 1536,
-    "validation_images": 1024
+    "training_images": 64,
+    "validation_images": 32
 }
