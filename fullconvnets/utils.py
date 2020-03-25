@@ -296,10 +296,7 @@ def predict_on_chunk(data, weights, network='unet_3d', n_class=1, pad_width=16,
     chunk_gen = tensor_generator(data_crop)
 
     results = model.predict(chunk_gen, steps=crop_steps, verbose=1)
-    prediction = _aux_predict(results,
-                              grid_shape=(1, 80, 80))
-
-    return prediction
+    return results
 
 
 def predict_on_image(image, weights, network='unet', n_class=1, pad_width=16,
@@ -359,13 +356,12 @@ def process_sample(folder, data, weights, network='unet'):
         check_path(pathname=aux)
 
     if network in const.AVAILABLE_3D_NETS:
-        last_original_plane = None
         data = data.concatenate()
-
         n_planes, n_rows, n_cols = data.shape
+
+        last_original_plane = n_planes
         # data should be divisible by const.STEP_3D.
-        if n_rows > n_planes:
-            last_original_plane = n_planes
+        if n_rows > last_original_plane:
             data_complete = np.zeros((n_rows - n_planes, n_rows, n_cols),
                                      dtype='bool')
             # filling data if necessary, to ensure np.split works.
@@ -378,7 +374,8 @@ def process_sample(folder, data, weights, network='unet'):
         for idx_chunk, chunk in enumerate(data):
             # generating a list of possible filenames...
             filenames = []
-            for num in range((idx_chunk)*const.STEP_3D, (idx_chunk+1)*const.STEP_3D):
+            for num in range((idx_chunk)*const.STEP_3D,
+                             (idx_chunk+1)*const.STEP_3D):
                 if num < last_original_plane:
                     filenames.append('%06d.png' % (num))
 
@@ -387,11 +384,19 @@ def process_sample(folder, data, weights, network='unet'):
                 os.path.join(FOLDER_PRED, aux_file))
                                    for aux_file in filenames])
             if not all_files_exist:
-                prediction = predict_on_chunk(chunk,
-                                              weights=weights,
-                                              network=network,
-                                              pad_width=const.PAD_WIDTH_3D,
-                                              window_shape=const.WINDOW_SHAPE_3D)
+                results = predict_on_chunk(chunk,
+                                           weights=weights,
+                                           network=network,
+                                           pad_width=const.PAD_WIDTH_3D,
+                                           window_shape=const.WINDOW_SHAPE_3D)
+                # determining grid_shape.
+                grid_shape = (1,
+                              n_rows * 2 / const.WINDOW_SHAPE_3D[1],
+                              n_cols * 2 / const.WINDOW_SHAPE_3D[2])
+
+                prediction = _aux_predict(results,
+                                          grid_shape=grid_shape)
+
                 for idx_plane, plane in enumerate(prediction):
                     current_plane = idx_plane + idx_chunk*const.STEP_3D
                     filename = '%06d.png' % (current_plane)
