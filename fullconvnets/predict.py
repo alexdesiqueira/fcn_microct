@@ -121,7 +121,11 @@ def predict(network, tiramisu_model=None, predict_vars=None, weights=None):
 
 def _predict_on_sample(sample, network, tiramisu_model, weights):
     print(f"# Now reading sample {sample['path']}.")
-    pattern = os.path.join(sample['path'], f'*{const.EXT_SAMPLE}')
+
+    if not sample['file_ext']:
+        sample['file_ext'] = const.EXT_SAMPLE
+
+    pattern = os.path.join(sample['path'], f"*{sample['file_ext']}")
     data_sample = io.ImageCollection(load_pattern=pattern)
 
     print('# Processing...')
@@ -149,12 +153,13 @@ def _predict_on_sample(sample, network, tiramisu_model, weights):
 
 
 def _read_prediction_variables(filename: str) -> Dict[str, int]:
-    """Reads train_vars from a JSON file."""
+    """Reads pred_vars from a JSON file."""
     with open(filename) as file_json:
-        train_vars = json.load(file_json)
+        pred_vars = json.load(file_json)
 
     expected_keys = ('folder',
                      'path',
+                     'file_ext',
                      'has_goldstd',
                      'path_goldstd',
                      'segmentation_interval',
@@ -162,10 +167,10 @@ def _read_prediction_variables(filename: str) -> Dict[str, int]:
 
     for key in expected_keys:
         # if (key not in train_vars.keys()) or (not train_vars[key]):
-        if (key not in train_vars.keys()):
+        if (key not in pred_vars.keys()):
             raise RuntimeError(f'{key} is not defined in {filename}.')
 
-    return train_vars
+    return pred_vars
 
 if __name__ == '__main__':
     main()
