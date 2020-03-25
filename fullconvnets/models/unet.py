@@ -7,9 +7,6 @@ def unet(input_size=(256, 256, 1)):
     """Implements the two-dimensional version of the U-Net dense neural
     network.
 
-    U-Net is a fully convolutional network, aimed to applications on semantic
-    segmentation.
-
     Parameters
     ----------
     input_size : (M, N, C) array-like, optional (default : (256, 256, 1))
@@ -22,6 +19,9 @@ def unet(input_size=(256, 256, 1)):
 
     Notes
     -----
+    U-Net is a fully convolutional network, aimed to applications on semantic
+    segmentation.
+
     input_size does not contain the batch size. The default input,
     for example, indicates that the model expects images with 256 rows,
     256 columns, and one channel.
@@ -34,7 +34,8 @@ def unet(input_size=(256, 256, 1)):
            Networks for Biomedical Image Segmentation,” in Medical Image
            Computing and Computer-Assisted Intervention – MICCAI 2015,
            Cham, 2015, pp. 234–241, doi: 10.1007/978-3-319-24574-4_28.
-    .. [2] https://github.com/zhixuhao/unet
+    .. [2] zhixuhao, "unet for image segmentation". Available at:
+           https://github.com/zhixuhao/unet.
 
     Examples
     --------
@@ -199,20 +200,17 @@ def unet(input_size=(256, 256, 1)):
 
     # defining last convolution.
     if n_classes == 1:
-        conv_output = layers.Conv2D(filters=1,
+        conv_output = layers.Conv2D(filters=n_classes,
                                     kernel_size=1,
                                     activation='sigmoid')(conv_up_1)
+        loss = 'binary_crossentropy'
     else:
         conv_output = layers.Conv2D(filters=n_classes,
                                     kernel_size=1,
                                     activation='softmax')(conv_up_1)
+        loss = 'categorical_crossentropy'
 
     model = Model(inputs, conv_output)
-
-    if n_classes == 1:
-        loss = 'binary_crossentropy'
-    else:
-        loss = 'categorical_crossentropy'
     model.compile(optimizer=Adam(learning_rate=1e-5),
                   loss=loss,
                   metrics=['accuracy'])
@@ -221,16 +219,13 @@ def unet(input_size=(256, 256, 1)):
 
 
 def unet_3d(input_size=(64, 64, 64, 1)):
-    """Implements the two-dimensional version of the U-Net dense neural
+    """Implements the three-dimensional version of the U-Net dense neural
     network.
-
-    U-Net is a fully convolutional network, aimed to applications on semantic
-    segmentation.
 
     Parameters
     ----------
-    input_size : (M, N, C) array-like, optional (default : (256, 256, 1))
-        Shape of the input data in rows, columns, and channels.
+    input_size : (P, M, N, C) array-like, optional (default : (64, 64, 64, 1))
+        Shape of the input data in planes, rows, columns, and channels.
 
     Returns
     -------
@@ -239,6 +234,9 @@ def unet_3d(input_size=(64, 64, 64, 1)):
 
     Notes
     -----
+    U-Net is a fully convolutional network, aimed to applications on semantic
+    segmentation.
+
     The implementation follows Çiçek et al. _[1]:
 
     N -> 32 -> 64  ====================================================================>>  64+128 -> 64 -> 64 ~> N
@@ -270,8 +268,8 @@ def unet_3d(input_size=(64, 64, 64, 1)):
 
     Examples
     --------
-    >>> from models import unet
-    >>> model_unet = unet(input_size=(128, 128, 1))
+    >>> from models import unet_3d
+    >>> model_3d_unet = unet_3d(input_size=(64, 64, 64, 1))
     """
     n_classes = input_size[-1]
     inputs = layers.Input(input_size)
@@ -392,20 +390,17 @@ def unet_3d(input_size=(64, 64, 64, 1)):
 
     # defining last convolution.
     if n_classes == 1:
-        conv_output = layers.Conv3D(filters=1,
+        conv_output = layers.Conv3D(filters=n_classes,
                                     kernel_size=1,
                                     activation='sigmoid')(conv_up_1)
+        loss = 'binary_crossentropy'
     else:
         conv_output = layers.Conv3D(filters=n_classes,
                                     kernel_size=1,
                                     activation='softmax')(conv_up_1)
+        loss = 'categorical_crossentropy'
 
     model = Model(inputs, conv_output)
-
-    if n_classes == 1:
-        loss = 'binary_crossentropy'
-    else:
-        loss = 'categorical_crossentropy'
     model.compile(optimizer=Adam(learning_rate=1e-5),
                   loss=loss,
                   metrics=['accuracy'])
