@@ -388,6 +388,16 @@ def unet_3d(input_size=(64, 64, 64, 1)):
                               padding='same',
                               kernel_initializer='he_normal')(conv_up_1)
 
+    # output segmentation map
+    # if this is right, we need to think on the
+    # filter size when dealing with more than one class.
+    # Maybe this filter is necessary only when n_classes == 1?
+    conv_up_1 = layers.Conv3D(filters=2,
+                              kernel_size=3,
+                              activation='relu',
+                              padding='same',
+                              kernel_initializer='he_normal')(conv_up_1)
+    
     # defining last convolution.
     if n_classes == 1:
         conv_output = layers.Conv3D(filters=n_classes,
