@@ -268,8 +268,8 @@ def _training_variables(network: str) -> Dict[str, int]:
                                          const.SUBFOLDER_TRAIN),
             'folder_validate': os.path.join(const.FOLDER_TRAINING_CROP_3D,
                                             const.SUBFOLDER_VALIDATE),
-            'training_images': 325844,
-            'validation_images': 134832
+            'training_images': 134400,
+            'validation_images': 57600
         }
     return train_vars
 
