@@ -276,7 +276,7 @@ def overlap_predictions(image, prediction):
 
 
 def predict_on_chunk(data, weights, network='unet_3d', n_class=1, pad_width=16,
-                     window_shape=(32, 32, 32), step=32):
+                     window_shape=(32, 32, 32), step=16):
     """
     """
     model = network_models(network,
