@@ -388,7 +388,8 @@ def process_sample(folder, data, weights, network='unet'):
                                            weights=weights,
                                            network=network,
                                            pad_width=const.PAD_WIDTH_3D,
-                                           window_shape=const.WINDOW_SHAPE_3D)
+                                           window_shape=const.WINDOW_SHAPE_3D,
+                                           step=const.STEP_3D)
                 # determining grid_shape.
                 grid_shape = (1,
                               n_rows * 2 / const.WINDOW_SHAPE_3D[1],
