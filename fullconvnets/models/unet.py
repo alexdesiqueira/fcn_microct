@@ -389,22 +389,30 @@ def unet_3d(input_size=(64, 64, 64, 1)):
                               kernel_initializer='he_normal')(conv_up_1)
 
     # defining last convolution.
+    # BEGIN: OLD CODE
     if n_classes == 1:
-        # output segmentation map
-        conv_up_1 = layers.Conv3D(filters=2,
-                                  kernel_size=3,
-                                  activation='relu',
-                                  padding='same',
-                                  kernel_initializer='he_normal')(conv_up_1)
-        conv_output = layers.Conv3D(filters=n_classes,
-                                    kernel_size=1,
-                                    activation='sigmoid')(conv_up_1)
+    #    # output segmentation map
+    #    conv_up_1 = layers.Conv3D(filters=2,
+    #                              kernel_size=3,
+    #                              activation='relu',
+    #                              padding='same',
+    #                              kernel_initializer='he_normal')(conv_up_1)
+    #    conv_output = layers.Conv3D(filters=n_classes,
+    #                                kernel_size=1,
+    #                                activation='sigmoid')(conv_up_1)
+    # END: OLD CODE
         loss = 'binary_crossentropy'
     else:
-        conv_output = layers.Conv3D(filters=n_classes,
-                                    kernel_size=1,
-                                    activation='softmax')(conv_up_1)
+    # BEGIN: OLD CODE
+    #    conv_output = layers.Conv3D(filters=n_classes,
+    #                                kernel_size=1,
+    #                                activation='softmax')(conv_up_1)
+    # END: OLD CODE
         loss = 'categorical_crossentropy'
+    # BEGIN: NEW CODE
+    conv_output = layers.Conv3D(filters=n_classes,
+                                kernel_size=1,
+                                activation='softmax')(conv_up_1)
 
     model = Model(inputs, conv_output)
     model.compile(optimizer=Adam(learning_rate=1e-5),
