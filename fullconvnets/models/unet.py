@@ -255,8 +255,8 @@ def unet_3d(input_size=(64, 64, 64, 1)):
     / : up-conv
 
     input_size does not contain the batch size. The default input,
-    for example, indicates that the model expects images with 256 rows,
-    256 columns, and one channel.
+    for example, indicates that the model expects images with 64 planes,
+    64 rows, 64 columns, and one channel.
 
     This model is compiled with the optimizer Adam.
 
@@ -340,11 +340,11 @@ def unet_3d(input_size=(64, 64, 64, 1)):
                               activation='relu',
                               padding='same',
                               kernel_initializer='he_normal')(merge_3)
-    conv_up_3 = layers.Conv3D(filters=256,
-                              kernel_size=3,
-                              activation='relu',
-                              padding='same',
-                              kernel_initializer='he_normal')(conv_up_3)
+    #conv_up_3 = layers.Conv3D(filters=256,
+    #                          kernel_size=3,
+    #                          activation='relu',
+    #                          padding='same',
+    #                          kernel_initializer='he_normal')(conv_up_3)
 
     # level 2 - up
     conv_up_2 = layers.Conv3D(filters=256,
@@ -361,11 +361,11 @@ def unet_3d(input_size=(64, 64, 64, 1)):
                               activation='relu',
                               padding='same',
                               kernel_initializer='he_normal')(merge_2)
-    conv_up_2 = layers.Conv3D(filters=128,
-                              kernel_size=3,
-                              activation='relu',
-                              padding='same',
-                              kernel_initializer='he_normal')(conv_up_2)
+    #conv_up_2 = layers.Conv3D(filters=128,
+    #                          kernel_size=3,
+    #                          activation='relu',
+    #                          padding='same',
+    #                          kernel_initializer='he_normal')(conv_up_2)
 
     # level 1 - up
     conv_up_1 = layers.Conv3D(filters=128,
@@ -382,20 +382,20 @@ def unet_3d(input_size=(64, 64, 64, 1)):
                               activation='relu',
                               padding='same',
                               kernel_initializer='he_normal')(merge_1)
-    conv_up_1 = layers.Conv3D(filters=64,
-                              kernel_size=3,
-                              activation='relu',
-                              padding='same',
-                              kernel_initializer='he_normal')(conv_up_1)
+    #conv_up_1 = layers.Conv3D(filters=64,
+    #                          kernel_size=3,
+    #                          activation='relu',
+    #                          padding='same',
+    #                          kernel_initializer='he_normal')(conv_up_1)
 
     # defining last convolution.
     if n_classes == 1:
         # output segmentation map
-        conv_up_1 = layers.Conv3D(filters=2,
-                                  kernel_size=3,
-                                  activation='relu',
-                                  padding='same',
-                                  kernel_initializer='he_normal')(conv_up_1)
+        #conv_up_1 = layers.Conv3D(filters=2,
+        #                          kernel_size=3,
+        #                          activation='relu',
+        #                          padding='same',
+        #                          kernel_initializer='he_normal')(conv_up_1)
         activation = 'sigmoid'
         loss = 'binary_crossentropy'
     else:
