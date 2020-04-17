@@ -254,6 +254,11 @@ def unet_3d(input_size=(64, 64, 64, 1)):
     \ : max pool
     / : up-conv
 
+    The analysis path consists of two (3, 3, 3) convolutions each, followed by
+    a ReLU. Then, a (2, 2, 2) max pooling with strides of size two. The
+    synthesis path, in its turn, consists of an upconvolution with an (2, 2, 2)
+    filter, and then two (3, 3, 3) convolutions followed by a ReLU.
+
     input_size does not contain the batch size. The default input,
     for example, indicates that the model expects images with 64 planes,
     64 rows, 64 columns, and one channel.
@@ -327,7 +332,7 @@ def unet_3d(input_size=(64, 64, 64, 1)):
 
     # level 3 - up
     conv_up_3 = layers.Conv3D(filters=512,
-                              kernel_size=3,
+                              kernel_size=2,
                               activation='relu',
                               padding='same',
                               kernel_initializer='he_normal')(
@@ -348,7 +353,7 @@ def unet_3d(input_size=(64, 64, 64, 1)):
 
     # level 2 - up
     conv_up_2 = layers.Conv3D(filters=256,
-                              kernel_size=3,
+                              kernel_size=2,
                               activation='relu',
                               padding='same',
                               kernel_initializer='he_normal')(
@@ -361,15 +366,15 @@ def unet_3d(input_size=(64, 64, 64, 1)):
                               activation='relu',
                               padding='same',
                               kernel_initializer='he_normal')(merge_2)
-    #conv_up_2 = layers.Conv3D(filters=128,
-    #                          kernel_size=3,
-    #                          activation='relu',
-    #                          padding='same',
-    #                          kernel_initializer='he_normal')(conv_up_2)
+    conv_up_2 = layers.Conv3D(filters=128,
+                              kernel_size=3,
+                              activation='relu',
+                              padding='same',
+                              kernel_initializer='he_normal')(conv_up_2)
 
     # level 1 - up
     conv_up_1 = layers.Conv3D(filters=128,
-                              kernel_size=3,
+                              kernel_size=2,
                               activation='relu',
                               padding='same',
                               kernel_initializer='he_normal')(
@@ -382,11 +387,11 @@ def unet_3d(input_size=(64, 64, 64, 1)):
                               activation='relu',
                               padding='same',
                               kernel_initializer='he_normal')(merge_1)
-    #conv_up_1 = layers.Conv3D(filters=64,
-    #                          kernel_size=3,
-    #                          activation='relu',
-    #                          padding='same',
-    #                          kernel_initializer='he_normal')(conv_up_1)
+    conv_up_1 = layers.Conv3D(filters=64,
+                              kernel_size=3,
+                              activation='relu',
+                              padding='same',
+                              kernel_initializer='he_normal')(conv_up_1)
 
     # defining last convolution.
     if n_classes == 1:
