@@ -391,11 +391,11 @@ def unet_3d(input_size=(64, 64, 64, 1)):
     # defining last convolution.
     if n_classes == 1:
         # output segmentation map
-        #conv_up_1 = layers.Conv3D(filters=2,
-        #                          kernel_size=3,
-        #                          activation='relu',
-        #                          padding='same',
-        #                          kernel_initializer='he_normal')(conv_up_1)
+        conv_up_1 = layers.Conv3D(filters=2,
+                                  kernel_size=3,
+                                  activation='relu',
+                                  padding='same',
+                                  kernel_initializer='he_normal')(conv_up_1)
         activation = 'sigmoid'
         loss = 'binary_crossentropy'
     else:
