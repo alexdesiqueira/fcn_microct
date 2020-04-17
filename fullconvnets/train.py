@@ -258,8 +258,8 @@ def _training_variables(network: str) -> Dict[str, int]:
                                          const.SUBFOLDER_TRAIN),
             'folder_validate': os.path.join(const.FOLDER_TRAINING_CROP,
                                             const.SUBFOLDER_VALIDATE),
-            'training_images': 70000,
-            'validation_images': 29800
+            'training_images': const.NUMBER_TRAIN_IMAGES,
+            'validation_images': const.NUMBER_VAL_IMAGES
         }
     elif network in const.AVAILABLE_3D_NETS:
         train_vars = {
@@ -268,8 +268,8 @@ def _training_variables(network: str) -> Dict[str, int]:
                                          const.SUBFOLDER_TRAIN),
             'folder_validate': os.path.join(const.FOLDER_TRAINING_CROP_3D,
                                             const.SUBFOLDER_VALIDATE),
-            'training_images': 134400,
-            'validation_images': 57600
+            'training_images': const.NUMBER_TRAIN_IMAGES_3D,
+            'validation_images': const.NUMBER_VAL_IMAGES_3D
         }
     return train_vars
 
