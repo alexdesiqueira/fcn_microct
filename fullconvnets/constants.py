@@ -116,6 +116,17 @@ FOLDER_VAL_LABEL_CROP_3D = os.path.join(FOLDER_TRAINING_CROP_3D,
                                         SUBFOLDER_VALIDATE,
                                         SUBFOLDER_LABEL)
 
+# amount of images available for training.
+NUMBER_TRAIN_IMAGES = 70000
+NUMBER_VAL_IMAGES = 29800
+
+if WINDOW_SHAPE_3D == (64, 64, 64):
+    NUMBER_TRAIN_IMAGES_3D = 134400
+    NUMBER_VAL_IMAGES_3D = 57600
+elif WINDOW_SHAPE_3D == (128, 128, 128):
+    NUMBER_TRAIN_IMAGES_3D = 16000
+    NUMBER_VAL_IMAGES_3D = 6400
+
 # interval images used in the training.
 INTERVAL_TRAIN_CURED = [160, 510]
 INTERVAL_TRAIN_WET = [510, 860]  # a total of 700 training images
