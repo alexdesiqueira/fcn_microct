@@ -395,12 +395,12 @@ def unet_3d(input_size=(64, 64, 64, 1)):
 
     # defining last convolution.
     if n_classes == 1:
-        #activation = 'sigmoid'
+        activation = 'sigmoid'
         loss = 'binary_crossentropy'
     else:
+        activation = 'softmax'
         loss = 'categorical_crossentropy'
 
-    activation = 'softmax'
     conv_output = layers.Conv3D(filters=n_classes,
                                 kernel_size=1,
                                 activation=activation)(conv_up_1)
