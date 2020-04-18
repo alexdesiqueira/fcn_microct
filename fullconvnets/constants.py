@@ -124,7 +124,7 @@ if WINDOW_SHAPE_3D == (64, 64, 64):
     NUMBER_TRAIN_IMAGES_3D = 134400
     NUMBER_VAL_IMAGES_3D = 57600
 else:
-    print('Window shape not defined')
+    print(f'Window shape not defined: {WINDOW_SHAPE_3D}')
 
 # interval images used in the training.
 INTERVAL_TRAIN_CURED = [160, 510]
