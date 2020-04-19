@@ -48,12 +48,25 @@ ROWS, COLS = (256, 256)
 STEP = 256
 WINDOW_SHAPE = (ROWS + 2*PAD_WIDTH, COLS + 2*PAD_WIDTH)
 
-PAD_WIDTH_3D = 4  # was: 16
+PAD_WIDTH_3D = 16
 PLANES_3D, ROWS_3D, COLS_3D = (32, 32, 32)
 STEP_3D = 32
 WINDOW_SHAPE_3D = (PLANES_3D + 2*PAD_WIDTH_3D,
                    ROWS_3D + 2*PAD_WIDTH_3D,
                    COLS_3D + 2*PAD_WIDTH_3D)
+
+# how many images available for training.
+NUMBER_TRAIN_IMAGES = 70000
+NUMBER_VAL_IMAGES = 29800
+
+if WINDOW_SHAPE_3D == (48, 48, 48):
+    NUMBER_TRAIN_IMAGES_3D = 134400
+    NUMBER_VAL_IMAGES_3D = 57600
+elif WINDOW_SHAPE_3D == (64, 64, 64):
+    NUMBER_TRAIN_IMAGES_3D = 134400
+    NUMBER_VAL_IMAGES_3D = 57600
+else:
+    print(f'Window shape not defined: {WINDOW_SHAPE_3D}')
 
 # the main subfolders, and extensions.
 SUBFOLDER_DATA_TRAIN = 'data_training'
@@ -115,19 +128,6 @@ FOLDER_VAL_IMAGE_CROP_3D = os.path.join(FOLDER_TRAINING_CROP_3D,
 FOLDER_VAL_LABEL_CROP_3D = os.path.join(FOLDER_TRAINING_CROP_3D,
                                         SUBFOLDER_VALIDATE,
                                         SUBFOLDER_LABEL)
-
-# amount of images available for training.
-NUMBER_TRAIN_IMAGES = 70000
-NUMBER_VAL_IMAGES = 29800
-
-if WINDOW_SHAPE_3D == (40, 40, 40):
-    NUMBER_TRAIN_IMAGES_3D = 134400
-    NUMBER_VAL_IMAGES_3D = 57600
-elif WINDOW_SHAPE_3D == (64, 64, 64):
-    NUMBER_TRAIN_IMAGES_3D = 134400
-    NUMBER_VAL_IMAGES_3D = 57600
-else:
-    print(f'Window shape not defined: {WINDOW_SHAPE_3D}')
 
 # interval images used in the training.
 INTERVAL_TRAIN_CURED = [160, 510]
