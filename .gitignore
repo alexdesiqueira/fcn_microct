@@ -12,3 +12,6 @@
 
 # ignoring test files (you got the idea!)
 **/tests
+
+# ignoring VSCode files
+.vscode/settings.json

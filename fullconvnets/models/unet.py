@@ -119,7 +119,7 @@ def unet(input_size=(256, 256, 1)):
                               kernel_initializer='he_normal')(
                                   layers.UpSampling2D(size=(2, 2))(dropout_5)
                               )
-    merge_4 = layers.concatenate([dropout_4, conv_up_4], axis=3)
+    merge_4 = layers.concatenate([dropout_4, conv_up_4], axis=-1)
     conv_up_4 = layers.Conv2D(filters=512,
                               kernel_size=3,
                               activation='relu',
@@ -139,7 +139,7 @@ def unet(input_size=(256, 256, 1)):
                               kernel_initializer='he_normal')(
                                   layers.UpSampling2D(size=(2, 2))(conv_up_4)
                               )
-    merge_3 = layers.concatenate([conv_down_3, conv_up_3], axis=3)
+    merge_3 = layers.concatenate([conv_down_3, conv_up_3], axis=-1)
     conv_up_3 = layers.Conv2D(filters=256,
                               kernel_size=3,
                               activation='relu',
@@ -159,7 +159,7 @@ def unet(input_size=(256, 256, 1)):
                               kernel_initializer='he_normal')(
                                   layers.UpSampling2D(size=(2, 2))(conv_up_3)
                               )
-    merge_2 = layers.concatenate([conv_down_2, conv_up_2], axis=3)
+    merge_2 = layers.concatenate([conv_down_2, conv_up_2], axis=-1)
     conv_up_2 = layers.Conv2D(filters=128,
                               kernel_size=3,
                               activation='relu',
@@ -179,7 +179,7 @@ def unet(input_size=(256, 256, 1)):
                               kernel_initializer='he_normal')(
                                   layers.UpSampling2D(size=(2, 2))(conv_up_2)
                               )
-    merge_1 = layers.concatenate([conv_down_1, conv_up_1], axis=3)
+    merge_1 = layers.concatenate([conv_down_1, conv_up_1], axis=-1)
     conv_up_1 = layers.Conv2D(filters=64,
                               kernel_size=3,
                               activation='relu',
@@ -191,15 +191,15 @@ def unet(input_size=(256, 256, 1)):
                               padding='same',
                               kernel_initializer='he_normal')(conv_up_1)
 
-    # output segmentation map
-    conv_up_1 = layers.Conv2D(filters=2,
-                              kernel_size=3,
-                              activation='relu',
-                              padding='same',
-                              kernel_initializer='he_normal')(conv_up_1)
-
     # defining last convolution.
     if n_classes == 1:
+        # output segmentation map
+        conv_up_1 = layers.Conv2D(filters=2,
+                                  kernel_size=3,
+                                  activation='relu',
+                                  padding='same',
+                                  kernel_initializer='he_normal')(conv_up_1)
+
         conv_output = layers.Conv2D(filters=n_classes,
                                     kernel_size=1,
                                     activation='sigmoid')(conv_up_1)
@@ -254,9 +254,14 @@ def unet_3d(input_size=(64, 64, 64, 1)):
     \ : max pool
     / : up-conv
 
+    The analysis path consists of two (3, 3, 3) convolutions each, followed by
+    a ReLU. Then, a (2, 2, 2) max pooling with strides of size two. The
+    synthesis path, in its turn, consists of an upconvolution with an (2, 2, 2)
+    filter, and then two (3, 3, 3) convolutions followed by a ReLU.
+
     input_size does not contain the batch size. The default input,
-    for example, indicates that the model expects images with 256 rows,
-    256 columns, and one channel.
+    for example, indicates that the model expects images with 64 planes,
+    64 rows, 64 columns, and one channel.
 
     This model is compiled with the optimizer Adam.
 
@@ -327,7 +332,7 @@ def unet_3d(input_size=(64, 64, 64, 1)):
 
     # level 3 - up
     conv_up_3 = layers.Conv3D(filters=512,
-                              kernel_size=3,
+                              kernel_size=2,
                               activation='relu',
                               padding='same',
                               kernel_initializer='he_normal')(
@@ -348,7 +353,7 @@ def unet_3d(input_size=(64, 64, 64, 1)):
 
     # level 2 - up
     conv_up_2 = layers.Conv3D(filters=256,
-                              kernel_size=3,
+                              kernel_size=2,
                               activation='relu',
                               padding='same',
                               kernel_initializer='he_normal')(
@@ -369,7 +374,7 @@ def unet_3d(input_size=(64, 64, 64, 1)):
 
     # level 1 - up
     conv_up_1 = layers.Conv3D(filters=128,
-                              kernel_size=3,
+                              kernel_size=2,
                               activation='relu',
                               padding='same',
                               kernel_initializer='he_normal')(
@@ -388,27 +393,17 @@ def unet_3d(input_size=(64, 64, 64, 1)):
                               padding='same',
                               kernel_initializer='he_normal')(conv_up_1)
 
-    # output segmentation map
-    # if this is right, we need to think on the
-    # filter size when dealing with more than one class.
-    # Maybe this filter is necessary only when n_classes == 1?
-    conv_up_1 = layers.Conv3D(filters=2,
-                              kernel_size=3,
-                              activation='relu',
-                              padding='same',
-                              kernel_initializer='he_normal')(conv_up_1)
-    
     # defining last convolution.
     if n_classes == 1:
-        conv_output = layers.Conv3D(filters=n_classes,
-                                    kernel_size=1,
-                                    activation='sigmoid')(conv_up_1)
+        activation = 'sigmoid'
         loss = 'binary_crossentropy'
     else:
-        conv_output = layers.Conv3D(filters=n_classes,
-                                    kernel_size=1,
-                                    activation='softmax')(conv_up_1)
+        activation = 'softmax'
         loss = 'categorical_crossentropy'
+
+    conv_output = layers.Conv3D(filters=n_classes,
+                                kernel_size=1,
+                                activation=activation)(conv_up_1)
 
     model = Model(inputs, conv_output)
     model.compile(optimizer=Adam(learning_rate=1e-5),

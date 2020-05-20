@@ -122,7 +122,11 @@ def predict(network, tiramisu_model=None, predict_vars=None, weights=None):
 def _predict_on_sample(sample, network, tiramisu_model, weights):
     print(f"# Now reading sample {sample['path']}.")
 
-    if not sample['file_ext']:
+    # need to check how to deal with this better.
+    try:
+        if not sample['file_ext']:
+            sample['file_ext'] = const.EXT_SAMPLE
+    except KeyError:
         sample['file_ext'] = const.EXT_SAMPLE
 
     pattern = os.path.join(sample['path'], f"*{sample['file_ext']}")

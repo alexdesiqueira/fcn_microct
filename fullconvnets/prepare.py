@@ -115,12 +115,13 @@ def crop_training_chunks():
     data_image = np.pad(data_image, pad_width=const.PAD_WIDTH_3D)
     data_label = np.pad(data_label, pad_width=const.PAD_WIDTH_3D)
 
+    print(f'* Window shape: {const.WINDOW_SHAPE_3D}; step: {const.STEP_3D}')
     utils.save_cropped_chunk(data_image,
                              window_shape=const.WINDOW_SHAPE_3D,
                              step=const.STEP_3D,
                              folder=const.FOLDER_TRAIN_IMAGE_CROP_3D)
 
-    utils.save_cropped_chunk(data_label,
+    utils.save_cropped_chunk(np.uint8(data_label),
                              window_shape=const.WINDOW_SHAPE_3D,
                              step=const.STEP_3D,
                              folder=const.FOLDER_TRAIN_LABEL_CROP_3D)
@@ -140,13 +141,14 @@ def crop_training_chunks():
     print(f'* Validation images: {len(data_image)}; labels: {len(data_label)}')
     data_image = np.pad(data_image, pad_width=const.PAD_WIDTH_3D)
     data_label = np.pad(data_label, pad_width=const.PAD_WIDTH_3D)
+    print(f'* Window shape: {const.WINDOW_SHAPE_3D}; step: {const.STEP_3D}')
 
     utils.save_cropped_chunk(data_image,
                              window_shape=const.WINDOW_SHAPE_3D,
                              step=const.STEP_3D,
                              folder=const.FOLDER_VAL_IMAGE_CROP_3D)
 
-    utils.save_cropped_chunk(data_label,
+    utils.save_cropped_chunk(np.uint8(data_label),
                              window_shape=const.WINDOW_SHAPE_3D,
                              step=const.STEP_3D,
                              folder=const.FOLDER_VAL_LABEL_CROP_3D)

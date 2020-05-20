@@ -276,7 +276,7 @@ def overlap_predictions(image, prediction):
 
 
 def predict_on_chunk(data, weights, network='unet_3d', n_class=1, pad_width=16,
-                     window_shape=(32, 32, 32), step=32):
+                     window_shape=(32, 32, 32), step=16):
     """
     """
     model = network_models(network,
@@ -388,7 +388,8 @@ def process_sample(folder, data, weights, network='unet'):
                                            weights=weights,
                                            network=network,
                                            pad_width=const.PAD_WIDTH_3D,
-                                           window_shape=const.WINDOW_SHAPE_3D)
+                                           window_shape=const.WINDOW_SHAPE_3D,
+                                           step=const.STEP_3D)
                 # determining grid_shape.
                 grid_shape = (1,
                               n_rows * 2 / const.WINDOW_SHAPE_3D[1],

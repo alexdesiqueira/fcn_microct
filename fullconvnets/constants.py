@@ -55,6 +55,19 @@ WINDOW_SHAPE_3D = (PLANES_3D + 2*PAD_WIDTH_3D,
                    ROWS_3D + 2*PAD_WIDTH_3D,
                    COLS_3D + 2*PAD_WIDTH_3D)
 
+# how many images available for training.
+NUMBER_TRAIN_IMAGES = 70000
+NUMBER_VAL_IMAGES = 29800
+
+if WINDOW_SHAPE_3D == (48, 48, 48):
+    NUMBER_TRAIN_IMAGES_3D = 134400
+    NUMBER_VAL_IMAGES_3D = 57600
+elif WINDOW_SHAPE_3D == (64, 64, 64):
+    NUMBER_TRAIN_IMAGES_3D = 134400
+    NUMBER_VAL_IMAGES_3D = 57600
+else:
+    print(f'Window shape not defined: {WINDOW_SHAPE_3D}')
+
 # the main subfolders, and extensions.
 SUBFOLDER_DATA_TRAIN = 'data_training'
 SUBFOLDER_DATA_PRED = 'data_prediction'
