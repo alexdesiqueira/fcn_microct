@@ -45,14 +45,14 @@ def unet(input_size=(256, 256, 1)):
     >>> model_unet = unet(input_size=(128, 128, 1))
     """
     n_classes = input_size[-1]
-    input_layer = layers.Input(input_size)
+    layer = layers.Input(input_size)
 
     # level 1 - down
     conv_down_1 = layers.Conv2D(filters=64,
                                 kernel_size=3,
                                 activation='relu',
                                 padding='same',
-                                kernel_initializer='he_uniform')(input_layer)
+                                kernel_initializer='he_uniform')(layer)
     conv_down_1 = layers.Conv2D(filters=64,
                                 kernel_size=3,
                                 activation='relu',
@@ -212,7 +212,7 @@ def unet(input_size=(256, 256, 1)):
                                     activation='softmax')(conv_up_1)
         loss = 'categorical_crossentropy'
 
-    model = Model(input_layer, conv_output)
+    model = Model(layer, conv_output)
     model.compile(optimizer=Adam(learning_rate=1e-5),
                   loss=loss,
                   metrics=['accuracy'])
@@ -220,7 +220,7 @@ def unet(input_size=(256, 256, 1)):
     return model
 
 
-def unet_3d(input_size=(64, 64, 64, 1), dropout_perc=0):
+def unet_3d(input_size=(64, 64, 64, 1), dropout_perc=0, learning_rate=1e-5):
     """Implements the three-dimensional version of the U-Net dense neural
     network.
 
@@ -277,15 +277,15 @@ def unet_3d(input_size=(64, 64, 64, 1), dropout_perc=0):
 
     Examples
     --------
-    >>> from models import unet_3d
+    >>> from models.unet import unet_3d
     >>> model_3d_unet = unet_3d(input_size=(64, 64, 64, 1))
     """
     n_classes = input_size[-1]
     inputs = layers.Input(input_size)
-    layer = identity(inputs)
+    # layer = identity(inputs)
 
     # analysis path.
-    conv_down_1, max_pool_1 = _analysis_path(layer,
+    conv_down_1, max_pool_1 = _analysis_path(inputs,
                                              filters=32,
                                              dropout_perc=dropout_perc)
     conv_down_2, max_pool_2 = _analysis_path(max_pool_1,
@@ -315,28 +315,28 @@ def unet_3d(input_size=(64, 64, 64, 1), dropout_perc=0):
     output, loss = _last_layer_activation(conv_up_1, n_classes=n_classes)
     model = Model(inputs, output)
 
-    model.compile(optimizer=Adam(learning_rate=1e-5),
+    model.compile(optimizer=Adam(learning_rate=learning_rate),
                   loss=loss,
                   metrics=['accuracy'])
 
     return model
 
 
-def _analysis_path(input_layer, filters, dropout_perc=0.2, is_bottleneck=False):
+def _analysis_path(layer, filters, dropout_perc=0.2, is_bottleneck=False):
     """Apply a conv-BN-ReLU layer with filter size 3, and a max pooling."""
-    aux = _conv_bn_relu(input_layer=input_layer,
-                        filters=filters,
-                        kernel_size=3,
-                        dropout_perc=dropout_perc)
-    layer = _conv_bn_relu(input_layer=aux,
+    layer = _conv_bn_relu(layer=layer,
+                          filters=filters,
+                          kernel_size=3,
+                          dropout_perc=dropout_perc)
+    layer = _conv_bn_relu(layer=layer,
                           filters=filters*2,
                           kernel_size=3,
                           dropout_perc=dropout_perc)
 
     if not is_bottleneck:
-        if ndim(input_layer) == 4:
+        if ndim(layer) == 4:
             max_pool = layers.MaxPooling2D((2, 2))(layer)
-        elif ndim(input_layer) == 5:
+        elif ndim(layer) == 5:
             max_pool = layers.MaxPooling3D((2, 2, 2))(layer)
 
         return layer, max_pool
@@ -344,19 +344,19 @@ def _analysis_path(input_layer, filters, dropout_perc=0.2, is_bottleneck=False):
     return layer
 
 
-def _conv_bn_relu(input_layer, filters, kernel_size=3, dropout_perc=0.2):
+def _conv_bn_relu(layer, filters, kernel_size=3, dropout_perc=0.2):
     """Apply successively Convolution, Batch Normalization, ReLU nonlinearity
     and Dropout, when dropout_perc > dropout_perc."""
-    if ndim(input_layer) == 4:
+    if ndim(layer) == 4:
         layer = layers.Conv2D(filters=filters,
                               kernel_size=kernel_size,
                               padding='same',
-                              kernel_initializer='he_uniform')(input_layer)
-    elif ndim(input_layer) == 5:
+                              kernel_initializer='he_uniform')(layer)
+    elif ndim(layer) == 5:
         layer = layers.Conv3D(filters=filters,
                               kernel_size=kernel_size,
                               padding='same',
-                              kernel_initializer='he_uniform')(input_layer)
+                              kernel_initializer='he_uniform')(layer)
     layer = layers.BatchNormalization()(layer)
     layer = layers.Activation('relu')(layer)
 
@@ -366,18 +366,18 @@ def _conv_bn_relu(input_layer, filters, kernel_size=3, dropout_perc=0.2):
     return layer
 
 
-def _last_layer_activation(input_layer, n_classes=1):
+def _last_layer_activation(layer, n_classes=1):
     """Performs 1x1 convolution followed by activation."""
-    if ndim(input_layer) == 4:
+    if ndim(layer) == 4:
         layer = layers.Conv2D(filters=n_classes,
                               kernel_size=1,
                               padding='same',
-                              kernel_initializer='he_uniform')(input_layer)
-    elif ndim(input_layer) == 5:
+                              kernel_initializer='he_uniform')(layer)
+    elif ndim(layer) == 5:
         layer = layers.Conv3D(filters=n_classes,
                               kernel_size=1,
                               padding='same',
-                              kernel_initializer='he_uniform')(input_layer)
+                              kernel_initializer='he_uniform')(layer)
 
     if n_classes == 1:
         output = layers.Activation('sigmoid')(layer)
@@ -389,17 +389,17 @@ def _last_layer_activation(input_layer, n_classes=1):
     return output, loss
 
 
-def _synthesis_path(input_layer, input_analysis, filters):
+def _synthesis_path(layer, input_analysis, filters):
     """
     """
-    layer = _upconv_bn_relu(input_layer, filters)
+    layer = _upconv_bn_relu(layer, filters)
     merge = layers.concatenate([input_analysis, layer], axis=-1)
 
-    layer = _conv_bn_relu(input_layer=merge,
+    layer = _conv_bn_relu(layer=merge,
                           filters=int(filters/2),
                           kernel_size=3,
                           dropout_perc=0)
-    layer = _conv_bn_relu(input_layer=layer,
+    layer = _conv_bn_relu(layer=layer,
                           filters=int(filters/2),
                           kernel_size=3,
                           dropout_perc=0)
@@ -407,16 +407,25 @@ def _synthesis_path(input_layer, input_analysis, filters):
     return layer
 
 
-def _upconv_bn_relu(input_layer, filters, kernel_size=2):
+def _upconv_bn_relu(layer, filters, kernel_size=2):
     """
     """
-    layer = layers.Conv3D(filters=filters,
-                          kernel_size=kernel_size,
-                          padding='same',
-                          kernel_initializer='he_uniform')(
-                              layers.UpSampling3D(size=(2, 2, 2))
-                              (input_layer)
-                         )
+    if ndim(layer) == 4:
+        layer = layers.Conv2D(filters=filters,
+                              kernel_size=kernel_size,
+                              padding='same',
+                              kernel_initializer='he_uniform')(
+                                  layers.UpSampling3D(size=(2, 2))
+                                  (layer)
+                             )
+    elif ndim(layer) == 5:
+        layer = layers.Conv3D(filters=filters,
+                              kernel_size=kernel_size,
+                              padding='same',
+                              kernel_initializer='he_uniform')(
+                                  layers.UpSampling3D(size=(2, 2, 2))
+                                  (layer)
+                             )
     layer = layers.BatchNormalization()(layer)
     layer = layers.Activation('relu')(layer)
 
