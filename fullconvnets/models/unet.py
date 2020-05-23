@@ -220,7 +220,7 @@ def unet(input_size=(256, 256, 1)):
     return model
 
 
-def unet_3d_old(input_size=(64, 64, 64, 1)):
+def unet_3d(input_size=(64, 64, 64, 1), dropout_perc=0):
     """Implements the three-dimensional version of the U-Net dense neural
     network.
 
@@ -228,6 +228,8 @@ def unet_3d_old(input_size=(64, 64, 64, 1)):
     ----------
     input_size : (P, M, N, C) array-like, optional (default : (64, 64, 64, 1))
         Shape of the input data in planes, rows, columns, and channels.
+    dropout_perc : float, optional (default : 0)
+        Percentage of dropout on each layer.
 
     Returns
     -------
@@ -277,146 +279,6 @@ def unet_3d_old(input_size=(64, 64, 64, 1)):
     --------
     >>> from models import unet_3d
     >>> model_3d_unet = unet_3d(input_size=(64, 64, 64, 1))
-    """
-    n_classes = input_size[-1]
-    input_layer = layers.Input(input_size)
-
-    # level 1 - down
-    conv_down_1 = layers.Conv3D(filters=32,
-                                kernel_size=3,
-                                activation='relu',
-                                padding='same',
-                                kernel_initializer='he_uniform')(input_layer)
-    conv_down_1 = layers.Conv3D(filters=64,
-                                kernel_size=3,
-                                activation='relu',
-                                padding='same',
-                                kernel_initializer='he_uniform')(conv_down_1)
-    max_pool_1 = layers.MaxPooling3D(pool_size=(2, 2, 2))(conv_down_1)
-
-    # level 2 - down
-    conv_down_2 = layers.Conv3D(filters=64,
-                                kernel_size=3,
-                                activation='relu',
-                                padding='same',
-                                kernel_initializer='he_uniform')(max_pool_1)
-    conv_down_2 = layers.Conv3D(filters=128,
-                                kernel_size=3,
-                                activation='relu',
-                                padding='same',
-                                kernel_initializer='he_uniform')(conv_down_2)
-    max_pool_2 = layers.MaxPooling3D(pool_size=(2, 2, 2))(conv_down_2)
-
-    # level 3 - down
-    conv_down_3 = layers.Conv3D(filters=128,
-                                kernel_size=3,
-                                activation='relu',
-                                padding='same',
-                                kernel_initializer='he_uniform')(max_pool_2)
-    conv_down_3 = layers.Conv3D(filters=256,
-                                kernel_size=3,
-                                activation='relu',
-                                padding='same',
-                                kernel_initializer='he_uniform')(conv_down_3)
-    max_pool_3 = layers.MaxPooling3D(pool_size=(2, 2, 2))(conv_down_3)
-
-    # level 4 - down
-    conv_down_4 = layers.Conv3D(filters=256,
-                                kernel_size=3,
-                                activation='relu',
-                                padding='same',
-                                kernel_initializer='he_uniform')(max_pool_3)
-    conv_down_4 = layers.Conv3D(filters=512,
-                                kernel_size=3,
-                                activation='relu',
-                                padding='same',
-                                kernel_initializer='he_uniform')(conv_down_4)
-
-    # level 3 - up
-    conv_up_3 = layers.Conv3D(filters=512,
-                              kernel_size=2,
-                              activation='relu',
-                              padding='same',
-                              kernel_initializer='he_uniform')(
-                                  layers.UpSampling3D(size=(2, 2, 2))
-                                  (conv_down_4)
-                              )
-    merge_3 = layers.concatenate([conv_down_3, conv_up_3], axis=-1)
-    conv_up_3 = layers.Conv3D(filters=256,
-                              kernel_size=3,
-                              activation='relu',
-                              padding='same',
-                              kernel_initializer='he_uniform')(merge_3)
-    conv_up_3 = layers.Conv3D(filters=256,
-                              kernel_size=3,
-                              activation='relu',
-                              padding='same',
-                              kernel_initializer='he_uniform')(conv_up_3)
-
-    # level 2 - up
-    conv_up_2 = layers.Conv3D(filters=256,
-                              kernel_size=2,
-                              activation='relu',
-                              padding='same',
-                              kernel_initializer='he_uniform')(
-                                  layers.UpSampling3D(size=(2, 2, 2))
-                                  (conv_up_3)
-                              )
-    merge_2 = layers.concatenate([conv_down_2, conv_up_2], axis=-1)
-    conv_up_2 = layers.Conv3D(filters=128,
-                              kernel_size=3,
-                              activation='relu',
-                              padding='same',
-                              kernel_initializer='he_uniform')(merge_2)
-    conv_up_2 = layers.Conv3D(filters=128,
-                              kernel_size=3,
-                              activation='relu',
-                              padding='same',
-                              kernel_initializer='he_uniform')(conv_up_2)
-
-    # level 1 - up
-    conv_up_1 = layers.Conv3D(filters=128,
-                              kernel_size=2,
-                              activation='relu',
-                              padding='same',
-                              kernel_initializer='he_uniform')(
-                                  layers.UpSampling3D(size=(2, 2, 2))
-                                  (conv_up_2)
-                              )
-    merge_1 = layers.concatenate([conv_down_1, conv_up_1], axis=-1)
-    conv_up_1 = layers.Conv3D(filters=64,
-                              kernel_size=3,
-                              activation='relu',
-                              padding='same',
-                              kernel_initializer='he_uniform')(merge_1)
-    conv_up_1 = layers.Conv3D(filters=64,
-                              kernel_size=3,
-                              activation='relu',  # is this supposed to be activated?!
-                              padding='same',
-                              kernel_initializer='he_uniform')(conv_up_1)
-
-    # defining last convolution.
-    if n_classes == 1:
-        activation = 'sigmoid'
-        loss = 'binary_crossentropy'
-    else:
-        activation = 'softmax'
-        loss = 'categorical_crossentropy'
-
-    conv_output = layers.Conv3D(filters=n_classes,
-                                kernel_size=1,
-                                activation=activation)(conv_up_1)
-
-    model = Model(input_layer, conv_output)
-    model.compile(optimizer=Adam(learning_rate=1e-5),
-                  loss=loss,
-                  metrics=['accuracy'])
-
-    return model
-
-
-def unet_3d(input_size=(64, 64, 64, 1), dropout_perc=0.2):
-    """
     """
     n_classes = input_size[-1]
     inputs = layers.Input(input_size)
