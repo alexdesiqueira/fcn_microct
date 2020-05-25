@@ -1,4 +1,3 @@
-from tensorflow import identity
 from tensorflow.keras import layers
 from tensorflow.keras.backend import ndim
 from tensorflow.keras.models import Model
@@ -220,7 +219,7 @@ def unet(input_size=(256, 256, 1)):
     return model
 
 
-def unet_3d(input_size=(64, 64, 64, 1), dropout_perc=0, learning_rate=1e-5):
+def unet_3d(input_size=(64, 64, 64, 1), dropout_perc=0, learning_rate=1E-5):
     """Implements the three-dimensional version of the U-Net dense neural
     network.
 
@@ -282,7 +281,6 @@ def unet_3d(input_size=(64, 64, 64, 1), dropout_perc=0, learning_rate=1e-5):
     """
     n_classes = input_size[-1]
     inputs = layers.Input(input_size)
-    # layer = identity(inputs)
 
     # analysis path.
     conv_down_1, max_pool_1 = _analysis_path(inputs,
@@ -303,13 +301,13 @@ def unet_3d(input_size=(64, 64, 64, 1), dropout_perc=0, learning_rate=1e-5):
 
     # synthesis path.
     conv_up_3 = _synthesis_path(conv_down_4,
-                                input_analysis=conv_down_3,
+                                layer_analysis=conv_down_3,
                                 filters=512)
-    conv_up_2 = _synthesis_path(conv_down_3,
-                                input_analysis=conv_down_2,
+    conv_up_2 = _synthesis_path(conv_up_3,
+                                layer_analysis=conv_down_2,
                                 filters=256)
-    conv_up_1 = _synthesis_path(conv_down_2,
-                                input_analysis=conv_down_1,
+    conv_up_1 = _synthesis_path(conv_up_2,
+                                layer_analysis=conv_down_1,
                                 filters=128)
 
     output, loss = _last_layer_activation(conv_up_1, n_classes=n_classes)
@@ -333,18 +331,17 @@ def _analysis_path(layer, filters, dropout_perc=0.2, is_bottleneck=False):
                           kernel_size=3,
                           dropout_perc=dropout_perc)
 
-    if not is_bottleneck:
+    if is_bottleneck:
+        return layer
+    else:
         if ndim(layer) == 4:
             max_pool = layers.MaxPooling2D((2, 2))(layer)
         elif ndim(layer) == 5:
             max_pool = layers.MaxPooling3D((2, 2, 2))(layer)
-
         return layer, max_pool
 
-    return layer
 
-
-def _conv_bn_relu(layer, filters, kernel_size=3, dropout_perc=0.2):
+def _conv_bn_relu(layer, filters, kernel_size=3, dropout_perc=0):
     """Apply successively Convolution, Batch Normalization, ReLU nonlinearity
     and Dropout, when dropout_perc > dropout_perc."""
     if ndim(layer) == 4:
@@ -360,7 +357,7 @@ def _conv_bn_relu(layer, filters, kernel_size=3, dropout_perc=0.2):
     layer = layers.BatchNormalization()(layer)
     layer = layers.Activation('relu')(layer)
 
-    if dropout_perc != dropout_perc:
+    if dropout_perc != 0:
         layer = layers.Dropout(dropout_perc)(layer)
 
     return layer
@@ -389,20 +386,20 @@ def _last_layer_activation(layer, n_classes=1):
     return output, loss
 
 
-def _synthesis_path(layer, input_analysis, filters):
+def _synthesis_path(layer, layer_analysis, filters, dropout_perc=0):
     """
     """
-    layer = _upconv_bn_relu(layer, filters)
-    merge = layers.concatenate([input_analysis, layer], axis=-1)
+    layer = _upconv_bn_relu(layer, filters, kernel_size=2)
+    merge = layers.concatenate([layer_analysis, layer], axis=-1)
 
     layer = _conv_bn_relu(layer=merge,
                           filters=int(filters/2),
                           kernel_size=3,
-                          dropout_perc=0)
+                          dropout_perc=dropout_perc)
     layer = _conv_bn_relu(layer=layer,
                           filters=int(filters/2),
                           kernel_size=3,
-                          dropout_perc=0)
+                          dropout_perc=dropout_perc)
 
     return layer
 
@@ -415,7 +412,7 @@ def _upconv_bn_relu(layer, filters, kernel_size=2):
                               kernel_size=kernel_size,
                               padding='same',
                               kernel_initializer='he_uniform')(
-                                  layers.UpSampling3D(size=(2, 2))
+                                  layers.UpSampling2D(size=(2, 2))
                                   (layer)
                              )
     elif ndim(layer) == 5:
