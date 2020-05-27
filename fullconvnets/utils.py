@@ -607,7 +607,7 @@ def save_cropped_image(image, index, window_shape=(512, 512), step=512,
 
     for idx, aux in enumerate(img_crop):
         fname = '%03d_img_crop-%03d.png' % (index, idx)
-        io.imsave(os.path.join(folder, fname), io.img_as_float32(aux))
+        io.imsave(os.path.join(folder, fname), util.img_as_float32(aux))
     return None
 
 
