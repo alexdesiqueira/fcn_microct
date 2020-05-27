@@ -4,13 +4,13 @@ from tensorflow.keras.models import Model
 from tensorflow.keras.optimizers import Adam
 
 
-def unet(input_size=(256, 256, 1)):
+def unet(input_size=(512, 512, 1), dropout_perc=0, learning_rate=1E-5):
     """Implements the two-dimensional version of the U-Net dense neural
     network.
 
     Parameters
     ----------
-    input_size : (M, N, C) array-like, optional (default : (256, 256, 1))
+    input_size : (M, N, C) array-like, optional (default : (512, 512, 1))
         Shape of the input data in rows, columns, and channels.
 
     Returns
@@ -44,175 +44,51 @@ def unet(input_size=(256, 256, 1)):
     >>> model_unet = unet(input_size=(128, 128, 1))
     """
     n_classes = input_size[-1]
-    layer = layers.Input(input_size)
+    inputs = layers.Input(input_size)
 
-    # level 1 - down
-    conv_down_1 = layers.Conv2D(filters=64,
-                                kernel_size=3,
-                                activation='relu',
-                                padding='same',
-                                kernel_initializer='he_uniform')(layer)
-    conv_down_1 = layers.Conv2D(filters=64,
-                                kernel_size=3,
-                                activation='relu',
-                                padding='same',
-                                kernel_initializer='he_uniform')(conv_down_1)
-    max_pool_1 = layers.MaxPooling2D(pool_size=(2, 2))(conv_down_1)
+    # analysis path.
+    conv_down_1, max_pool_1 = _analysis_path(inputs,
+                                             filters=64,
+                                             dropout_perc=dropout_perc)
+    conv_down_2, max_pool_2 = _analysis_path(max_pool_1,
+                                             filters=128,
+                                             dropout_perc=dropout_perc)
+    conv_down_3, max_pool_3 = _analysis_path(max_pool_2,
+                                             filters=256,
+                                             dropout_perc=dropout_perc)
+    conv_down_4, max_pool_4 = _analysis_path(max_pool_3,
+                                             filters=512,
+                                             dropout_perc=0.5)
 
-    # level 2 - down
-    conv_down_2 = layers.Conv2D(filters=128,
-                                kernel_size=3,
-                                activation='relu',
-                                padding='same',
-                                kernel_initializer='he_uniform')(max_pool_1)
-    conv_down_2 = layers.Conv2D(filters=128,
-                                kernel_size=3,
-                                activation='relu',
-                                padding='same',
-                                kernel_initializer='he_uniform')(conv_down_2)
-    max_pool_2 = layers.MaxPooling2D(pool_size=(2, 2))(conv_down_2)
+    # bottleneck.
+    conv_down_5 = _analysis_path(max_pool_4,
+                                 filters=1024,
+                                 dropout_perc=0.5,
+                                 is_bottleneck=True)
 
-    # level 3 - down
-    conv_down_3 = layers.Conv2D(filters=256,
-                                kernel_size=3,
-                                activation='relu',
-                                padding='same',
-                                kernel_initializer='he_uniform')(max_pool_2)
-    conv_down_3 = layers.Conv2D(filters=256,
-                                kernel_size=3,
-                                activation='relu',
-                                padding='same',
-                                kernel_initializer='he_uniform')(conv_down_3)
-    max_pool_3 = layers.MaxPooling2D(pool_size=(2, 2))(conv_down_3)
+    # synthesis path.
+    conv_up_4 = _synthesis_path(conv_down_5,
+                                layer_analysis=conv_down_4,
+                                filters=512,
+                                dropout_perc=dropout_perc)
+    conv_up_3 = _synthesis_path(conv_up_4,
+                                layer_analysis=conv_down_3,
+                                filters=256,
+                                dropout_perc=dropout_perc)
+    conv_up_2 = _synthesis_path(conv_up_3,
+                                layer_analysis=conv_down_2,
+                                filters=128,
+                                dropout_perc=dropout_perc)
+    conv_up_1 = _synthesis_path(conv_up_2,
+                                layer_analysis=conv_down_1,
+                                filters=64,
+                                dropout_perc=dropout_perc)
 
-    # level 4 - down
-    conv_down_4 = layers.Conv2D(filters=512,
-                                kernel_size=3,
-                                activation='relu',
-                                padding='same',
-                                kernel_initializer='he_uniform')(max_pool_3)
-    conv_down_4 = layers.Conv2D(filters=512,
-                                kernel_size=3,
-                                activation='relu',
-                                padding='same',
-                                kernel_initializer='he_uniform')(conv_down_4)
-    dropout_4 = layers.Dropout(0.5)(conv_down_4)
-    max_pool_4 = layers.MaxPooling2D(pool_size=(2, 2))(dropout_4)
+    # last layer.
+    output, loss = _last_layer_activation(conv_up_1, n_classes=n_classes)
+    model = Model(inputs, output)
 
-    # level 5 - down
-    conv_down_5 = layers.Conv2D(filters=1024,
-                                kernel_size=3,
-                                activation='relu',
-                                padding='same',
-                                kernel_initializer='he_uniform')(max_pool_4)
-    conv_down_5 = layers.Conv2D(filters=1024,
-                                kernel_size=3,
-                                activation='relu',
-                                padding='same',
-                                kernel_initializer='he_uniform')(conv_down_5)
-    dropout_5 = layers.Dropout(0.5)(conv_down_5)
-
-    # level 4 - up
-    conv_up_4 = layers.Conv2D(filters=512,
-                              kernel_size=2,
-                              activation='relu',
-                              padding='same',
-                              kernel_initializer='he_uniform')(
-                                  layers.UpSampling2D(size=(2, 2))(dropout_5)
-                              )
-    merge_4 = layers.concatenate([dropout_4, conv_up_4], axis=-1)
-    conv_up_4 = layers.Conv2D(filters=512,
-                              kernel_size=3,
-                              activation='relu',
-                              padding='same',
-                              kernel_initializer='he_uniform')(merge_4)
-    conv_up_4 = layers.Conv2D(filters=512,
-                              kernel_size=3,
-                              activation='relu',
-                              padding='same',
-                              kernel_initializer='he_uniform')(conv_up_4)
-
-    # level 3 - up
-    conv_up_3 = layers.Conv2D(filters=256,
-                              kernel_size=2,
-                              activation='relu',
-                              padding='same',
-                              kernel_initializer='he_uniform')(
-                                  layers.UpSampling2D(size=(2, 2))(conv_up_4)
-                              )
-    merge_3 = layers.concatenate([conv_down_3, conv_up_3], axis=-1)
-    conv_up_3 = layers.Conv2D(filters=256,
-                              kernel_size=3,
-                              activation='relu',
-                              padding='same',
-                              kernel_initializer='he_uniform')(merge_3)
-    conv_up_3 = layers.Conv2D(filters=256,
-                              kernel_size=3,
-                              activation='relu',
-                              padding='same',
-                              kernel_initializer='he_uniform')(conv_up_3)
-
-    # level 2 - up
-    conv_up_2 = layers.Conv2D(filters=128,
-                              kernel_size=2,
-                              activation='relu',
-                              padding='same',
-                              kernel_initializer='he_uniform')(
-                                  layers.UpSampling2D(size=(2, 2))(conv_up_3)
-                              )
-    merge_2 = layers.concatenate([conv_down_2, conv_up_2], axis=-1)
-    conv_up_2 = layers.Conv2D(filters=128,
-                              kernel_size=3,
-                              activation='relu',
-                              padding='same',
-                              kernel_initializer='he_uniform')(merge_2)
-    conv_up_2 = layers.Conv2D(filters=128,
-                              kernel_size=3,
-                              activation='relu',
-                              padding='same',
-                              kernel_initializer='he_uniform')(conv_up_2)
-
-    # level 1 - up
-    conv_up_1 = layers.Conv2D(filters=64,
-                              kernel_size=2,
-                              activation='relu',
-                              padding='same',
-                              kernel_initializer='he_uniform')(
-                                  layers.UpSampling2D(size=(2, 2))(conv_up_2)
-                              )
-    merge_1 = layers.concatenate([conv_down_1, conv_up_1], axis=-1)
-    conv_up_1 = layers.Conv2D(filters=64,
-                              kernel_size=3,
-                              activation='relu',
-                              padding='same',
-                              kernel_initializer='he_uniform')(merge_1)
-    conv_up_1 = layers.Conv2D(filters=64,
-                              kernel_size=3,
-                              activation='relu',
-                              padding='same',
-                              kernel_initializer='he_uniform')(conv_up_1)
-
-    # defining last convolution.
-    if n_classes == 1:
-        # output segmentation map
-        conv_up_1 = layers.Conv2D(filters=2,
-                                  kernel_size=3,
-                                  activation='relu',
-                                  padding='same',
-                                  kernel_initializer='he_uniform')(conv_up_1)
-
-        conv_output = layers.Conv2D(filters=n_classes,
-                                    kernel_size=1,
-                                    activation='sigmoid')(conv_up_1)
-        loss = 'binary_crossentropy'
-    else:
-        conv_output = layers.Conv2D(filters=n_classes,
-                                    kernel_size=1,
-                                    activation='softmax')(conv_up_1)
-        loss = 'categorical_crossentropy'
-
-    model = Model(layer, conv_output)
-    model.compile(optimizer=Adam(learning_rate=1e-5),
+    model.compile(optimizer=Adam(learning_rate=learning_rate),
                   loss=loss,
                   metrics=['accuracy'])
 
@@ -285,31 +161,43 @@ def unet_3d(input_size=(64, 64, 64, 1), dropout_perc=0, learning_rate=1E-5):
     # analysis path.
     conv_down_1, max_pool_1 = _analysis_path(inputs,
                                              filters=32,
-                                             dropout_perc=dropout_perc)
+                                             dropout_perc=dropout_perc,
+                                             is_unet_3d=True)
     conv_down_2, max_pool_2 = _analysis_path(max_pool_1,
                                              filters=64,
-                                             dropout_perc=dropout_perc)
+                                             dropout_perc=dropout_perc,
+                                             is_unet_3d=True)
     conv_down_3, max_pool_3 = _analysis_path(max_pool_2,
                                              filters=128,
-                                             dropout_perc=dropout_perc)
+                                             dropout_perc=dropout_perc,
+                                             is_unet_3d=True)
 
     # bottleneck.
     conv_down_4 = _analysis_path(max_pool_3,
                                  filters=256,
                                  dropout_perc=dropout_perc,
-                                 is_bottleneck=True)
+                                 is_bottleneck=True,
+                                 is_unet_3d=True)
+
 
     # synthesis path.
     conv_up_3 = _synthesis_path(conv_down_4,
                                 layer_analysis=conv_down_3,
-                                filters=512)
+                                filters=512,
+                                dropout_perc=dropout_perc,
+                                is_unet_3d=True)
     conv_up_2 = _synthesis_path(conv_up_3,
                                 layer_analysis=conv_down_2,
-                                filters=256)
+                                filters=256,
+                                dropout_perc=dropout_perc,
+                                is_unet_3d=True)
     conv_up_1 = _synthesis_path(conv_up_2,
                                 layer_analysis=conv_down_1,
-                                filters=128)
+                                filters=128,
+                                dropout_perc=dropout_perc,
+                                is_unet_3d=True)
 
+    # last layer.
     output, loss = _last_layer_activation(conv_up_1, n_classes=n_classes)
     model = Model(inputs, output)
 
@@ -320,14 +208,17 @@ def unet_3d(input_size=(64, 64, 64, 1), dropout_perc=0, learning_rate=1E-5):
     return model
 
 
-def _analysis_path(layer, filters, dropout_perc=0.2, is_bottleneck=False):
+def _analysis_path(layer, filters, dropout_perc=0, is_bottleneck=False,
+                   is_unet_3d=False):
     """Apply a conv-BN-ReLU layer with filter size 3, and a max pooling."""
     layer = _conv_bn_relu(layer=layer,
                           filters=filters,
                           kernel_size=3,
                           dropout_perc=dropout_perc)
+    if is_unet_3d:
+        filters *= 2
     layer = _conv_bn_relu(layer=layer,
-                          filters=filters*2,
+                          filters=filters,
                           kernel_size=3,
                           dropout_perc=dropout_perc)
 
@@ -364,8 +255,22 @@ def _conv_bn_relu(layer, filters, kernel_size=3, dropout_perc=0):
 
 
 def _last_layer_activation(layer, n_classes=1):
-    """Performs 1x1 convolution followed by activation."""
+    """Performs a convolution with kernel size 1, followed by the an activation
+    chosen according to the input size.
+
+    Notes
+    -----
+    For a 2D input, it includes a 2D convolution before this conv, representing
+    the output segmentation map described in Ronneberger et al (2015).
+    """
     if ndim(layer) == 4:
+        layer = layers.Conv2D(filters=2,
+                              kernel_size=3,
+                              padding='same',
+                              kernel_initializer='he_uniform')(layer)
+        layer = layers.BatchNormalization()(layer)
+        layer = layers.Activation('relu')(layer)
+
         layer = layers.Conv2D(filters=n_classes,
                               kernel_size=1,
                               padding='same',
@@ -386,18 +291,21 @@ def _last_layer_activation(layer, n_classes=1):
     return output, loss
 
 
-def _synthesis_path(layer, layer_analysis, filters, dropout_perc=0):
+def _synthesis_path(layer, layer_analysis, filters, dropout_perc=0,
+                    is_unet_3d=False):
     """
     """
     layer = _upconv_bn_relu(layer, filters, kernel_size=2)
     merge = layers.concatenate([layer_analysis, layer], axis=-1)
 
+    if is_unet_3d:
+        filters = int(filters/2)
     layer = _conv_bn_relu(layer=merge,
-                          filters=int(filters/2),
+                          filters=filters,
                           kernel_size=3,
                           dropout_perc=dropout_perc)
     layer = _conv_bn_relu(layer=layer,
-                          filters=int(filters/2),
+                          filters=filters,
                           kernel_size=3,
                           dropout_perc=dropout_perc)
 
