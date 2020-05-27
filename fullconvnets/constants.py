@@ -130,10 +130,10 @@ FOLDER_VAL_LABEL_CROP_3D = os.path.join(FOLDER_TRAINING_CROP_3D,
                                         SUBFOLDER_LABEL)
 
 # interval images used in the training.
-INTERVAL_TRAIN_CURED = [160, 510]
-INTERVAL_TRAIN_WET = [510, 860]  # a total of 700 training images
-INTERVAL_VAL_CURED = [860, 1010]
-INTERVAL_VAL_WET = [1010, 1158]  # a total of 298 validation images
+INTERVAL_TRAIN_CURED = [160, 260]  # [160, 510]
+INTERVAL_TRAIN_WET = [260, 360]  # a total of 200 training images  # [510, 860]  # a total of 700 training images
+INTERVAL_VAL_CURED = [360, 370]  # [860, 1010]
+INTERVAL_VAL_WET = [370, 380]  # a total of 20 validation images # [1010, 1158]  # a total of 298 validation images
 
 # our prediction folders.
 FOLDER_PRED_TIRAMISU = os.path.join(FOLDER_BASE,
