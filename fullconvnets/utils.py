@@ -279,6 +279,7 @@ def predict_on_chunk(data, weights, network='unet_3d', n_class=1, pad_width=16,
                      window_shape=(32, 32, 32), step=16):
     """
     """
+    results = []
     model = network_models(network,
                            window_shape=window_shape,
                            n_class=n_class)
@@ -292,11 +293,16 @@ def predict_on_chunk(data, weights, network='unet_3d', n_class=1, pad_width=16,
                              window_shape=window_shape,
                              step=step)
     ))
-    crop_steps = data_crop.shape[0]
-    chunk_gen = tensor_generator(data_crop)
-
-    results = model.predict(chunk_gen, steps=crop_steps, verbose=1)
-    return results
+    data_size = data_crop.shape[0]
+    crop_steps = 640
+    for idx in range(0, data_size, crop_steps):
+        slice = data_crop[idx:idx+crop_steps]  # passing less objects at a time; trying to save some memory
+        steps = slice.shape[0]
+        chunk_gen = tensor_generator(slice)
+        results.append(model.predict(chunk_gen, steps=steps, verbose=1))
+        clear_session()
+    print(np.asarray(results).shape)
+    return np.vstack(np.asarray(results))
 
 
 def predict_on_image(image, weights, network='unet', n_class=1, pad_width=16,
@@ -410,7 +416,7 @@ def process_sample(folder, data, weights, network='unet'):
                                                 data_original=chunk[idx_plane],
                                                 prediction=plane,
                                                 filename=filename)
-            clear_session()  # resetting TensorFlow session state.
+                clear_session()  # resetting TensorFlow session state.
 
     elif network in const.AVAILABLE_2D_NETS:
         for idx, image in enumerate(data):
@@ -431,7 +437,7 @@ def process_sample(folder, data, weights, network='unet'):
                                         prediction=prediction,
                                         filename=filename)
 
-            clear_session()  # resetting TensorFlow session state.
+                clear_session()  # resetting TensorFlow session state.
     return None
 
 
@@ -607,7 +613,7 @@ def save_cropped_image(image, index, window_shape=(512, 512), step=512,
 
     for idx, aux in enumerate(img_crop):
         fname = '%03d_img_crop-%03d.png' % (index, idx)
-        io.imsave(os.path.join(folder, fname), util.img_as_float32(aux))
+        io.imsave(os.path.join(folder, fname), util.img_as_ubyte(aux))
     return None
 
 
