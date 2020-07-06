@@ -93,11 +93,14 @@ def compare(network, tiramisu_model=None):
 
             # coefficients will receive the folder name as a filename.
             filename = f"{path_coefficients}/{sample['folder']}-{network}_coefs.csv"
+            file_roc = f"{path_coefficients}/{sample['folder']}-{network}_roc_auc.csv"
 
-            _, _ = utils.measure_all_coefficients(data_prediction,
-                                                  data_goldstd,
-                                                  save_coef=True,
-                                                  filename=filename)
+            _ = utils.measure_all_coefficients(data_prediction,
+                                               data_goldstd,
+                                               save_coef=True,
+                                               filename=filename)
+            _ = measure_roc_and_auc(data_prediction, data_goldstd, save_coef=True,
+                                    filename=file_roc)
     return None
 
 

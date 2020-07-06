@@ -3,6 +3,7 @@ from fullconvnets.models.tiramisu import tiramisu, tiramisu_3d
 from fullconvnets import constants as const
 from fullconvnets import evaluation
 from skimage import color, exposure, io, util
+from sklearn.metrics import auc, roc_curve
 from tensorflow.keras.backend import clear_session
 
 import csv
@@ -146,6 +147,46 @@ def measure_all_coefficients(data_test, data_gt,
                 coef_writer.writerow(all_dice)
 
     return all_matthews, all_dice
+
+
+def measure_roc_and_auc(data_pred, data_gs,
+                        save_coef=True,
+                        filename='coef_roc_and_auc.csv'):
+    """Measures all comparison coefficients between two input data.
+
+    Example
+    -------
+    >>> from skimage import io
+    >>> data_bin = io.ImageCollection(load_pattern='res_figures/binary/Test_TIRR_0_1p5_B0p2_*_bin.png',
+                                      plugin=None)[1000:2000]
+    >>> data_gs = io.ImageCollection(load_pattern='gt_figures/19_Gray_*.tif',
+                                     plugin=None)
+    >>> tp_rate, fp_rate, area_curve = measure_roc_and_auc(data_bin,
+                                                           data_gs,
+                                                           save_coef=True)
+    """
+    _assert_same_length(data_pred, data_gs)
+
+    for idx, (img_pred, img_gs) in enumerate(zip(data_pred, data_gs)):
+        img_gs = process_goldstd_images(img_gs)
+        _assert_compatible(img_pred, img_gs)
+
+        data_pred = data_pred.ravel().astype(np.uint8)
+        data_gs = data_gs.ravel().astype(np.uint8)
+
+        aux_fpr, aux_tpr, _ = roc_curve(data_gs, data_pred)
+
+        roc_curves.append([aux_fpr, aux_tpr])
+
+    fpr_mean = np.asarray(roc_curves)[:, 0].mean(axis=0)
+    tpr_mean = np.asarray(roc_curves)[:, 1].mean(axis=0)
+
+    if save_coef:
+        with open(filename, 'a+') as file_coef:
+            coef_writer = csv.writer(file_coef, delimiter=',')
+            coef_writer.writerow(tpr_mean, fpr_mean, auc(fpr_mean, tpr_mean))
+
+    return tpr_mean, fpr_mean, auc(fpr_mean, tpr_mean)
 
 
 def montage_3d(array_input, fill='mean', rescale_intensity=False,
