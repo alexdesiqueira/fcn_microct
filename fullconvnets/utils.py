@@ -165,6 +165,7 @@ def measure_roc_and_auc(data_pred, data_gs,
                                                            data_gs,
                                                            save_coef=True)
     """
+    roc_curves = []
     _assert_same_length(data_pred, data_gs)
 
     for idx, (img_pred, img_gs) in enumerate(zip(data_pred, data_gs)):
