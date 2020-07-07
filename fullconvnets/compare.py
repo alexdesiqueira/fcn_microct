@@ -99,8 +99,8 @@ def compare(network, tiramisu_model=None):
                                                data_goldstd,
                                                save_coef=True,
                                                filename=filename)
-            _ = measure_roc_and_auc(data_prediction, data_goldstd, save_coef=True,
-                                    filename=file_roc)
+            _ = utils. measure_roc_and_auc(data_prediction, data_goldstd,
+                                           save_coef=True, filename=file_roc)
     return None
 
 
