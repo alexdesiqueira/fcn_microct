@@ -1,12 +1,12 @@
-from fullconvnets.models.unet import unet, unet_3d
-from fullconvnets.models.tiramisu import tiramisu, tiramisu_3d
-from fullconvnets import constants as const
-from fullconvnets import evaluation
+from models.unet import unet, unet_3d
+from models.tiramisu import tiramisu, tiramisu_3d
 from skimage import color, exposure, io, util
 from sklearn.metrics import auc, roc_curve
 from tensorflow.keras.backend import clear_session
 
+import constants as const
 import csv
+import evaluation
 import numpy as np
 import os
 
@@ -89,12 +89,15 @@ def folders_to_process(folder_base, folder_pred, subfolder_pred,
     return pred_valid, gold_valid
 
 
-def imread_prediction(image):
+def imread_prediction(image, is_binary=True):
     """Auxiliary function intended to be used with skimage.io.ImageCollection.
     Returns a binary prediction image — True when image > 0.5, False
     when image <= 0.5.
     """
-    return util.img_as_float(io.imread(image)) > 0.5
+    if is_binary:
+        return util.img_as_float(io.imread(image)) > 0.5
+    else:
+        return util.img_as_float(io.imread(image))
 
 
 def imread_goldstd(image):
@@ -487,7 +490,7 @@ def process_sample(folder, data, weights, network='unet'):
     return None
 
 
-def read_data(sample, folder_prediction, is_registered=False):
+def read_data(sample, folder_prediction, is_registered=False, is_binary=True):
     """
     """
     aux_folder = sample['folder']
@@ -507,7 +510,8 @@ def read_data(sample, folder_prediction, is_registered=False):
                                   f'*{const.EXT_GOLDSTD}')
 
     data_prediction = io.ImageCollection(load_pattern=folder_pred,
-                                         load_func=imread_prediction)
+                                         load_func=imread_prediction,
+                                         is_binary=is_binary)
     data_goldstd = io.ImageCollection(load_pattern=folder_goldstd,
                                       load_func=imread_goldstd)
     return data_prediction, data_goldstd
@@ -542,6 +546,41 @@ def read_csv_coefficients(filename):
     dice = np.asarray(coefs_dice[1:], dtype='float')
 
     return matthews, dice
+
+
+def read_csv_roc_auc(filename):
+    """Reads csv ROC and AUC saved in a file.
+    
+    Parameters
+    ----------
+    filename : str
+    
+    Returns
+    -------
+    fp_rate : ndarray
+        Arrays containing mean and standard deviation of false positive rate for
+        the processed samples.
+    tp_rate : array
+        Arrays containing mean and standard deviation of true positive rate for
+        the processed samples.
+    area_under_curve : float
+        Area under curve obtained from fp_rate and tp_rate means.
+    """
+    coefs, fp, tp = [[] for _ in range(3)]
+    csv_file = csv.reader(open(filename, 'r'))
+    for row in csv_file:
+        coefs.append(row)
+
+    fp_rate, tp_rate, area_under_curve = coefs
+    for (aux_fp, aux_tp) in zip(fp_rate, tp_rate):
+        fp.append(aux_fp.replace('[', ' ').replace(']', ' ').split())
+        tp.append(aux_tp.replace('[', ' ').replace(']', ' ').split())
+
+    fp_rate = np.asarray(fp[1:], dtype='float')
+    tp_rate = np.asarray(tp[1:], dtype='float')
+    area_under_curve = np.asarray(area_under_curve[1:], dtype='float')
+
+    return fp_rate, tp_rate, area_under_curve[0]
 
 
 def regroup_image(image_set, grid_shape=None, pad_width=32,
