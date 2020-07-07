@@ -179,15 +179,17 @@ def measure_roc_and_auc(data_pred, data_gs,
 
         roc_curves.append([aux_fpr, aux_tpr])
 
-    fpr_mean = np.asarray(roc_curves)[:, 0].mean(axis=0)
-    tpr_mean = np.asarray(roc_curves)[:, 1].mean(axis=0)
+    fpr_mean = (np.asarray(roc_curves)[:, 0].mean(axis=0),
+                np.asarray(roc_curves)[:, 0].std(axis=0))
+    tpr_mean = (np.asarray(roc_curves)[:, 1].mean(axis=0),
+                np.asarray(roc_curves)[:, 1].std(axis=0))
 
     if save_coef:
         with open(filename, 'a+') as file_coef:
             coef_writer = csv.writer(file_coef, delimiter=',')
-            coef_writer.writerow([tpr_mean, fpr_mean, auc(fpr_mean, tpr_mean)])
+            coef_writer.writerow([fpr_mean, tpr_mean, auc(fpr_mean, tpr_mean)])
 
-    return tpr_mean, fpr_mean, auc(fpr_mean, tpr_mean)
+    return fpr_mean, tpr_mean, auc(fpr_mean, tpr_mean)
 
 
 def montage_3d(array_input, fill='mean', rescale_intensity=False,
