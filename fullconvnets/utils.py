@@ -175,10 +175,7 @@ def measure_roc_and_auc(data_pred, data_gs,
         img_gs = process_goldstd_images(img_gs)
         _assert_compatible(img_pred, img_gs)
 
-        img_pred = img_pred.ravel().astype(np.uint8)
-        img_gs = img_gs.ravel().astype(np.uint8)
-
-        aux_fpr, aux_tpr, _ = roc_curve(img_gs, img_pred)
+        aux_fpr, aux_tpr, _ = roc_curve(img_gs.ravel(), img_pred.ravel())
 
         roc_curves.append([aux_fpr, aux_tpr])
 
