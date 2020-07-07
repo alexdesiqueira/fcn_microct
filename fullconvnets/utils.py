@@ -187,9 +187,8 @@ def measure_roc_and_auc(data_pred, data_gs,
     if save_coef:
         with open(filename, 'a+') as file_coef:
             coef_writer = csv.writer(file_coef, delimiter=',')
-            coef_writer.writerow([fpr_mean[0], fpr_mean[1],
-                                  tpr_mean[0], tpr_mean[1],
-                                  auc(fpr_mean[0], tpr_mean[0])])
+            line = f'({fpr_mean}}), ({tpr_mean}), {auc(fpr_mean[0], tpr_mean[0])}'
+            coef_writer.writerow(line)
 
     return fpr_mean, tpr_mean, auc(fpr_mean, tpr_mean)
 
