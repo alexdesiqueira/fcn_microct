@@ -175,14 +175,16 @@ def measure_roc_and_auc(data_pred, data_gs,
         img_gs = process_goldstd_images(img_gs)
         _assert_compatible(img_pred, img_gs)
 
-        aux_fpr, aux_tpr, _ = roc_curve(img_gs.ravel(), img_pred.ravel())
+        aux_fpr, aux_tpr, _ = roc_curve(img_gs.ravel(), img_pred.ravel(),
+                                        pos_label=1, drop_intermediate=False)
 
         roc_curves.append([aux_fpr, aux_tpr])
 
-    fpr_mean = (np.asarray(roc_curves)[:, 0].mean(axis=0),
-                np.asarray(roc_curves)[:, 0].std(axis=0))
-    tpr_mean = (np.asarray(roc_curves)[:, 1].mean(axis=0),
-                np.asarray(roc_curves)[:, 1].std(axis=0))
+    roc_curves = np.asarray(roc_curves)
+    fpr_mean = (roc_curves[:, 0].mean(axis=0),
+                roc_curves[:, 0].std(axis=0))
+    tpr_mean = (roc_curves[:, 1].mean(axis=0),
+                roc_curves[:, 1].std(axis=0))
 
     if save_coef:
         with open(filename, 'a+') as file_coef:
