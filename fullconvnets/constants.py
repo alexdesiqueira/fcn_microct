@@ -50,7 +50,7 @@ WINDOW_SHAPE = (ROWS + 2*PAD_WIDTH, COLS + 2*PAD_WIDTH)
 
 PAD_WIDTH_3D = 16
 PLANES_3D, ROWS_3D, COLS_3D = (32, 32, 32)
-STEP_3D = 32
+STEP_3D = 48
 WINDOW_SHAPE_3D = (PLANES_3D + 2*PAD_WIDTH_3D,
                    ROWS_3D + 2*PAD_WIDTH_3D,
                    COLS_3D + 2*PAD_WIDTH_3D)
@@ -59,10 +59,7 @@ WINDOW_SHAPE_3D = (PLANES_3D + 2*PAD_WIDTH_3D,
 NUMBER_TRAIN_IMAGES = 70000
 NUMBER_VAL_IMAGES = 29800
 
-if WINDOW_SHAPE_3D == (48, 48, 48):
-    NUMBER_TRAIN_IMAGES_3D = 134400
-    NUMBER_VAL_IMAGES_3D = 57600
-elif WINDOW_SHAPE_3D == (64, 64, 64):
+if WINDOW_SHAPE_3D == (64, 64, 64):
     NUMBER_TRAIN_IMAGES_3D = 134400
     NUMBER_VAL_IMAGES_3D = 57600
 else:
@@ -129,11 +126,11 @@ FOLDER_VAL_LABEL_CROP_3D = os.path.join(FOLDER_TRAINING_CROP_3D,
                                         SUBFOLDER_VALIDATE,
                                         SUBFOLDER_LABEL)
 
-# interval images used in the training.
-INTERVAL_TRAIN_CURED = [160, 260]  # [160, 510]
-INTERVAL_TRAIN_WET = [260, 360]  # a total of 200 training images  # [510, 860]  # a total of 700 training images
-INTERVAL_VAL_CURED = [360, 370]  # [860, 1010]
-INTERVAL_VAL_WET = [370, 380]  # a total of 20 validation images # [1010, 1158]  # a total of 298 validation images
+# interval images used in the training.fullconvnets
+INTERVAL_TRAIN_CURED = [160, 310]
+INTERVAL_TRAIN_WET = [310, 460]  # a total of 300 training images
+INTERVAL_VAL_CURED = [460, 490]
+INTERVAL_VAL_WET = [490, 520]  # a total of 60 validation images
 
 # our prediction folders.
 FOLDER_PRED_TIRAMISU = os.path.join(FOLDER_BASE,
