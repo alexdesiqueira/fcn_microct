@@ -196,11 +196,12 @@ def train(network: str, tiramisu_model: Union[str, None] = None,
                                      target_size=train_vars['target_size'],
                                      save_to_dir=None)
 
+    # validation data does not need to be augmented.
     valid_gen = data.train_generator(batch_size=batch_size,
                                      train_path=train_vars['folder_validate'],
                                      subfolders=(const.SUBFOLDER_IMAGE,
                                                  const.SUBFOLDER_LABEL),
-                                     augmentation_dict=DATA_GEN_ARGS,
+                                     augmentation_dict=dict(),
                                      target_size=train_vars['target_size'],
                                      save_to_dir=None)
 
