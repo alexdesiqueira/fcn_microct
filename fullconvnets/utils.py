@@ -1,11 +1,12 @@
-from fullconvnets.models.unet import unet, unet_3d
-from fullconvnets.models.tiramisu import tiramisu, tiramisu_3d
-from fullconvnets import constants as const
-from fullconvnets import evaluation
+from models.unet import unet, unet_3d
+from models.tiramisu import tiramisu, tiramisu_3d
 from skimage import color, exposure, io, util
+from sklearn.metrics import auc, roc_curve
 from tensorflow.keras.backend import clear_session
 
+import constants as const
 import csv
+import evaluation
 import numpy as np
 import os
 
@@ -88,12 +89,15 @@ def folders_to_process(folder_base, folder_pred, subfolder_pred,
     return pred_valid, gold_valid
 
 
-def imread_prediction(image):
+def imread_prediction(image, is_binary=True):
     """Auxiliary function intended to be used with skimage.io.ImageCollection.
     Returns a binary prediction image — True when image > 0.5, False
     when image <= 0.5.
     """
-    return util.img_as_float(io.imread(image)) > 0.5
+    if is_binary:
+        return util.img_as_float(io.imread(image)) > 0.5
+    else:
+        return util.img_as_float(io.imread(image))
 
 
 def imread_goldstd(image):
@@ -146,6 +150,50 @@ def measure_all_coefficients(data_test, data_gt,
                 coef_writer.writerow(all_dice)
 
     return all_matthews, all_dice
+
+
+def measure_roc_and_auc(data_pred, data_gs,
+                        save_coef=True,
+                        filename='coef_roc_and_auc.csv'):
+    """Measures all comparison coefficients between two input data.
+
+    Example
+    -------
+    >>> from skimage import io
+    >>> data_bin = io.ImageCollection(load_pattern='res_figures/binary/Test_TIRR_0_1p5_B0p2_*_bin.png',
+                                      plugin=None)[1000:2000]
+    >>> data_gs = io.ImageCollection(load_pattern='gt_figures/19_Gray_*.tif',
+                                     plugin=None)
+    >>> tp_rate, fp_rate, area_curve = measure_roc_and_auc(data_bin,
+                                                           data_gs,
+                                                           save_coef=True)
+    """
+    roc_curves = []
+    _assert_same_length(data_pred, data_gs)
+
+    for idx, (img_pred, img_gs) in enumerate(zip(data_pred, data_gs)):
+        img_gs = process_goldstd_images(img_gs)
+        _assert_compatible(img_pred, img_gs)
+
+        aux_fpr, aux_tpr, _ = roc_curve(img_gs.ravel(), img_pred.ravel(),
+                                        pos_label=1, drop_intermediate=False)
+
+        roc_curves.append([aux_fpr, aux_tpr])
+
+    roc_curves = np.asarray(roc_curves)
+    fpr_mean = (roc_curves[:, 0].mean(axis=0),
+                roc_curves[:, 0].std(axis=0))
+    tpr_mean = (roc_curves[:, 1].mean(axis=0),
+                roc_curves[:, 1].std(axis=0))
+
+    if save_coef:
+        with open(filename, 'a+') as file_coef:
+            coef_writer = csv.writer(file_coef, delimiter=',')
+            coef_writer.writerow(['fpr', fpr_mean[0], fpr_mean[1]])
+            coef_writer.writerow(['tpr', tpr_mean[0], tpr_mean[1]])
+            coef_writer.writerow(['auc', auc(fpr_mean[0], tpr_mean[0])])
+
+    return fpr_mean, tpr_mean, auc(fpr_mean[0], tpr_mean[0])
 
 
 def montage_3d(array_input, fill='mean', rescale_intensity=False,
@@ -441,7 +489,7 @@ def process_sample(folder, data, weights, network='unet'):
     return None
 
 
-def read_data(sample, folder_prediction, is_registered=False):
+def read_data(sample, folder_prediction, is_registered=False, is_binary=True):
     """
     """
     aux_folder = sample['folder']
@@ -461,7 +509,8 @@ def read_data(sample, folder_prediction, is_registered=False):
                                   f'*{const.EXT_GOLDSTD}')
 
     data_prediction = io.ImageCollection(load_pattern=folder_pred,
-                                         load_func=imread_prediction)
+                                         load_func=imread_prediction,
+                                         is_binary=is_binary)
     data_goldstd = io.ImageCollection(load_pattern=folder_goldstd,
                                       load_func=imread_goldstd)
     return data_prediction, data_goldstd
@@ -496,6 +545,41 @@ def read_csv_coefficients(filename):
     dice = np.asarray(coefs_dice[1:], dtype='float')
 
     return matthews, dice
+
+
+def read_csv_roc_auc(filename):
+    """Reads csv ROC and AUC saved in a file.
+    
+    Parameters
+    ----------
+    filename : str
+    
+    Returns
+    -------
+    fp_rate : ndarray
+        Arrays containing mean and standard deviation of false positive rate for
+        the processed samples.
+    tp_rate : array
+        Arrays containing mean and standard deviation of true positive rate for
+        the processed samples.
+    area_under_curve : float
+        Area under curve obtained from fp_rate and tp_rate means.
+    """
+    coefs, fp, tp = [[] for _ in range(3)]
+    csv_file = csv.reader(open(filename, 'r'))
+    for row in csv_file:
+        coefs.append(row)
+
+    fp_rate, tp_rate, area_under_curve = coefs
+    for (aux_fp, aux_tp) in zip(fp_rate, tp_rate):
+        fp.append(aux_fp.replace('[', ' ').replace(']', ' ').split())
+        tp.append(aux_tp.replace('[', ' ').replace(']', ' ').split())
+
+    fp_rate = np.asarray(fp[1:], dtype='float')
+    tp_rate = np.asarray(tp[1:], dtype='float')
+    area_under_curve = np.asarray(area_under_curve[1:], dtype='float')
+
+    return fp_rate, tp_rate, area_under_curve[0]
 
 
 def regroup_image(image_set, grid_shape=None, pad_width=32,
@@ -628,7 +712,7 @@ def save_predictions(save_folder, predictions, multichannel=False,
             output = pred[:, :, 0]
         io.imsave(os.path.join(save_folder,
                                '%03d_predict.png' % (idx)),
-                 util.img_as_ubyte(output))
+                  util.img_as_ubyte(output))
     return None
 
 

@@ -87,17 +87,26 @@ def compare(network, tiramisu_model=None):
             is_registered = sample['registered_path'] is not None
             data_prediction, data_goldstd = utils.read_data(sample,
                                                             folder_prediction=network_folder,
-                                                            is_registered=is_registered)
-
+                                                            is_registered=is_registered,
+                                                            is_binary=True)
             data_prediction = data_prediction[slice(*sample['segmentation_interval'])]
 
             # coefficients will receive the folder name as a filename.
             filename = f"{path_coefficients}/{sample['folder']}-{network}_coefs.csv"
+            _ = utils.measure_all_coefficients(data_prediction,
+                                               data_goldstd,
+                                               save_coef=True,
+                                               filename=filename)
 
-            _, _ = utils.measure_all_coefficients(data_prediction,
-                                                  data_goldstd,
-                                                  save_coef=True,
-                                                  filename=filename)
+            # getting ROC and AUC data.
+            data_prediction, data_goldstd = utils.read_data(sample,
+                                                            folder_prediction=network_folder,
+                                                            is_registered=is_registered,
+                                                            is_binary=False)
+            data_prediction = data_prediction[slice(*sample['segmentation_interval'])]
+            file_roc = f"{path_coefficients}/{sample['folder']}-{network}_roc_auc.csv"
+            _ = utils.measure_roc_and_auc(data_prediction, data_goldstd,
+                                          save_coef=True, filename=file_roc)
     return None
 
 
