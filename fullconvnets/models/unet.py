@@ -4,7 +4,7 @@ from tensorflow.keras.models import Model
 from tensorflow.keras.optimizers import Adam
 
 
-def unet(input_size=(512, 512, 1), dropout_perc=0, learning_rate=1E-5):
+def unet(input_size=(512, 512, 1), dropout_perc=0, learning_rate=1E-4):
     """Implements the two-dimensional version of the U-Net dense neural
     network.
 
@@ -95,7 +95,7 @@ def unet(input_size=(512, 512, 1), dropout_perc=0, learning_rate=1E-5):
     return model
 
 
-def unet_3d(input_size=(64, 64, 64, 1), dropout_perc=0, learning_rate=1E-5):
+def unet_3d(input_size=(64, 64, 64, 1), dropout_perc=0, learning_rate=1E-4):
     """Implements the three-dimensional version of the U-Net dense neural
     network.
 

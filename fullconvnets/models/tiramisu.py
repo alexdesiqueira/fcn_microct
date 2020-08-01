@@ -5,7 +5,7 @@ from tensorflow.keras.optimizers import RMSprop
 
 
 def tiramisu(input_size=(256, 256, 1), preset_model='tiramisu-67',
-             dropout_perc=0.2):
+             dropout_perc=0.2, learning_rate=1E-4):
     """Implements two-dimensional version of the One Hundred Layers
     Tiramisu dense neural network.
 
@@ -122,7 +122,7 @@ def tiramisu(input_size=(256, 256, 1), preset_model='tiramisu-67',
         loss = 'binary_crossentropy'
     else:
         loss = 'categorical_crossentropy'
-    model.compile(optimizer=RMSprop(learning_rate=1e-5),
+    model.compile(optimizer=RMSprop(learning_rate=learning_rate),
                   loss=loss,
                   metrics=['accuracy'])
 
@@ -130,7 +130,7 @@ def tiramisu(input_size=(256, 256, 1), preset_model='tiramisu-67',
 
 
 def tiramisu_3d(input_size=(32, 32, 32, 1), preset_model='tiramisu-67',
-                dropout_perc=0.2):
+                dropout_perc=0.2, learning_rate=1E-4):
     """Implements the three-dimensional version of the One Hundred
     Layers Tiramisu dense neural network.
 
@@ -247,7 +247,7 @@ def tiramisu_3d(input_size=(32, 32, 32, 1), preset_model='tiramisu-67',
         loss = 'binary_crossentropy'
     else:
         loss = 'categorical_crossentropy'
-    model.compile(optimizer=RMSprop(learning_rate=1e-5),
+    model.compile(optimizer=RMSprop(learning_rate=learning_rate),
                   loss=loss,
                   metrics=['accuracy'])
 
