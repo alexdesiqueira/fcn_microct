@@ -349,7 +349,6 @@ def predict_on_chunk(data, weights, network='unet_3d', n_class=1, pad_width=16,
         chunk_gen = tensor_generator(slice)
         results.append(model.predict(chunk_gen, steps=steps, verbose=1))
         clear_session()
-    print(np.asarray(results).shape)
     return np.vstack(np.asarray(results))
 
 
