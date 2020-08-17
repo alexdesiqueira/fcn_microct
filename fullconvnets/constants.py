@@ -50,18 +50,18 @@ WINDOW_SHAPE = (ROWS + 2*PAD_WIDTH, COLS + 2*PAD_WIDTH)
 
 PAD_WIDTH_3D = 16
 PLANES_3D, ROWS_3D, COLS_3D = (32, 32, 32)
-STEP_3D = 48
+STEP_3D = 32
 WINDOW_SHAPE_3D = (PLANES_3D + 2*PAD_WIDTH_3D,
                    ROWS_3D + 2*PAD_WIDTH_3D,
                    COLS_3D + 2*PAD_WIDTH_3D)
 
-# how many images available for training.
-NUMBER_TRAIN_IMAGES = 70000
-NUMBER_VAL_IMAGES = 29800
+# how many images are available for training.
+NUMBER_TRAIN_IMAGES = 50000
+NUMBER_VAL_IMAGES = 10000
 
 if WINDOW_SHAPE_3D == (64, 64, 64):
-    NUMBER_TRAIN_IMAGES_3D = 134400
-    NUMBER_VAL_IMAGES_3D = 57600
+    NUMBER_TRAIN_IMAGES_3D = 96000
+    NUMBER_VAL_IMAGES_3D = 19200
 else:
     print(f'Window shape not defined: {WINDOW_SHAPE_3D}')
 
@@ -127,10 +127,10 @@ FOLDER_VAL_LABEL_CROP_3D = os.path.join(FOLDER_TRAINING_CROP_3D,
                                         SUBFOLDER_LABEL)
 
 # interval images used in the training.fullconvnets
-INTERVAL_TRAIN_CURED = [160, 310]
-INTERVAL_TRAIN_WET = [310, 460]  # a total of 300 training images
-INTERVAL_VAL_CURED = [460, 490]
-INTERVAL_VAL_WET = [490, 520]  # a total of 60 validation images
+INTERVAL_TRAIN_CURED = [160, 410]
+INTERVAL_TRAIN_WET = [410, 660]  # a total of 500 training images
+INTERVAL_VAL_CURED = [660, 710]
+INTERVAL_VAL_WET = [710, 760]  # a total of 100 validation images
 
 # our prediction folders.
 FOLDER_PRED_TIRAMISU = os.path.join(FOLDER_BASE,
