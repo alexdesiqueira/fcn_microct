@@ -33,7 +33,7 @@ def check_tiramisu_layers(tiramisu_model=None):
 
     Parameters
     ----------
-    tiramisu_model : str or None (default : None)
+    tiramisu_model : str or None, optional (default : None)
         The tiramisu model to be used.
 
     Returns
@@ -54,15 +54,15 @@ def imread_prediction(image, is_binary=True):
 
     Parameters
     ----------
-    image : array_like
+    image : (M, N) array
         The input image.
-    is_binary : bool
+    is_binary : boolean, optional (default : True)
         If True, returns a binary prediction image: True when pixel in the image
         is higher than 0.5, False when lower than or equal to 0.5.
 
     Returns
     -------
-    prediction : array_like
+    prediction : (M, N) array
         The prediction image.
     """
     if is_binary:
@@ -77,12 +77,12 @@ def imread_goldstd(image):
 
     Parameters
     ----------
-    image : array_like
+    image : (M, N) array
         The input image.
 
     Returns
     -------
-    gold_standard : array_like
+    gold_standard : (M, N) array
         The gold standard image.
     """
     return process_goldstd_images(io.imread(image))
@@ -96,15 +96,15 @@ def measure_all_coefficients(data_test, data_gt,
 
     Parameters
     ----------
-    data_test : array_like
+    data_test : (M, N, P) array
         The input test data.
-    data_gt : array_like
+    data_gt : (M, N, P) array
         The gold standard data.
-    calc_coef : dict (default : {'matthews': True, 'dice': True})
+    calc_coef : dict, optional (default : {'matthews': True, 'dice': True})
         Determines what coefficients to calculate.
-    save_coef : bool (default : True)
+    save_coef : boolean, optional (default : True)
         If True, saves the coefficients to a file in the disk.
-    filename : str (default : 'coefficients.csv')
+    filename : str, optional (default : 'coefficients.csv')
         If save_coef is True, where to save the calculated coefficients.
 
     Returns
@@ -156,13 +156,14 @@ def measure_all_coefficients(data_test, data_gt,
 def measure_roc_and_auc(data_pred, data_gs,
                         save_coef=True,
                         filename='coef_roc_and_auc.csv'):
-    """Measures the ROC curve and its area under curve for two input data.
+    """Measures the ROC curve and its area under curve for the input data and
+    a comparison gold standard.
 
     Parameters
     ----------
-    data_pred : array_like
+    data_pred : (M, N, P) array
         The input prediction data.
-    data_gs : array_like
+    data_gs : (M, N, P) array
         The gold standard data.
     save_coef : boolean, optional (default : True)
         If True, saves the coefficients to a file in the disk.
@@ -306,26 +307,27 @@ def network_models(network='unet', window_shape=(288, 288), n_class=1,
 
     Parameters
     ----------
-    network : str (default : 'unet')
-        Name of the network.
-    window_shape : 2D or 3D array_like (default : (288, 288))
+    network : str, optional (default : 'unet')
+        Name of the network to be used.
+    window_shape : (M, N) or (M, N, P) list, optional (default : (288, 288))
         Size of the window used on the network.
-    n_class : int (default : 1)
+    n_class : int, optional (default : 1)
         Number of classes.
-    preset_model : str (default : 'tiramisu-67')
+    preset_model : str, optional (default : 'tiramisu-67')
         Tiramisu preset model.
 
     Returns
     -------
-    model : Keras model
-        A Keras model defined according to the parameters.
+    model : TensorFlow model
+        A TensorFlow model defined according to the parameters.
 
     Notes
     -----
-    window_shape receives two-dimensional and three-dimensional inputs,
+    window_shape receives two-dimensional or three-dimensional inputs,
     chosen to match the network.
 
-    preset_model can receive tiramisu-56 and tiramisu-67.
+    preset_model can receive tiramisu-56 and tiramisu-67; not applied when
+    using U-nets.
     """
     if network in const.AVAILABLE_2D_NETS:
         model = _available_2d_nets(network,
@@ -378,12 +380,12 @@ def predict_on_chunk(data, weights, network='unet_3d', n_class=1, pad_width=16,
     weights : TensorFlow weights
         A file with TensorFlow weights for the desired network.
     network : str (default : 'unet_3d')
-        The network to use in prediction, correspondent to the weights file.
+        The network to use in prediction, corresponding to the weights file.
     n_class : int (default : 1)
         Number of classes to predict.
     pad_width : int (default : 16)
         Width of the padding to add in the borders of data.
-    window_shape : list (default : (32, 32, 32))
+    window_shape : (M, N, P) list (default : (32, 32, 32))
         Size of the window to process.
     step : int (default : 16)
         Size of the step used to chunk the data. Used as an overlap feature.
@@ -426,24 +428,24 @@ def predict_on_image(image, weights, network='unet', n_class=1, pad_width=16,
 
     Parameters
     ----------
-    image : 2d array
+    image : (M, N) array
         The input data.
     weights : TensorFlow weights
         A file with TensorFlow weights for the desired network.
-    network : str (default : 'unet')
-        The network to use in prediction, correspondent to the weights file.
-    n_class : int (default : 1)
+    network : str, optional (default : 'unet')
+        The network to use in prediction, corresponding to the weights file.
+    n_class : int, optional (default : 1)
         Number of classes to predict.
-    pad_width : int (default : 16)
+    pad_width : int, optional (default : 16)
         Width of the padding to add in the borders of data.
-    window_shape : list (default : (288, 288))
+    window_shape : (M, N) list, optional (default : (288, 288))
         Size of the window to process.
-    step : int (default : 16)
+    step : int, optional (default : 16)
         Size of the step used to chunk the data. Used as an overlap feature.
 
     Returns
     -------
-    prediction : array
+    prediction : (M, N) array
         Array containing predictions on the input data.
     """
     model = network_models(network,
@@ -467,7 +469,21 @@ def predict_on_image(image, weights, network='unet', n_class=1, pad_width=16,
 
 
 def prediction_folder(network='unet', tiramisu_model=None):
-    """Returns the saving folder according to the network."""
+    """Returns the saving folder according to the network.
+
+    Parameters
+    ----------
+    network : str, optional (default : 'unet')
+        The network to be used.
+    tiramisu_model : str or None, optional (default : None)
+        The tiramisu model to be used.
+
+    Returns
+    -------
+    pred_folder : str
+        The folder predictions will be stored, according to
+        constants.FOLDER_PRED_<NETWORK>.
+    """
     tiramisu_layers = check_tiramisu_layers(tiramisu_model=tiramisu_model)
 
     available_folders = {
@@ -485,12 +501,12 @@ def process_goldstd_images(data_goldstd):
 
     Parameters
     ----------
-    data_goldstd : array
+    data_goldstd : (M, N) array
         Input image from Larson et al.
 
     Returns
     -------
-    bin_goldstd : array
+    bin_goldstd : (M, N) array
         Binary image containing fibers detected by Larson et al.'s algorithm.
     """
     if np.unique(data_goldstd).size > 2:
@@ -500,8 +516,28 @@ def process_goldstd_images(data_goldstd):
 
 
 def process_sample(folder, data, weights, network='unet'):
-    """Process the sample and overlaps the original
-    image with the results.
+    """Process the sample, predicting with the chosen network, and overlaps the
+    original image with the results.
+
+    Parameters
+    ----------
+    folder : str
+        Folder where the results of prediction and overlap will be saved.
+    data : (M, N, P) array
+        The input data to be processed.
+    weights : TensorFlow weights
+        A file with TensorFlow weights for the desired network.
+    network : str, optional (default : 'unet')
+        The network to be used.
+
+    Returns
+    -------
+    None
+
+    Notes
+    -----
+    All results are saved in disk; please check if you have sufficient space to
+    store the processed data.
     """
     FOLDER_PRED = os.path.join(folder, const.SUBFOLDER_PRED)
     FOLDER_OVER = os.path.join(folder, const.SUBFOLDER_OVER)
@@ -590,7 +626,25 @@ def process_sample(folder, data, weights, network='unet'):
 
 
 def read_data(sample, folder_prediction, is_registered=False, is_binary=True):
-    """
+    """Reads prediction data and its respective gold standard.
+
+    Parameters
+    ----------
+    sample : dict
+        Sample information according to Larson et al.'s data.
+    folder_prediction : str
+        Where the prediction data is in the disk.
+    is_registered : boolean, optional (default : False)
+        True if the sample has registered data available.
+    is_binary : boolean, optional (default : True)
+        If True, converts the input data into binary when reading.
+
+    Returns
+    -------
+    data_prediction : (M, N, P) array
+        The prediction data corresponding to sample.
+    data_goldstd : (M, N, P) array
+        The gold standard data corresponding to sample.
     """
     aux_folder = sample['folder']
     if is_registered:
@@ -613,11 +667,17 @@ def read_data(sample, folder_prediction, is_registered=False, is_binary=True):
                                          is_binary=is_binary)
     data_goldstd = io.ImageCollection(load_pattern=folder_goldstd,
                                       load_func=imread_goldstd)
+
     return data_prediction, data_goldstd
 
 
 def _check_and_save_prediction(folder, prediction, filename):
-    """"""
+    """
+    
+    Returns
+    -------
+    None
+    """
     if not os.path.isfile(os.path.join(folder, filename)):
         io.imsave(os.path.join(folder, filename),
                   util.img_as_ubyte(prediction))
@@ -625,7 +685,11 @@ def _check_and_save_prediction(folder, prediction, filename):
 
 
 def _check_and_save_overlap(folder, data_original, prediction, filename):
-    """"""
+    """
+
+    Returns
+    -------
+    None"""
     if not os.path.isfile(os.path.join(folder, filename)):
         overlap = overlap_predictions(data_original, prediction)
         io.imsave(os.path.join(folder, filename),
@@ -704,7 +768,12 @@ def regroup_image(image_set, grid_shape=None, pad_width=32,
 
 
 def save_callbacks_csv(callbacks, filename_base='larson'):
-    """Small utility function to save Keras's callbacks.
+    """Small utility function to save TensorFlow callbacks.
+
+        
+    Returns
+    -------
+    None
     """
     np.savetxt(f'{filename_base}-accuracy.csv',
                np.asarray(callbacks.history['accuracy']),
@@ -726,7 +795,7 @@ def save_callbacks_csv(callbacks, filename_base='larson'):
 
 def save_cropped_chunk(image, window_shape=(32, 32, 32), step=32,
                        folder='temp'):
-    """Crops image and saves the cropped chunks in disk.
+    """Crops image and saves the cropped chunks in the disk.
 
     Parameters
     ----------
@@ -746,7 +815,7 @@ def save_cropped_chunk(image, window_shape=(32, 32, 32), step=32,
 
     Returns
     -------
-        None
+    None
 
     Notes
     -----
@@ -768,7 +837,7 @@ def save_cropped_chunk(image, window_shape=(32, 32, 32), step=32,
 
 def save_cropped_image(image, index, window_shape=(512, 512), step=512,
                        folder='temp'):
-    """Crops image and saves the cropped chunks in disk.
+    """Crops image and saves the cropped chunks in the disk.
 
     Parameters
     ----------
@@ -789,7 +858,7 @@ def save_cropped_image(image, index, window_shape=(512, 512), step=512,
 
     Returns
     -------
-        None
+    None
     """
     img_crop = np.vstack(util.view_as_windows(image,
                                               window_shape=window_shape,
@@ -803,6 +872,12 @@ def save_cropped_image(image, index, window_shape=(512, 512), step=512,
 
 def save_predictions(save_folder, predictions, multichannel=False,
                      num_class=2):
+    """
+        
+    Returns
+    -------
+    None
+    """
     for idx, pred in enumerate(predictions):
         if multichannel:
             output = _aux_label_visualize(image=pred,
@@ -892,6 +967,7 @@ def _aux_predict(predictions, pad_width=16, grid_shape=(10, 10),
 
 
 def _available_2d_nets(network, window_shape, n_class, preset_model):
+    """"""
     available_nets = {
         'tiramisu': tiramisu(input_size=(*window_shape, n_class),
                              preset_model=preset_model),
@@ -901,6 +977,7 @@ def _available_2d_nets(network, window_shape, n_class, preset_model):
 
 
 def _available_3d_nets(network, window_shape, n_class, preset_model):
+    """"""
     available_nets = {
         'tiramisu_3d': tiramisu_3d(input_size=(*window_shape, n_class),
                                    preset_model=preset_model),
@@ -910,8 +987,7 @@ def _available_3d_nets(network, window_shape, n_class, preset_model):
 
 
 def _folder_samples(base_ref, subfolder_ref):
-    """Returns the folder structure for each sample.
-    """
+    """Returns the folder structure for each sample."""
     folders = []
     for base_path, subfolders, _ in os.walk(base_ref):
         if subfolder_ref in subfolders:
@@ -921,8 +997,7 @@ def _folder_samples(base_ref, subfolder_ref):
 
 def _suitable_samples(pred_folders, gold_folders):
     """Returns the path of each sample contained in both prediction and
-    gold standard folders.
-    """
+    gold standard folders."""
     gold_samples = []
 
     pred_samples = [folder.split('/')[-2] for folder in pred_folders]
