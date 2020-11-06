@@ -234,16 +234,16 @@ def montage_3d(array_input, fill='mean', rescale_intensity=False,
         mean, uses the mean value over all images.
     rescale_intensity : boolean, optional (default : False)
         Whether to rescale the intensity of each image to [0, 1].
-    grid_shape : tuple, optional (default : None)
+    grid_shape : tuple or None, optional (default : None)
         The desired grid shape for the montage (ntiles_row, ntiles_column,
         ntiles_plane). The default aspect ratio is cubic.
-    padding_width=0 : int, optional (default : 0)
+    padding_width : int, optional (default : 0)
         The size of the spacing between the tiles and between the tiles and the
         borders. If non-zero, makes the boundaries of individual images easier
         to perceive.
     multichannel : boolean, optional (default : False)
-        If True, the last dimension is threated as a color channel, otherwise as
-        spatial.
+        If True, the last dimension is threated as a color channel. If False,
+        as spatial.
     """
     if multichannel:
         array_input = np.asarray(array_input)
@@ -642,9 +642,9 @@ def read_data(sample, folder_prediction, is_registered=False, is_binary=True):
     Returns
     -------
     data_prediction : (M, N, P) array
-        The prediction data corresponding to sample.
+        The prediction data corresponding to the sample.
     data_goldstd : (M, N, P) array
-        The gold standard data corresponding to sample.
+        The gold standard data corresponding to the sample.
     """
     aux_folder = sample['folder']
     if is_registered:
@@ -672,8 +672,17 @@ def read_data(sample, folder_prediction, is_registered=False, is_binary=True):
 
 
 def _check_and_save_prediction(folder, prediction, filename):
-    """
-    
+    """Checks if prediction exists in folder.
+
+    Parameters
+    ----------
+    folder : str
+        Folder where to look for filename.
+    prediction : (M, N) array
+        Prediction data.
+    filename : str
+        Name of the prediction file.
+
     Returns
     -------
     None
@@ -687,9 +696,21 @@ def _check_and_save_prediction(folder, prediction, filename):
 def _check_and_save_overlap(folder, data_original, prediction, filename):
     """
 
+    Parameters
+    ----------
+    folder : str
+        Folder where to look for filename.
+    data_original : (M, N) array
+        Original data to be overlapped with prediction.
+    prediction : (M, N) array
+        Prediction data.
+    filename : str
+        Name of the overlap file.
+
     Returns
     -------
-    None"""
+    None
+    """
     if not os.path.isfile(os.path.join(folder, filename)):
         overlap = overlap_predictions(data_original, prediction)
         io.imsave(os.path.join(folder, filename),
@@ -698,7 +719,20 @@ def _check_and_save_overlap(folder, data_original, prediction, filename):
 
 
 def read_csv_coefficients(filename):
-    """Reads csv coefficients saved in a file."""
+    """Reads Matthews and Dice coefficients saved in a file.
+
+    Parameters
+    ----------
+    filename : str
+        CSV file containing Matthews and Dice coefficients.
+
+    Returns
+    -------
+    matthews : array
+        Matthews coefficients read from file.
+    dice : array
+        Dice coefficients read from file.
+    """
     coefs = []
     csv_file = csv.reader(open(filename, 'r'))
     for row in csv_file:
@@ -712,20 +746,21 @@ def read_csv_coefficients(filename):
 
 
 def read_csv_roc_auc(filename):
-    """Reads csv ROC and AUC saved in a file.
+    """Reads ROC and AUC saved in a file.
     
     Parameters
     ----------
     filename : str
-    
+        CSV file containing ROC and AUC coefficients.
+
     Returns
     -------
-    fp_rate : ndarray
-        Arrays containing mean and standard deviation of false positive rate for
-        the processed samples.
+    fp_rate : array
+        Arrays containing mean and standard deviation of false positive rate
+        for the processed samples.
     tp_rate : array
-        Arrays containing mean and standard deviation of true positive rate for
-        the processed samples.
+        Arrays containing mean and standard deviation of true positive rate
+        for the processed samples.
     area_under_curve : float
         Area under curve obtained from fp_rate and tp_rate means.
     """
@@ -748,7 +783,27 @@ def read_csv_roc_auc(filename):
 
 def regroup_image(image_set, grid_shape=None, pad_width=32,
                   multichannel=False):
-    """
+    """Regroups an input imageset according to padding width and grid shape.
+
+    Parameters
+    ----------
+    image_set : (M, N) or (M, N, P) array
+        Input image.
+    grid_shape : tuple or None, optional (default : None)
+        The desired grid shape for the montage (ntiles_row, ntiles_column,
+        ntiles_plane). The default aspect ratio is cubic.
+    pad_width : int, optional (default : 32)
+        The size of the spacing between the tiles and between the tiles and the
+        borders. If non-zero, makes the boundaries of individual images easier
+        to perceive.
+    multichannel : boolean, optional (default : False)
+        If True, the last dimension is threated as a color channel. If False,
+        as spatial.
+
+    Returns
+    -------
+    image : (M, N) or (M, N, P) array
+        Image regrouped according to pad_width.
     """
     if multichannel:
         image_set = image_set[:,
@@ -768,12 +823,23 @@ def regroup_image(image_set, grid_shape=None, pad_width=32,
 
 
 def save_callbacks_csv(callbacks, filename_base='larson'):
-    """Small utility function to save TensorFlow callbacks.
+    """Saves TensorFlow callbacks in the disk, according to filename_base.
 
-        
+    Parameters
+    ----------
+    callbacks : TensorFlow callbacks
+        Variable containing TensorFlow callbacks resulting from training.
+    filename_base : str, optional (default : 'larson')
+        The base filename for the callbacks.
+
     Returns
     -------
     None
+
+    Notes
+    -----
+    This function saves the following callbacks: accuracy, validation accuracy,
+    loss, and validation loss.
     """
     np.savetxt(f'{filename_base}-accuracy.csv',
                np.asarray(callbacks.history['accuracy']),
@@ -872,8 +938,20 @@ def save_cropped_image(image, index, window_shape=(512, 512), step=512,
 
 def save_predictions(save_folder, predictions, multichannel=False,
                      num_class=2):
-    """
-        
+    """Stores prediction data in the folder chosen.
+
+    Parameters
+    ----------
+    save_folder : str
+        Folder where predictions will be stored.
+    predictions : (M, N, P) array
+        Prediction data.
+    multichannel : boolean, optional (default : False)
+        If True, the last dimension is threated as a color channel. If False,
+        as spatial.
+    num_class : int, optional (default : 2)
+        Number of classes.
+
     Returns
     -------
     None
@@ -892,7 +970,20 @@ def save_predictions(save_folder, predictions, multichannel=False,
 
 
 def tensor_generator(images, multichannel=False):
-    """
+    """Prepares data to be used in training/prediction.
+
+    Parameters
+    ----------
+    images : (M, N, P) array
+        Input data.
+    multichannel : boolean, optional (default : False)
+        If True, the last dimension is threated as a color channel. If False,
+        as spatial.
+
+    Yields
+    ------
+    image (M, N) array
+        Images with datatype float32, interval [0, 1].
     """
     for image in images:
         image = image / 255
@@ -925,8 +1016,7 @@ def _assert_same_length(data_1, data_2):
 
 
 def _aux_label_visualize(image, color_dict, num_class=2):
-    """
-    """
+    """Attributes colors to the input image, according to a color dict."""
     if np.ndim(image) == 3:
         image = image[..., 0]
     output = np.zeros(image.shape + (3,))
@@ -937,8 +1027,8 @@ def _aux_label_visualize(image, color_dict, num_class=2):
 
 def _aux_predict(predictions, pad_width=16, grid_shape=(10, 10),
                  num_class=2, multichannel=False):
-    """
-    """
+    """Calculates predictions according to padding width, grid shape and number
+    of classes."""
     aux_slice = len(grid_shape) * [slice(pad_width, -pad_width)]
     if multichannel:
         # multiply pad_width with everyone, except depth and colors
@@ -967,7 +1057,8 @@ def _aux_predict(predictions, pad_width=16, grid_shape=(10, 10),
 
 
 def _available_2d_nets(network, window_shape, n_class, preset_model):
-    """"""
+    """Returns the chosen 2D network model adapted for window shape and number
+    of classes."""
     available_nets = {
         'tiramisu': tiramisu(input_size=(*window_shape, n_class),
                              preset_model=preset_model),
@@ -977,7 +1068,8 @@ def _available_2d_nets(network, window_shape, n_class, preset_model):
 
 
 def _available_3d_nets(network, window_shape, n_class, preset_model):
-    """"""
+    """Returns the chosen 3D network model adapted for window shape and number
+    of classes."""
     available_nets = {
         'tiramisu_3d': tiramisu_3d(input_size=(*window_shape, n_class),
                                    preset_model=preset_model),
