@@ -11,6 +11,10 @@ import utils
 def copy_training_samples():
     """Copies training and validation images to a separated folder.
 
+    Parameters
+    ----------
+    None
+
     Returns
     -------
     None
@@ -70,6 +74,10 @@ def copy_training_samples():
 
 def crop_training_chunks():
     """Crops training and validation images in chunks.
+
+    Parameters
+    ----------
+    None
 
     Returns
     -------
@@ -157,6 +165,10 @@ def crop_training_chunks():
 
 def crop_training_images():
     """Crops training and validation images in smaller slices.
+
+    Parameters
+    ----------
+    None
 
     Returns
     -------

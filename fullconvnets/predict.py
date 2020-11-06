@@ -88,10 +88,12 @@ def predict(network, tiramisu_model=None, predict_vars=None, weights=None):
         Network results to compare with the gold standard.
     tiramisu_model : str or None (default : None)
         Tiramisu model to be used.
-    batch_size : int (default : 2)
-        Size of the batches used in the training.
-    epochs : int (default : 5)
-        How many epochs are used in the training.
+    predict_vars : str or None (default : None)
+        JSON file containing the variables 'folder', 'path', 'has_goldstd',
+        'path_goldstd', 'segmentation_interval', and 'registered_path'. If None,
+        values are based on Larson et al samples.
+    weights : str or None (default : None)
+        File containing weight coefficients to be used during prediction.
 
     Returns
     -------
@@ -99,9 +101,9 @@ def predict(network, tiramisu_model=None, predict_vars=None, weights=None):
 
     Notes
     -----
-    predict() calculates predictions on all samples in
-    constants.SAMPLES_BUNCH2 and saves the results on disk. Be sure
-    you have disk space available.
+    predict() calculates predictions on all samples in constants.SAMPLES_BUNCH2
+    and saves the results on disk. Be sure you have (lots of) disk space
+    available, according to the amount of samples you would like to process.
 
     Examples
     --------
@@ -120,6 +122,25 @@ def predict(network, tiramisu_model=None, predict_vars=None, weights=None):
 
 
 def _predict_on_sample(sample, network, tiramisu_model, weights):
+    """Predicts values on sample, using the chosen network and weights.
+
+    Parameters
+    ----------
+    network : str
+        Network results to compare with the gold standard.
+    tiramisu_model : str or None (default : None)
+        Tiramisu model to be used.
+    predict_vars : str or None (default : None)
+        JSON file containing the variables 'folder', 'path', 'has_goldstd',
+        'path_goldstd', 'segmentation_interval', and 'registered_path'. If None,
+        values are based on Larson et al samples.
+    weights : str or None (default : None)
+        File containing weight coefficients to be used during prediction.
+
+    Returns
+    -------
+    None
+    """
     print(f"# Now reading sample {sample['path']}.")
 
     # need to check how to deal with this better.
@@ -157,7 +178,7 @@ def _predict_on_sample(sample, network, tiramisu_model, weights):
 
 
 def _read_prediction_variables(filename: str) -> Dict[str, int]:
-    """Reads pred_vars from a JSON file."""
+    """Reads prediction variables from a JSON file."""
     with open(filename) as file_json:
         pred_vars = json.load(file_json)
 

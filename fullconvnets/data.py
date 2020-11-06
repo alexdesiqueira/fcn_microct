@@ -113,7 +113,24 @@ def train_generator(batch_size, train_path, subfolders, augmentation_dict,
 
 
 def _adjust_data(image, label, n_classes=2, multichannel=False):
-    """Helps set data according to its channels, classes, and labels."""
+    """Helps set data according to its channels, classes, and labels.
+    
+    Parameters
+    ----------
+    image : array_like
+        The input image.
+    label : array_like
+        The label image corresponding to the input image.
+    n_classes : int (default : 2)
+        Number of classes contained in labels.
+    multichannel : bool (default : False)
+        False if the input images have only one channel.
+
+    Returns
+    -------
+    (image, label) : list
+        List with the image/label pair.
+    """
     if multichannel:
         image = image / 255
         label = label[..., 0]

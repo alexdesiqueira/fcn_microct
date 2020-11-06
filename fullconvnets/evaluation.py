@@ -185,7 +185,7 @@ def measure_matthews(conf_matrix):
 
 
 def _assert_compatible(image_1, image_2):
-    """Raise an error if the shape and dtype do not match."""
+    """Raise an error if the shape of image_1 and image_2 do not match."""
     if not image_1.shape == image_2.shape:
         raise ValueError('Input images do not have the same dimensions.')
     return None

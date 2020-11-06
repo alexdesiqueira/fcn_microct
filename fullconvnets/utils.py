@@ -34,6 +34,7 @@ def check_tiramisu_layers(tiramisu_model=None):
     Parameters
     ----------
     tiramisu_model : str or None (default : None)
+        The tiramisu model to be used.
 
     Returns
     -------
@@ -48,51 +49,21 @@ def check_tiramisu_layers(tiramisu_model=None):
     return tiramisu_layers
 
 
-def folders_to_process(folder_base, folder_pred, subfolder_pred,
-                       folder_gold_std, subfolder_gold_std):
-    """Returns lists of folders with correspondents in both prediction and gold
-    standard samples.
-
-    Notes
-    -----
-       The input arguments generated from Larson's gold standard and our
-    results are:
-
-    FOLDER_BASE = '~/data/larson_2019/'
-    FOLDER_PRED = 'data/<network>/'
-    SUBFOLDER_PRED = 'predict'
-    FOLDER_GOLD_STD = 'Seg/Bunch2/'
-    SUBFOLDER_GOLD_STD = '19_Gray_image'
-
-    Please replace <network> in FOLDER_PRED with 'unet', 'tiramisu', 'unet_3d',
-    or 'tiramisu_3d', depending on the predictions you want to use.
-    """
-    pred_folders, gold_folders = [], []
-
-    base_pred = os.path.join(folder_base, folder_pred)
-    base_gold = os.path.join(folder_base, folder_gold_std)
-
-    for folder in [base_pred, base_gold]:
-        _assert_folder_exists(folder)
-
-    # checking the path for prediction samples.
-    pred_folders = _folder_samples(base_ref=base_pred,
-                                   subfolder_ref=subfolder_pred)
-
-    # now, checking the path for Larson's gold standard.
-    gold_folders = _folder_samples(base_ref=base_gold,
-                                   subfolder_ref=subfolder_gold_std)
-
-    # ensuring the same samples are available in pred_folders and gold_folders
-    pred_valid, gold_valid = _suitable_samples(pred_folders, gold_folders)
-
-    return pred_valid, gold_valid
-
-
 def imread_prediction(image, is_binary=True):
     """Auxiliary function intended to be used with skimage.io.ImageCollection.
-    Returns a binary prediction image — True when image > 0.5, False
-    when image <= 0.5.
+
+    Parameters
+    ----------
+    image : array_like
+        The input image.
+    is_binary : bool
+        If True, returns a binary prediction image: True when pixel in the image
+        is higher than 0.5, False when lower than or equal to 0.5.
+
+    Returns
+    -------
+    prediction : array_like
+        The prediction image.
     """
     if is_binary:
         return util.img_as_float(io.imread(image)) > 0.5
@@ -103,6 +74,16 @@ def imread_prediction(image, is_binary=True):
 def imread_goldstd(image):
     """Auxiliary function intended to be used with skimage.io.ImageCollection.
     Helps to read and process Larson et al's gold standard images.
+
+    Parameters
+    ----------
+    image : array_like
+        The input image.
+
+    Returns
+    -------
+    gold_standard : array_like
+        The gold standard image.
     """
     return process_goldstd_images(io.imread(image))
 
@@ -112,6 +93,26 @@ def measure_all_coefficients(data_test, data_gt,
                              save_coef=True,
                              filename='coefficients.csv'):
     """Measures all comparison coefficients between two input data.
+
+    Parameters
+    ----------
+    data_test : array_like
+        The input test data.
+    data_gt : array_like
+        The gold standard data.
+    calc_coef : dict (default : {'matthews': True, 'dice': True})
+        Determines what coefficients to calculate.
+    save_coef : bool (default : True)
+        If True, saves the coefficients to a file in the disk.
+    filename : str (default : 'coefficients.csv')
+        If save_coef is True, where to save the calculated coefficients.
+
+    Returns
+    -------
+    all_matthews : array
+        Array containing all Matthews coefficient values for the input data.
+    all_dice : array
+        Array containing all Dice coefficient values for the input data.
 
     Example
     -------
@@ -155,7 +156,28 @@ def measure_all_coefficients(data_test, data_gt,
 def measure_roc_and_auc(data_pred, data_gs,
                         save_coef=True,
                         filename='coef_roc_and_auc.csv'):
-    """Measures all comparison coefficients between two input data.
+    """Measures the ROC curve and its area under curve for two input data.
+
+    Parameters
+    ----------
+    data_pred : array_like
+        The input prediction data.
+    data_gs : array_like
+        The gold standard data.
+    save_coef : boolean, optional (default : True)
+        If True, saves the coefficients to a file in the disk.
+    filename : str, optional (default : 'coef_roc_and_auc.csv')
+        If save_coef is True, where to save the calculated coefficients.
+
+    Returns
+    -------
+    fpr_mean : array
+        Mean and standard deviation for the false positive rates.
+    tpr_mean : array
+        Mean and standard deviation for the true positive rates.
+    auc(fpr_mean[0], tpr_mean[0]) : array
+        Area under curve for the mean ROC (true positive rate vs. false positive
+        rate) curve.
 
     Example
     -------
@@ -199,6 +221,28 @@ def measure_roc_and_auc(data_pred, data_gs,
 def montage_3d(array_input, fill='mean', rescale_intensity=False,
                grid_shape=None, padding_width=0, multichannel=False):
     """Create a montage of several single- or multichannel cubes.
+
+    Parameters
+    ----------
+    array_input : ndarray
+        An array representing an ensemble of K images of equal shape.
+    fill : float or array-like of floats or ‘mean’, optional (default : 'mean')
+        Value to fill the padding areas and/or the extra tiles in the output
+        array. Has to be float for single channel collections. For multichannel
+        collections has to be an array-like of shape of number of channels. If
+        mean, uses the mean value over all images.
+    rescale_intensity : boolean, optional (default : False)
+        Whether to rescale the intensity of each image to [0, 1].
+    grid_shape : tuple, optional (default : None)
+        The desired grid shape for the montage (ntiles_row, ntiles_column,
+        ntiles_plane). The default aspect ratio is cubic.
+    padding_width=0 : int, optional (default : 0)
+        The size of the spacing between the tiles and between the tiles and the
+        borders. If non-zero, makes the boundaries of individual images easier
+        to perceive.
+    multichannel : boolean, optional (default : False)
+        If True, the last dimension is threated as a color channel, otherwise as
+        spatial.
     """
     if multichannel:
         array_input = np.asarray(array_input)
@@ -258,7 +302,7 @@ def montage_3d(array_input, fill='mean', rescale_intensity=False,
 
 def network_models(network='unet', window_shape=(288, 288), n_class=1,
                    preset_model='tiramisu-67'):
-    """
+    """Returns a network model with window shape and number of classes defined.
 
     Parameters
     ----------
@@ -281,7 +325,7 @@ def network_models(network='unet', window_shape=(288, 288), n_class=1,
     window_shape receives two-dimensional and three-dimensional inputs,
     chosen to match the network.
 
-    preset_model can receive  tiramisu-56 and tiramisu-67.
+    preset_model can receive tiramisu-56 and tiramisu-67.
     """
     if network in const.AVAILABLE_2D_NETS:
         model = _available_2d_nets(network,
@@ -325,7 +369,29 @@ def overlap_predictions(image, prediction):
 
 def predict_on_chunk(data, weights, network='unet_3d', n_class=1, pad_width=16,
                      window_shape=(32, 32, 32), step=16):
-    """
+    """Returns a network prediction on a data chunk — i.e., a 3D object.
+
+    Parameters
+    ----------
+    data : ndarray
+        The input data.
+    weights : TensorFlow weights
+        A file with TensorFlow weights for the desired network.
+    network : str (default : 'unet_3d')
+        The network to use in prediction, correspondent to the weights file.
+    n_class : int (default : 1)
+        Number of classes to predict.
+    pad_width : int (default : 16)
+        Width of the padding to add in the borders of data.
+    window_shape : list (default : (32, 32, 32))
+        Size of the window to process.
+    step : int (default : 16)
+        Size of the step used to chunk the data. Used as an overlap feature.
+
+    Returns
+    -------
+    chunk_predictions : ndarray
+        Array containing predict windows on the input data.
     """
     results = []
     model = network_models(network,
@@ -343,8 +409,10 @@ def predict_on_chunk(data, weights, network='unet_3d', n_class=1, pad_width=16,
     ))
     data_size = data_crop.shape[0]
     crop_steps = 640
+
     for idx in range(0, data_size, crop_steps):
-        slice = data_crop[idx:idx+crop_steps]  # passing less objects at a time; trying to save some memory
+        # passing less objects at a time; trying to save some memory
+        slice = data_crop[idx:idx+crop_steps]
         steps = slice.shape[0]
         chunk_gen = tensor_generator(slice)
         results.append(model.predict(chunk_gen, steps=steps, verbose=1))
@@ -354,7 +422,29 @@ def predict_on_chunk(data, weights, network='unet_3d', n_class=1, pad_width=16,
 
 def predict_on_image(image, weights, network='unet', n_class=1, pad_width=16,
                      window_shape=(288, 288), step=256):
-    """
+    """Returns a network prediction on an image — i.e., a 2D object.
+
+    Parameters
+    ----------
+    image : 2d array
+        The input data.
+    weights : TensorFlow weights
+        A file with TensorFlow weights for the desired network.
+    network : str (default : 'unet')
+        The network to use in prediction, correspondent to the weights file.
+    n_class : int (default : 1)
+        Number of classes to predict.
+    pad_width : int (default : 16)
+        Width of the padding to add in the borders of data.
+    window_shape : list (default : (288, 288))
+        Size of the window to process.
+    step : int (default : 16)
+        Size of the step used to chunk the data. Used as an overlap feature.
+
+    Returns
+    -------
+    prediction : array
+        Array containing predictions on the input data.
     """
     model = network_models(network,
                            window_shape=window_shape,
@@ -390,7 +480,18 @@ def prediction_folder(network='unet', tiramisu_model=None):
 
 
 def process_goldstd_images(data_goldstd):
-    """
+    """Reads a gold standard image from Larson et al., returning only the
+    fibers within it.
+
+    Parameters
+    ----------
+    data_goldstd : array
+        Input image from Larson et al.
+
+    Returns
+    -------
+    bin_goldstd : array
+        Binary image containing fibers detected by Larson et al.'s algorithm.
     """
     if np.unique(data_goldstd).size > 2:
         data_goldstd = data_goldstd == 217
@@ -728,7 +829,7 @@ def tensor_generator(images, multichannel=False):
 
 
 def _assert_compatible(image_1, image_2):
-    """Raise an error if the shape and dtype do not match."""
+    """Raise an error if the shape of image_1 and image_2 do not match."""
     if not image_1.shape == image_2.shape:
         raise ValueError('Input images do not have the same dimensions.')
     return None
