@@ -28,20 +28,22 @@ When `git` is installed, the following command on a [Linux](https://help.gnome.o
 $ git clone https://github.com/alexdesiqueira/fcn_microct.git fcn_microct
 ```
 
-For more information on how to use `git`,  please check (its documentation)[https://git-scm.com/doc].
+For more information on how to use `git`,  please check [its documentation](https://git-scm.com/doc).
+
+To run the code, you need Python installed. We recommend using the [Anaconda distribution](https://www.anaconda.com/products/individual); all necessary tools are pre-installed. For installation instructions and packages to different operating systems, please refer to their [downloads page](https://www.anaconda.com/products/individual#Downloads).
 
 ## Training a neural network
 
 After downloading the input data, 
 
 
-### Options
+### Arguments
 
-* `-n`, `--network` : convolutional network to be used in the training. Available networks: 'tiramisu', 'tiramisu_3d', 'unet', 'unet_3d'.
+* `-n`, `--network` : convolutional network to be used in the training. Available networks: `'tiramisu'`, `'tiramisu_3d'`, `'unet'`, `'unet_3d'`.
 
-* `-t`, `--tiramisu_model` : when the network used is a tiramisu, the model to be used. Not necessary when using U-Nets. Available models: 'tiramisu-56', 'tiramisu-67'.
+* `-t`, `--tiramisu_model` : when the network used is a tiramisu, the model to be used. Not necessary when using U-Nets. Available models: `'tiramisu-56'`, `'tiramisu-67'`.
 
-* `-v`, `--train_vars` : JSON file containing the training variables 'target_size', 'folder_train', 'folder_validate', 'training_images', 'validation_images'. Defaults: based on `constants.py` to train using Larson et al samples.
+* `-v`, `--train_vars` : JSON file containing the training variables `'target_size'`, `'folder_train'`, `'folder_validate'`, `'training_images'`, `'validation_images'`. Defaults: based on `constants.py` to train using Larson et al samples.
 
 * `-b`, `--batch_size` : size of the batches used in the training (optional). Default: 2.
 
