@@ -28,14 +28,26 @@ When `git` is installed, the following command on a [Linux](https://help.gnome.o
 $ git clone https://github.com/alexdesiqueira/fcn_microct.git fcn_microct
 ```
 
-For more information on how to use `git`,  please check [its documentation](https://git-scm.com/doc).
+The `$` represents the Terminal prompt. For more information on how to use `git`,  please check [its documentation](https://git-scm.com/doc).
 
-To run the code, you need Python installed. We recommend using the [Anaconda distribution](https://www.anaconda.com/products/individual); all necessary tools are pre-installed. For installation instructions and packages to different operating systems, please refer to their [downloads page](https://www.anaconda.com/products/individual#Downloads).
+You need Python installed to execute the code. We recommend using the [Anaconda distribution](https://www.anaconda.com/products/individual); all necessary tools are pre-installed. For installation instructions and packages to different operating systems, please refer to their [downloads page](https://www.anaconda.com/products/individual#Downloads). The following command installs the necessary dependencies:
+
+```bash
+$ pip install -r requirements.txt
+```
+
+The `$` represents the Terminal prompt. Now we are ready to use this repository.
+
 
 ## Training a neural network
 
-After downloading the input data, 
+After downloading Larson et al's original data and preparing the PC to run the code in this repository, you can use the script `train.py` to train the neural networks in the input data. For example, the command
 
+```bash
+$ python train.py -n 'tiramisu_3d' -t 'tiramisu-67' -w 'larson_tiramisu_3d-67.hdf5' -e 5 -b 2
+```
+
+will train a 3D Tiramisu-67 for 5 epochs, with a batch size of 2 using Larson et al's input data. The resulting weights will be stored at `larson_tiramisu_3d-67.hdf5`.
 
 ### Arguments
 
@@ -44,6 +56,18 @@ After downloading the input data,
 * `-t`, `--tiramisu_model` : when the network used is a tiramisu, the model to be used. Not necessary when using U-Nets. Available models: `'tiramisu-56'`, `'tiramisu-67'`.
 
 * `-v`, `--train_vars` : JSON file containing the training variables `'target_size'`, `'folder_train'`, `'folder_validate'`, `'training_images'`, `'validation_images'`. Defaults: based on `constants.py` to train using Larson et al samples.
+
+An example of a JSON file follows:
+
+```json
+{
+    "target_size": [64, 64, 64],
+    "folder_train": "tests/data/train",
+    "folder_validate": "tests/data/validate",
+    "training_images": 1536,
+    "validation_images": 1024
+}
+```
 
 * `-b`, `--batch_size` : size of the batches used in the training (optional). Default: 2.
 
