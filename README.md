@@ -51,11 +51,11 @@ will train a 3D Tiramisu-67 for 5 epochs, with a batch size of 2 using Larson et
 
 ### Arguments
 
-* `-n`, `--network` : convolutional network to be used in the training. Available networks: `'tiramisu'`, `'tiramisu_3d'`, `'unet'`, `'unet_3d'`.
+* `-n`, `--network` : convolutional network to be used in the training. **Available networks:** `'tiramisu'`, `'tiramisu_3d'`, `'unet'`, `'unet_3d'`.
 
-* `-t`, `--tiramisu_model` : when the network used is a tiramisu, the model to be used. Not necessary when using U-Nets. Available models: `'tiramisu-56'`, `'tiramisu-67'`.
+* `-t`, `--tiramisu_model` : when the network used is a tiramisu, the model to be used. Not necessary when using U-Nets. **Available models:** `'tiramisu-56'`, `'tiramisu-67'`.
 
-* `-v`, `--train_vars` : JSON file containing the training variables `'target_size'`, `'folder_train'`, `'folder_validate'`, `'training_images'`, `'validation_images'`. Defaults: based on `constants.py` to train using Larson et al samples.
+* `-v`, `--train_vars` : JSON file containing the training variables `'target_size'`, `'folder_train'`, `'folder_validate'`, `'training_images'`, `'validation_images'`. **Defaults:** based on `constants.py` to train using Larson et al samples.
 
 An example of a JSON file follows:
 
@@ -69,11 +69,11 @@ An example of a JSON file follows:
 }
 ```
 
-* `-b`, `--batch_size` : size of the batches used in the training (optional). Default: 2.
+* `-b`, `--batch_size` : size of the batches used in the training (optional). **Default:** 2.
 
-* `-e`, `--epochs` : how many epochs are used in the training (optional). Default: 5.
+* `-e`, `--epochs` : how many epochs are used in the training (optional). **Default:** 5.
 
-* `-w`, `--weights` : output containing weight coefficients. Default: `weights_<NETWORK>.hdf5`.
+* `-w`, `--weights` : output containing weight coefficients. **Default:** `weights_<NETWORK>.hdf5`.
 
 ## Predicting on Larson et al's data
 
