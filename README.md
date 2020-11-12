@@ -62,10 +62,10 @@ An example of a JSON file follows:
 ```json
 {
     "target_size": [64, 64, 64],
-    "folder_train": "tests/data/train",
-    "folder_validate": "tests/data/validate",
-    "training_images": 1536,
-    "validation_images": 1024
+    "folder_train": "data/train",
+    "folder_validate": "data/validate",
+    "training_images": 1000,
+    "validation_images": 200
 }
 ```
 
@@ -75,7 +75,40 @@ An example of a JSON file follows:
 
 * `-w`, `--weights` : output containing weight coefficients. **Default:** `weights_<NETWORK>.hdf5`.
 
+
 ## Predicting on Larson et al's data
+
+After training one of the architectures into the input data — or if you would like to use one of weights we made available — you can use the script `predict.py` to predict results — i.e., use the network to separate regions of interest into your data. For example, the command
+
+```bash
+$ python predict.py -n 'tiramisu_3d' -t 'tiramisu-67' -w 'coefficients/larson2019_tiramisu_3d-67/larson_tiramisu_3d-67.hdf5'
+```
+
+will separate fibers in Larson et al's input data using a 3D Tiramisu-67.
+
+### Arguments
+
+* `-n`, `--network` : convolutional network to be used in the prediction. **Available networks:** `'tiramisu'`, `'tiramisu_3d'`, `'unet'`, `'unet_3d'`.
+
+* `-t`, `--tiramisu_model` : when the network used is a tiramisu, the model to be used. Not necessary when using U-Nets. **Available models:** `'tiramisu-56'`, `'tiramisu-67'`.
+
+* `-v`, `--train_vars` : JSON file containing the training variables `'folder'`, `'path'`, `'file_ext'`, `'has_goldstd'`, `'path_goldstd'`, `'segmentation_interval'`, `'registered_path'`. **Defaults:** based on `constants.py` to train using Larson et al samples.
+
+An example of a JSON file follows:
+
+```json
+{
+    "folder": "data",
+    "path": "data/test",
+    "file_ext": ".tif",
+    "has_goldstd": true,
+    "path_goldstd": "data/test/label",
+    "segmentation_interval": null,
+    "registered_path": null
+}
+```
+
+* `-w`, `--weights` : file containing weight coefficients to be used on the prediction.
 
 
 ## References

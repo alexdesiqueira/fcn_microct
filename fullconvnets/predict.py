@@ -42,7 +42,7 @@ def main():
     help_predict_vars = """JSON file containing the variables 'folder', 'path',
                            'has_goldstd', 'path_goldstd',
                            'segmentation_interval', and 'registered_path'.
-                           Defaults: based on constants.py to train Larson
+                           Defaults: based on constants.py to predict on Larson
                            et al samples"""
     parser.add_argument('-v',
                         '--predict_vars',
