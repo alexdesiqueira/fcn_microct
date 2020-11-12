@@ -81,10 +81,10 @@ An example of a JSON file follows:
 After training one of the architectures into the input data — or if you would like to use one of weights we made available — you can use the script `predict.py` to predict results — i.e., use the network to separate regions of interest into your data. For example, the command
 
 ```bash
-$ python predict.py -n 'tiramisu_3d' -t 'tiramisu-67' -w 'coefficients/larson2019_tiramisu_3d-67/larson_tiramisu_3d-67.hdf5'
+$ python predict.py -n 'tiramisu_3d' -t 'tiramisu-67' -w 'larson_tiramisu_3d-67.hdf5'
 ```
 
-will separate fibers in Larson et al's input data using a 3D Tiramisu-67.
+will separate fibers in Larson et al's input data using a 3D Tiramisu-67, with weights contained in the file `larson_tiramisu_3d-67.hdf5`.
 
 ### Arguments
 
