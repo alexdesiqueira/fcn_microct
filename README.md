@@ -80,4 +80,4 @@ An example of a JSON file follows:
 
 ## References
 
-[1] Larson, N. M., Cuellar, C. & Zok, F. W. X-ray computed tomography of microstructure evolution during matrix impregnation and curing in unidirectional fiber beds. Composites Part A: Applied Science and Manufacturing 117, 243–259 (2019).
+[[1]](https://www.sciencedirect.com/science/article/abs/pii/S1359835X18304603) Larson, N. M., Cuellar, C. & Zok, F. W. X-ray computed tomography of microstructure evolution during matrix impregnation and curing in unidirectional fiber beds. Composites Part A: Applied Science and Manufacturing 117, 243–259 (2019).
