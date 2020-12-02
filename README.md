@@ -115,7 +115,7 @@ An example of a JSON file follows:
 
 ### Preparing the training samples
 
-After downloading Larson et al's data, on the folder `fullconvnets`, start a Python prompt — e.g, Python interpreter, IPython, Jupyter Notebook. First, we import the library `prepare.py`:
+After downloading Larson et al's data, on the folder `fullconvnets`, start a Python prompt — e.g, [Python interpreter](https://docs.python.org/3.8/tutorial/interpreter.html), IPython, Jupyter Notebook. First, we import the library `prepare.py`:
 
 ```python
 >>> import prepare
@@ -141,7 +141,7 @@ To crop the training samples and their labels for the 3D networks, use the follo
 
 ### Training the networks
 
-The following commands in a Terminal/PowerShell will train the four networks using the downloaded and prepared data, according to our study:
+The following commands in a [Linux](https://help.gnome.org/users/gnome-terminal/stable/)/[Mac OS](https://support.apple.com/guide/terminal/welcome/mac) Terminal or a [Windows PowerShell](https://docs.microsoft.com/en-us/powershell/scripting/windows-powershell/install/installing-windows-powershell?view=powershell-7) will train the four networks using the downloaded and prepared data, according to our study:
 
 ```bash
 $ python train.py -n 'unet' -w 'larson_unet.hdf5' -e 5 -b 2
