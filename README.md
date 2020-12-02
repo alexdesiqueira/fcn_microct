@@ -115,7 +115,7 @@ An example of a JSON file follows:
 
 ### Preparing the training samples
 
-After downloading Larson et al's data, on the folder `fullconvnets`, start a Python prompt — e.g, [Python interpreter](https://docs.python.org/3.8/tutorial/interpreter.html), IPython, Jupyter Notebook. First, we import the library `prepare.py`:
+After downloading Larson et al's data, on the folder `fullconvnets`, start a Python prompt — e.g, [Python interpreter](https://docs.python.org/3.8/tutorial/interpreter.html), [IPython](http://ipython.org/), [Jupyter Notebook](https://jupyter.org/). First, we import the library `prepare.py`:
 
 ```python
 >>> import prepare
@@ -152,7 +152,7 @@ $ python train.py -n 'tiramisu_3d' -t 'tiramisu-67' -w 'larson_tiramisu_3d-67.hd
 
 ### Predicting using the trained networks
 
-The following commands in a Terminal/PowerShell will predict the data using the four trained networks:
+The following commands in a [Linux](https://help.gnome.org/users/gnome-terminal/stable/)/[Mac OS](https://support.apple.com/guide/terminal/welcome/mac) Terminal or a [Windows PowerShell](https://docs.microsoft.com/en-us/powershell/scripting/windows-powershell/install/installing-windows-powershell?view=powershell-7) will predict the data using the four trained networks:
 
 [TODO Continue here!]
 
