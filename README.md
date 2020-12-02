@@ -111,6 +111,52 @@ An example of a JSON file follows:
 * `-w`, `--weights` : file containing weight coefficients to be used on the prediction.
 
 
+## HOW-TO: Reproducing our study
+
+### Preparing the training samples
+
+After downloading Larson et al's data, on the folder `fullconvnets`, start a Python prompt — e.g, Python interpreter, IPython, Jupyter Notebook. First, we import the library `prepare.py`:
+
+```python
+>>> import prepare
+```
+
+After importing `prepare`, we copy the training samples we will use, as defined in `constants.py`. Use the function `prepare.copy_training_samples()`:
+
+```python
+>>> prepare.copy_training_samples()
+```
+
+Then, we crop the images to fit the network input. If you would like to train the 2D networks, the following statement crops the training images and their labels:
+
+```python
+>>> prepare.crop_training_images()
+```
+
+To crop the training samples and their labels for the 3D networks, use the following statement:
+
+```python
+>>> prepare.crop_training_chunks()
+```
+
+### Training the networks
+
+The following commands in a Terminal/PowerShell will train the four networks using the downloaded and prepared data, according to our study:
+
+```bash
+$ python train.py -n 'unet' -w 'larson_unet.hdf5' -e 5 -b 2
+$ python train.py -n 'unet_3d' -w 'larson_unet_3d.hdf5' -e 5 -b 2
+$ python train.py -n 'tiramisu' -t 'tiramisu-67' -w 'larson_tiramisu-67.hdf5' -e 5 -b 2
+$ python train.py -n 'tiramisu_3d' -t 'tiramisu-67' -w 'larson_tiramisu_3d-67.hdf5' -e 5 -b 2
+```
+
+### Predicting using the trained networks
+
+The following commands in a Terminal/PowerShell will predict the data using the four trained networks:
+
+[TODO Continue here!]
+
+
 ## References
 
 [[1]](https://www.sciencedirect.com/science/article/abs/pii/S1359835X18304603) Larson, N. M., Cuellar, C. & Zok, F. W. X-ray computed tomography of microstructure evolution during matrix impregnation and curing in unidirectional fiber beds. Composites Part A: Applied Science and Manufacturing 117, 243–259 (2019).
