@@ -113,6 +113,8 @@ An example of a JSON file follows:
 
 ## HOW-TO: Reproducing our study
 
+The following instructions can be used to reproduce the results from our manuscript. All CNN algorithms were implemented using [TensorFlow](https://www.tensorflow.org/) and [Keras](https://keras.io/) on a computer with two Intel Xeon Gold processors 6134 and two Nvidia GeForce RTX 2080 graphical processing units. Each GPU has 10 GB of RAM.
+
 ### Preparing the training samples
 
 After downloading Larson et al's data, on the folder `fullconvnets`, start a Python prompt — e.g, [Python interpreter](https://docs.python.org/3.8/tutorial/interpreter.html), [IPython](http://ipython.org/), [Jupyter Notebook](https://jupyter.org/). First, we import the library `prepare.py`:
@@ -154,7 +156,14 @@ $ python train.py -n 'tiramisu_3d' -t 'tiramisu-67' -w 'larson_tiramisu_3d-67.hd
 
 The following commands in a [Linux](https://help.gnome.org/users/gnome-terminal/stable/)/[Mac OS](https://support.apple.com/guide/terminal/welcome/mac) Terminal or a [Windows PowerShell](https://docs.microsoft.com/en-us/powershell/scripting/windows-powershell/install/installing-windows-powershell?view=powershell-7) will predict the data using the four trained networks:
 
-[TODO Continue here!]
+[TODO Check these commands]
+
+```bash
+$ python predict.py -n 'unet' -w 'larson_unet.hdf5'
+$ python predict.py -n 'unet_3d' -w 'larson_unet_3d.hdf5'
+$ python predict.py -n 'tiramisu' -t 'tiramisu-67' -w 'larson_tiramisu-67.hdf5'
+$ python predict.py -n 'tiramisu_3d' -t 'tiramisu-67' -w 'larson_tiramisu_3d-67.hdf5'
+```
 
 
 ## References
