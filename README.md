@@ -15,7 +15,7 @@
 
 This study uses neural networks to process fibers in fiber beds, using Larson et al's data [1]. To be able to reproduce our study, it is necessary to download that data. For that, you will need a login at the [Globus](https://www.globus.org/) platform.
 
-Larson et al's dataset is available at http://dx.doi.org/doi:10.18126/M2QM0Z. We used twelve different datasets in total. We keep the same file identifiers for fast cross-reference:
+Larson et al's dataset is available at http://dx.doi.org/doi:10.18126/M2QM0Z. We used twelve different datasets in total. We keep the same file identifiers Larson et al. used in their study, for fast cross-reference:
 
 * **"232p1":** 
     * wet: folder `data/Recons/Bunch2WoPR/rec20160324_055424_232p1_wet_1cm_cont_4097im_1500ms_17keV_13_a.h5`
