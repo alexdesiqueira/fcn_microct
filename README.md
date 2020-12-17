@@ -15,7 +15,28 @@
 
 This study uses neural networks to process fibers in fiber beds, using Larson et al's data [1]. To be able to reproduce our study, it is necessary to download that data. For that, you will need a login at the [Globus](https://www.globus.org/) platform.
 
-Larson et al's dataset is available at http://dx.doi.org/doi:10.18126/M2QM0Z. The samples we used are at the folder `data/Recons/Bunch2WoPR`.
+Larson et al's dataset is available at http://dx.doi.org/doi:10.18126/M2QM0Z. We used twelve different datasets in total. We keep the same file identifiers for fast cross-reference:
+
+* **"232p1":** 
+    * wet: folder `data/Recons/Bunch2WoPR/rec20160324_055424_232p1_wet_1cm_cont_4097im_1500ms_17keV_13_a.h5`
+* **"232p3":**
+    * wet: folder `data/Recons/Bunch2WoPR/rec20160318_191511_232p3_2cm_cont__4097im_1500ms_ML17keV_6.h5`
+    * cured: folder `data/Recons/Bunch2WoPR/rec20160323_093947_232p3_cured_1p5cm_cont_4097im_1500ms_17keV_10.h5`
+    * cured registered: folder `data/Seg/Bunch2/rec20160323_093947_232p3_cured_1p5cm_cont_4097im_1500ms_17keV_10.h5/Registered/Bunch2WoPR`
+* **"235p1":**
+    * wet: folder `data/Recons/Bunch2WoPR/rec20160324_123639_235p1_wet_0p7cm_cont_4097im_1500ms_17keV_14.h5`
+* **"235p4":**
+    * wet: folder `data/Recons/Bunch2WoPR/rec20160326_175540_235p4_wet_1p15cm_cont_4097im_1500ex_17keV_20.h5`
+    * cured: folder `data/Recons/Bunch2WoPR/rec20160327_003824_235p4_cured_1p15cm_cont_4097im_1500ex_17keV_22.h5`
+    * cured registered: folder `data/Seg/Bunch2/rec20160327_003824_235p4_cured_1p15cm_cont_4097im_1500ex_17keV_22.h5/Registered/Bunch2WoPR`
+* **"244p1":**
+    * wet: folder `data/Recons/Bunch2WoPR/rec20160318_223946_244p1_1p5cm_cont__4097im_1500ms_ML17keV_7.h5`
+    * cured: folder `data/Recons/Bunch2WoPR/rec20160320_160251_244p1_1p5cm_cont_4097im_1500ms_ML17keV_9.h5`
+    * cured registered: folder `data/Seg/Bunch2/rec20160320_160251_244p1_1p5cm_cont_4097im_1500ms_ML17keV_9.h5/Registered/Bunch2WoPR`
+* **"245p1":** 
+    * wet: folder `rec20160327_160624_245p1_wet_1cm_cont_4097im_1500ex_17keV_23.h5`
+
+The first three numeric characters correspond to a material sample, and the last character correspond to different extrinsic factors, e.g. deformation. Despite being samples from similar materials, the reconstructed files presented several differences: different amount of ringing artifacts, intensity variation, noise, etc. Then, they are considered as different samples in our study.
 
 
 ## Preparing the PC to run the code locally
