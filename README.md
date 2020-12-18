@@ -1,4 +1,4 @@
-# Large-scale fiber segmentation on unidirectional fiber beds using fully convolutional neural networks
+# A reusable pipeline for large-scale fiber segmentation on unidirectional fiber beds using fully convolutional neural networks
 
 ## Alexandre Fioravante de Siqueira<sup>1,2,3</sup>, Daniela Mayumi Ushizima<sup>1,2</sup>, Stéfan J. van der Walt<sup>1,2</sup>
 
