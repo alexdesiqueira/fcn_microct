@@ -197,7 +197,7 @@ $ python predict.py -n 'tiramisu_3d' -t 'tiramisu-67' -w 'larson_tiramisu_3d-67.
 
 ## Structure on Larson et al's data
 
-This is the structure on Larson et al's folders we used in this study.
+This is the structure of Larson et al's folders we used in this study.
 
 ```bash
 data/Recons/Bunch2WoPR/
