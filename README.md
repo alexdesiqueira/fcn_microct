@@ -36,7 +36,9 @@ Larson et al's dataset is available at http://dx.doi.org/doi:10.18126/M2QM0Z. We
 * **"245p1":** 
     * wet: folder `rec20160327_160624_245p1_wet_1cm_cont_4097im_1500ex_17keV_23.h5`
 
-The first three numeric characters correspond to a material sample, and the last character correspond to different extrinsic factors, e.g. deformation. Despite being samples from similar materials, the reconstructed files presented several differences: different amount of ringing artifacts, intensity variation, noise, etc. Then, they are considered as different samples in our study.
+The first three numeric characters correspond to a material sample, and the last character correspond to different extrinsic factors, e.g. deformation. Despite being samples from similar materials, the reconstructed files presented several differences: different amount of ringing artifacts, intensity variation, noise, etc.
+
+A copy of the folder structure is given at the Appendix, at the end of this file.
 
 
 ## Preparing the PC to run the code locally
@@ -186,7 +188,85 @@ $ python predict.py -n 'tiramisu' -t 'tiramisu-67' -w 'larson_tiramisu-67.hdf5'
 $ python predict.py -n 'tiramisu_3d' -t 'tiramisu-67' -w 'larson_tiramisu_3d-67.hdf5'
 ```
 
-
 ## References
 
 [[1]](https://www.sciencedirect.com/science/article/abs/pii/S1359835X18304603) Larson, N. M., Cuellar, C. & Zok, F. W. X-ray computed tomography of microstructure evolution during matrix impregnation and curing in unidirectional fiber beds. Composites Part A: Applied Science and Manufacturing 117, 243–259 (2019).
+
+
+# Appendices
+
+## Structure on Larson et al's data
+
+This is the structure on Larson et al's folders we used in this study.
+
+```bash
+data/Recons/Bunch2WoPR/
+├── rec20160318_191511_232p3_2cm_cont__4097im_1500ms_ML17keV_6.h5
+│   ├── rec_SFRR_2600_B0p2_00159.tiff
+│   ├── rec_SFRR_2600_B0p2_00160.tiff
+│   ├── (...)
+│   └── rec_SFRR_2600_B0p2_01158.tiff
+├── rec20160318_223946_244p1_1p5cm_cont__4097im_1500ms_ML17keV_7.h5
+│   ├── rec_SFRR_2600_B0p2_00000.tiff
+│   ├── rec_SFRR_2600_B0p2_00001.tiff
+│   ├── (...)
+│   └── rec_SFRR_2600_B0p2_02159.tiff
+├── rec20160320_160251_244p1_1p5cm_cont_4097im_1500ms_ML17keV_9.h5
+│   ├── rec_SFRR_2600_B0p2_00000.tiff
+│   ├── rec_SFRR_2600_B0p2_00001.tiff
+│   ├── (...)
+│   └── rec_SFRR_2600_B0p2_02159.tiff
+├── rec20160323_093947_232p3_cured_1p5cm_cont_4097im_1500ms_17keV_10.h5
+│   ├── rec_SFRR_2600_B0p2_00000.tiff
+│   ├── rec_SFRR_2600_B0p2_00001.tiff
+│   ├── (...)
+│   └── rec_SFRR_2600_B0p2_02159.tiff
+├── rec20160324_055424_232p1_wet_1cm_cont_4097im_1500ms_17keV_13_a.h5
+│   ├── rec_SFRR_2600_B0p2_00000.tiff
+│   ├── rec_SFRR_2600_B0p2_00001.tiff
+│   ├── (...)
+│   └── rec_SFRR_2600_B0p2_02159.tiff
+├── rec20160324_123639_235p1_wet_0p7cm_cont_4097im_1500ms_17keV_14.h5
+│   ├── rec_SFRR_2600_B0p2_00000.tiff
+│   ├── rec_SFRR_2600_B0p2_00001.tiff
+│   ├── (...)
+│   └── rec_SFRR_2600_B0p2_02159.tiff
+├── rec20160326_175540_235p4_wet_1p15cm_cont_4097im_1500ex_17keV_20.h5
+│   ├── rec_SFRR_2600_B0p2_00000.tiff
+│   ├── rec_SFRR_2600_B0p2_00001.tiff
+│   ├── (...)
+│   └── rec_SFRR_2600_B0p2_02159.tiff
+├── rec20160327_003824_235p4_cured_1p15cm_cont_4097im_1500ex_17keV_22.h5
+│   ├── rec_SFRR_2600_B0p2_00000.tiff
+│   ├── rec_SFRR_2600_B0p2_00001.tiff
+│   ├── (...)
+│   └── rec_SFRR_2600_B0p2_02159.tiff
+└── rec20160327_160624_245p1_wet_1cm_cont_4097im_1500ex_17keV_23.h5
+    ├── rec_SFRR_2600_B0p2_00000.tiff
+    ├── rec_SFRR_2600_B0p2_00001.tiff
+    ├── (...)
+    └── rec_SFRR_2600_B0p2_02159.tiff
+
+data/Seg/Bunch2/
+├── rec20160320_160251_244p1_1p5cm_cont_4097im_1500ms_ML17keV_9.h5
+│   └── Registered
+│       └── Bunch2WoPR
+│           ├── Reg_0001.tif
+│           ├── Reg_0002.tif
+│           ├── (...)
+│           └──
+├── rec20160323_093947_232p3_cured_1p5cm_cont_4097im_1500ms_17keV_10.h5
+│   └── Registered
+│       └── Bunch2WoPR
+│           ├── Reg_0001.tif
+│           ├── Reg_0002.tif
+│           ├── (...)
+│           └── Reg_2160.tif
+└── rec20160327_003824_235p4_cured_1p15cm_cont_4097im_1500ex_17keV_22.h5
+    └── Registered
+        └── Bunch2WoPR
+            ├── Reg_0001.tif
+            ├── Reg_0002.tif
+            ├── (...)
+            └── Reg_2160.tif
+```
