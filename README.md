@@ -45,13 +45,21 @@ A copy of the folder structure is given at the Appendix, at the end of this file
 
 To download this repository to your machine, please use `git`. It can be downloaded freely [at the project's page](https://git-scm.com/downloads).
 
-When `git` is installed, the following command on a [Linux](https://help.gnome.org/users/gnome-terminal/stable/)/[Mac OS](https://support.apple.com/guide/terminal/welcome/mac) Terminal or a [Windows PowerShell](https://docs.microsoft.com/en-us/powershell/scripting/windows-powershell/install/installing-windows-powershell?view=powershell-7) downloads this repository.
+When `git` is installed, the following command on a [Linux](https://help.gnome.org/users/gnome-terminal/stable/)/[Mac OS](https://support.apple.com/guide/terminal/welcome/mac) Terminal or a [Windows PowerShell](https://docs.microsoft.com/en-us/powershell/scripting/windows-powershell/install/installing-windows-powershell?view=powershell-7) downloads this repository to the subfolder `fcn_microct` in your current folder.
 
 ```bash
 $ git clone https://github.com/alexdesiqueira/fcn_microct.git fcn_microct
 ```
 
-The `$` represents the Terminal prompt. For more information on how to use `git`,  please check [its documentation](https://git-scm.com/doc).
+The `$` represents the Terminal prompt.
+
+---
+
+**Using Git**
+
+For more information on how to use `git`, please check [its documentation](https://git-scm.com/doc). [Git Immersion](https://gitimmersion.com/) is also a great — and extensive — tour through Git fundamentals.
+
+---
 
 You need Python installed to execute the code. We recommend using the [Anaconda distribution](https://www.anaconda.com/products/individual); all necessary tools are pre-installed. For installation instructions and packages to different operating systems, please refer to their [downloads page](https://www.anaconda.com/products/individual#Downloads). The following command installs the necessary dependencies:
 
@@ -59,7 +67,7 @@ You need Python installed to execute the code. We recommend using the [Anaconda 
 $ pip install -r requirements.txt
 ```
 
-The `$` represents the Terminal prompt. Now we are ready to use this repository.
+The `$` represents the Terminal prompt. Now you are ready to use this repository.
 
 
 ## Training a neural network
@@ -177,9 +185,7 @@ $ python train.py -n 'tiramisu_3d' -t 'tiramisu-67' -w 'larson_tiramisu_3d-67.hd
 
 ### Predicting using the trained networks
 
-The following commands in a [Linux](https://help.gnome.org/users/gnome-terminal/stable/)/[Mac OS](https://support.apple.com/guide/terminal/welcome/mac) Terminal or a [Windows PowerShell](https://docs.microsoft.com/en-us/powershell/scripting/windows-powershell/install/installing-windows-powershell?view=powershell-7) will predict the data using the four trained networks:
-
-[TODO Check these commands]
+The following commands in a [Linux](https://help.gnome.org/users/gnome-terminal/stable/)/[Mac OS](https://support.apple.com/guide/terminal/welcome/mac) Terminal or a [Windows PowerShell](https://docs.microsoft.com/en-us/powershell/scripting/windows-powershell/install/installing-windows-powershell?view=powershell-7) will predict results in the data using the four trained networks.
 
 ```bash
 $ python predict.py -n 'unet' -w 'larson_unet.hdf5'
@@ -187,6 +193,15 @@ $ python predict.py -n 'unet_3d' -w 'larson_unet_3d.hdf5'
 $ python predict.py -n 'tiramisu' -t 'tiramisu-67' -w 'larson_tiramisu-67.hdf5'
 $ python predict.py -n 'tiramisu_3d' -t 'tiramisu-67' -w 'larson_tiramisu_3d-67.hdf5'
 ```
+
+Here we assume that the files for `unet`, `unet_3d`, `tiramisu` and `tiramisu_3d` are named `larson_unet.hdf5`, `larson_unet_3d.hdf5`, `larson_tiramisu-67.hdf5`, and `larson_tiramisu_3d-67`, respectively. In this case, we also expect them to be in the same folder you are executing the code.
+
+Another example. If you would like to predict results using the U-net network and your coefficients are in the folder `coefficients/unet`, you would use:
+
+```bash
+$ python predict.py -n 'unet' -w 'coefficients/unet/larson_unet.hdf5'
+```
+
 
 ## References
 
@@ -200,73 +215,77 @@ $ python predict.py -n 'tiramisu_3d' -t 'tiramisu-67' -w 'larson_tiramisu_3d-67.
 This is the structure of Larson et al's folders we used in this study, for reference.
 
 ```bash
-data/Recons/Bunch2WoPR/
-├── rec20160318_191511_232p3_2cm_cont__4097im_1500ms_ML17keV_6.h5
-│   ├── rec_SFRR_2600_B0p2_00159.tiff
-│   ├── rec_SFRR_2600_B0p2_00160.tiff
-│   ├── (...)
-│   └── rec_SFRR_2600_B0p2_01158.tiff
-├── rec20160318_223946_244p1_1p5cm_cont__4097im_1500ms_ML17keV_7.h5
-│   ├── rec_SFRR_2600_B0p2_00000.tiff
-│   ├── rec_SFRR_2600_B0p2_00001.tiff
-│   ├── (...)
-│   └── rec_SFRR_2600_B0p2_02159.tiff
-├── rec20160320_160251_244p1_1p5cm_cont_4097im_1500ms_ML17keV_9.h5
-│   ├── rec_SFRR_2600_B0p2_00000.tiff
-│   ├── rec_SFRR_2600_B0p2_00001.tiff
-│   ├── (...)
-│   └── rec_SFRR_2600_B0p2_02159.tiff
-├── rec20160323_093947_232p3_cured_1p5cm_cont_4097im_1500ms_17keV_10.h5
-│   ├── rec_SFRR_2600_B0p2_00000.tiff
-│   ├── rec_SFRR_2600_B0p2_00001.tiff
-│   ├── (...)
-│   └── rec_SFRR_2600_B0p2_02159.tiff
-├── rec20160324_055424_232p1_wet_1cm_cont_4097im_1500ms_17keV_13_a.h5
-│   ├── rec_SFRR_2600_B0p2_00000.tiff
-│   ├── rec_SFRR_2600_B0p2_00001.tiff
-│   ├── (...)
-│   └── rec_SFRR_2600_B0p2_02159.tiff
-├── rec20160324_123639_235p1_wet_0p7cm_cont_4097im_1500ms_17keV_14.h5
-│   ├── rec_SFRR_2600_B0p2_00000.tiff
-│   ├── rec_SFRR_2600_B0p2_00001.tiff
-│   ├── (...)
-│   └── rec_SFRR_2600_B0p2_02159.tiff
-├── rec20160326_175540_235p4_wet_1p15cm_cont_4097im_1500ex_17keV_20.h5
-│   ├── rec_SFRR_2600_B0p2_00000.tiff
-│   ├── rec_SFRR_2600_B0p2_00001.tiff
-│   ├── (...)
-│   └── rec_SFRR_2600_B0p2_02159.tiff
-├── rec20160327_003824_235p4_cured_1p15cm_cont_4097im_1500ex_17keV_22.h5
-│   ├── rec_SFRR_2600_B0p2_00000.tiff
-│   ├── rec_SFRR_2600_B0p2_00001.tiff
-│   ├── (...)
-│   └── rec_SFRR_2600_B0p2_02159.tiff
-└── rec20160327_160624_245p1_wet_1cm_cont_4097im_1500ex_17keV_23.h5
-    ├── rec_SFRR_2600_B0p2_00000.tiff
-    ├── rec_SFRR_2600_B0p2_00001.tiff
-    ├── (...)
-    └── rec_SFRR_2600_B0p2_02159.tiff
+data/
+    Recons/
+        Bunch2WoPR/
+         ├── rec20160318_191511_232p3_2cm_cont__4097im_1500ms_ML17keV_6.h5
+         │   ├── rec_SFRR_2600_B0p2_00159.tiff
+         │   ├── rec_SFRR_2600_B0p2_00160.tiff
+         │   ├── (...)
+         │   └── rec_SFRR_2600_B0p2_01158.tiff
+         ├── rec20160318_223946_244p1_1p5cm_cont__4097im_1500ms_ML17keV_7.h5
+         │   ├── rec_SFRR_2600_B0p2_00000.tiff
+         │   ├── rec_SFRR_2600_B0p2_00001.tiff
+         │   ├── (...)
+         │   └── rec_SFRR_2600_B0p2_02159.tiff
+         ├── rec20160320_160251_244p1_1p5cm_cont_4097im_1500ms_ML17keV_9.h5
+         │   ├── rec_SFRR_2600_B0p2_00000.tiff
+         │   ├── rec_SFRR_2600_B0p2_00001.tiff
+         │   ├── (...)
+         │   └── rec_SFRR_2600_B0p2_02159.tiff
+         ├── rec20160323_093947_232p3_cured_1p5cm_cont_4097im_1500ms_17keV_10.h5
+         │   ├── rec_SFRR_2600_B0p2_00000.tiff
+         │   ├── rec_SFRR_2600_B0p2_00001.tiff
+         │   ├── (...)
+         │   └── rec_SFRR_2600_B0p2_02159.tiff
+         ├── rec20160324_055424_232p1_wet_1cm_cont_4097im_1500ms_17keV_13_a.h5
+         │   ├── rec_SFRR_2600_B0p2_00000.tiff
+         │   ├── rec_SFRR_2600_B0p2_00001.tiff
+         │   ├── (...)
+         │   └── rec_SFRR_2600_B0p2_02159.tiff
+         ├── rec20160324_123639_235p1_wet_0p7cm_cont_4097im_1500ms_17keV_14.h5
+         │   ├── rec_SFRR_2600_B0p2_00000.tiff
+         │   ├── rec_SFRR_2600_B0p2_00001.tiff
+         │   ├── (...)
+         │   └── rec_SFRR_2600_B0p2_02159.tiff
+         ├── rec20160326_175540_235p4_wet_1p15cm_cont_4097im_1500ex_17keV_20.h5
+         │   ├── rec_SFRR_2600_B0p2_00000.tiff
+         │   ├── rec_SFRR_2600_B0p2_00001.tiff
+         │   ├── (...)
+         │   └── rec_SFRR_2600_B0p2_02159.tiff
+         ├── rec20160327_003824_235p4_cured_1p15cm_cont_4097im_1500ex_17keV_22.h5
+         │   ├── rec_SFRR_2600_B0p2_00000.tiff
+         │   ├── rec_SFRR_2600_B0p2_00001.tiff
+         │   ├── (...)
+         │   └── rec_SFRR_2600_B0p2_02159.tiff
+         └── rec20160327_160624_245p1_wet_1cm_cont_4097im_1500ex_17keV_23.h5
+                         ├── rec_SFRR_2600_B0p2_00000.tiff
+                         ├── rec_SFRR_2600_B0p2_00001.tiff
+                         ├── (...)
+                         └── rec_SFRR_2600_B0p2_02159.tiff
 
-data/Seg/Bunch2/
-├── rec20160320_160251_244p1_1p5cm_cont_4097im_1500ms_ML17keV_9.h5
-│   └── Registered
-│       └── Bunch2WoPR
-│           ├── Reg_0001.tif
-│           ├── Reg_0002.tif
-│           ├── (...)
-│           └──
-├── rec20160323_093947_232p3_cured_1p5cm_cont_4097im_1500ms_17keV_10.h5
-│   └── Registered
-│       └── Bunch2WoPR
-│           ├── Reg_0001.tif
-│           ├── Reg_0002.tif
-│           ├── (...)
-│           └── Reg_2160.tif
-└── rec20160327_003824_235p4_cured_1p15cm_cont_4097im_1500ex_17keV_22.h5
-    └── Registered
-        └── Bunch2WoPR
-            ├── Reg_0001.tif
-            ├── Reg_0002.tif
-            ├── (...)
-            └── Reg_2160.tif
+data/
+    Seg/
+        Bunch2/
+         ├── rec20160320_160251_244p1_1p5cm_cont_4097im_1500ms_ML17keV_9.h5
+         │   └── Registered
+         │       └── Bunch2WoPR
+         │           ├── Reg_0001.tif
+         │           ├── Reg_0002.tif
+         │           ├── (...)
+         │           └──
+         ├── rec20160323_093947_232p3_cured_1p5cm_cont_4097im_1500ms_17keV_10.h5
+         │   └── Registered
+         │       └── Bunch2WoPR
+         │           ├── Reg_0001.tif
+         │           ├── Reg_0002.tif
+         │           ├── (...)
+         │           └── Reg_2160.tif
+         └── rec20160327_003824_235p4_cured_1p15cm_cont_4097im_1500ex_17keV_22.h5
+             └── Registered
+                 └── Bunch2WoPR
+                     ├── Reg_0001.tif
+                     ├── Reg_0002.tif
+                     ├── (...)
+                     └── Reg_2160.tif
 ```
