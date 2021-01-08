@@ -1,14 +1,16 @@
 # A reusable pipeline for large-scale fiber segmentation on unidirectional fiber beds using fully convolutional neural networks
 
-## Alexandre Fioravante de Siqueira<sup>1,2,3</sup>, Daniela Mayumi Ushizima<sup>1,2</sup>, Stéfan J. van der Walt<sup>1,2</sup>
+## Alexandre Fioravante de Siqueira<sup>1,2</sup>, Daniela Mayumi Ushizima<sup>1,2</sup>, Stéfan J. van der Walt<sup>1,2</sup>
 
 <sup>1</sup> _Berkeley Institute for Data Science, University of California, Berkeley, USA_
 
 <sup>2</sup> _Lawrence Berkeley National Laboratory, Berkeley, USA_
 
-<sup>3</sup> _Institute for Globally Distributed Open Research and Education (IGDORE)_
-
 * This paper is available on: [[arXiv]](https://...)
+
+* Supplementary data available on: [[Dryad]](https://...)
+
+In this study we separate fibers in ex-situ X-ray CT fiber beds of nine samples from [Larson et al (2019)](http://dx.doi.org/doi:10.18126/M2QM0Z)'s data. To separate the fibers in these samples, we tested four different fully convolutional neural networks — U-net, 3D U-net, Tiramisu, and 3D Tiramisu. When comparing our neural network approach to Larson et al. results, we obtained [Dice](https://doi.org/10.2307/1932409) and [Matthews](https://doi.org/10.1016/0005-2795(75)90109-9) coefficients greater than 92.28 ± 9.65%, reaching up to 98.42 ± 0.03%. This shows that the network results are close to the human-supervised ones in these fiber beds, in some cases separating fibers that the original study could not find. Here you find the data resulting from this study.
 
 
 ## Downloading Larson et al's data
