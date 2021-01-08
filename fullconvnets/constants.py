@@ -1,7 +1,6 @@
 import numpy as np
 import os
 
-
 # available networks.
 AVAILABLE_2D_NETS = ('tiramisu', 'unet')
 AVAILABLE_3D_NETS = ('tiramisu_3d', 'unet_3d')
@@ -26,7 +25,7 @@ COLOR_DICT = np.array([CLASS_0, CLASS_1, CLASS_2, CLASS_3, CLASS_4,
 
 # defining folder structure.
 # base folder
-FOLDER_BASE = '/home/alex/data/larson_2019'
+FOLDER_BASE = '.'
 
 # Larson's samples
 FOLDER_SAMPLE = os.path.join(FOLDER_BASE, 'Recons/Bunch2WoPR/')
