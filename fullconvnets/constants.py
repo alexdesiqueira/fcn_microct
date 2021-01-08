@@ -25,7 +25,7 @@ COLOR_DICT = np.array([CLASS_0, CLASS_1, CLASS_2, CLASS_3, CLASS_4,
 
 # defining folder structure.
 # base folder
-FOLDER_BASE = '.'
+FOLDER_BASE = './data'
 
 # Larson's samples
 FOLDER_SAMPLE = os.path.join(FOLDER_BASE, 'Recons/Bunch2WoPR/')
