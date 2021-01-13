@@ -15,3 +15,6 @@
 
 # ignoring VSCode files
 .vscode/settings.json
+
+# ignoring the data folder, where Larson et al.'s data live
+./data
