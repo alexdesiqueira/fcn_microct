@@ -40,8 +40,7 @@ Larson et al's dataset is available [at this link](http://dx.doi.org/doi:10.1812
 
 The first three numeric characters correspond to a material sample, and the last character correspond to different extrinsic factors, e.g. deformation. Despite being samples from similar materials, the reconstructed files presented several differences: different amount of ringing artifacts, intensity variation, noise, etc.
 
-Larson's folder structure should be placed at the folder `data`.
-A copy of the folder structure is given at the Appendix, at the end of this file. For more info on the data, please refer to [Larson et al (2019)](https://www.sciencedirect.com/science/article/abs/pii/S1359835X18304603).
+Larson et al.'s folder structure should be placed at the folder `data`. A copy of the folder structure is given at the Appendix, at the end of this file. For more info on the data, please refer to [Larson et al (2019)](https://www.sciencedirect.com/science/article/abs/pii/S1359835X18304603).
 
 
 ## Preparing the PC to run the code locally
