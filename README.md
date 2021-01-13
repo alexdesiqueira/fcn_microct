@@ -40,6 +40,7 @@ Larson et al's dataset is available [at this link](http://dx.doi.org/doi:10.1812
 
 The first three numeric characters correspond to a material sample, and the last character correspond to different extrinsic factors, e.g. deformation. Despite being samples from similar materials, the reconstructed files presented several differences: different amount of ringing artifacts, intensity variation, noise, etc.
 
+Larson's folder structure should be placed at the folder `data`.
 A copy of the folder structure is given at the Appendix, at the end of this file. For more info on the data, please refer to [Larson et al (2019)](https://www.sciencedirect.com/science/article/abs/pii/S1359835X18304603).
 
 
@@ -74,7 +75,7 @@ The `$` represents the Terminal prompt. Now you are ready to use this repository
 
 ## Training a neural network
 
-After downloading Larson et al's original data and preparing the PC to run the code in this repository, you can use the script `train.py` to train the neural networks in the input data. For example, the command
+After downloading Larson et al's original data and preparing the PC to run the code in this repository, you can use the script `train.py` to train the neural networks in the input data. For example, when on the folder `fullconvnets`, the command
 
 ```bash
 $ python train.py -n 'tiramisu_3d' -t 'tiramisu-67' -w 'larson_tiramisu_3d-67.hdf5' -e 5 -b 2
@@ -111,7 +112,7 @@ An example of a JSON file follows:
 
 ## Predicting on Larson et al's data
 
-After training one of the architectures into the input data — or if you would like to use one of weights we made available — you can use the script `predict.py` to predict results — i.e., use the network to separate regions of interest into your data. For example, the command
+After training one of the architectures into the input data — or if you would like to use one of weights we made available on [Dryad](https://doi.org/10.6078/D1069R) — you can use the script `predict.py` to predict results — i.e., use the network to separate regions of interest into your data. For example, when on the folder `fullconvnets`,  the command
 
 ```bash
 $ python predict.py -n 'tiramisu_3d' -t 'tiramisu-67' -w 'larson_tiramisu_3d-67.hdf5'
