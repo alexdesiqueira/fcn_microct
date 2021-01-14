@@ -6,7 +6,9 @@
 
 <sup>2</sup> _Lawrence Berkeley National Laboratory, Berkeley, USA_
 
-* This paper is available on: [[arXiv]](https://...)
+* This paper is available on: [[arXiv]](http://arxiv.org/abs/2101.04823)
+
+* Supplementary material available on: [[GitHub]](https://github.com/alexdesiqueira/fcn_microct/)
 
 * Supplementary data available on: [[Dryad]](https://doi.org/10.6078/D1069R)
 
