@@ -817,22 +817,22 @@ def _add_auc_legend(area_under_curve, ax=None):
         _, ax = plt.subplots(figsize=FIGURE_SIZE)
 
     # Setting patches for the legends.
-    _ = np.round(np.asarray(area_under_curve[0]) * 100, decimals=4)
+    _ = np.round(np.asarray(area_under_curve[0]) * 100, decimals=2)
     aux_label = f'Tiramisu (AUC$_\mu$: {_}%)'
     leg_auc_tiramisu = mpatches.Patch(color=COLOR_TIRAMISU,
                                       label=aux_label)
 
-    _ = np.round(np.asarray(area_under_curve[1]) * 100, decimals=4)
+    _ = np.round(np.asarray(area_under_curve[1]) * 100, decimals=2)
     aux_label = f'U-net (AUC$_\mu$: {_}%)'
     leg_auc_unet = mpatches.Patch(color=COLOR_UNET,
                                   label=aux_label)
 
-    _ = np.round(np.asarray(area_under_curve[2]) * 100, decimals=4)
+    _ = np.round(np.asarray(area_under_curve[2]) * 100, decimals=2)
     aux_label = f'3D Tiramisu (AUC$_\mu$: {_}%)'
     leg_auc_tiramisu_3d = mpatches.Patch(color=COLOR_TIRAMISU_3D,
                                          label=aux_label)
 
-    _ = np.round(np.asarray(area_under_curve[3]) * 100, decimals=4)
+    _ = np.round(np.asarray(area_under_curve[3]) * 100, decimals=2)
     aux_label = f'3D U-net (AUC$_\mu$: {_}%)'
     leg_auc_unet_3d = mpatches.Patch(color=COLOR_UNET_3D,
                                      label=aux_label)
