@@ -1,0 +1,14 @@
+@article{fcn_microct-2022, 
+         title = {A reusable neural network pipeline for unidirectional fiber segmentation}, 
+         volume = {9}, 
+         ISSN = {2052-4463}, 
+         DOI = {10.1038/s41597-022-01119-6}, 
+         abstractNote = {Fiber-reinforced ceramic-matrix composites are advanced, temperature resistant materials with applications in aerospace engineering. Their analysis involves the detection and separation of fibers, embedded in a fiber bed, from an imaged sample. Currently, this is mostly done using semi-supervised techniques. Here, we present an open, automated computational pipeline to detect fibers from a tomographically reconstructed X-ray volume. We apply our pipeline to a non-trivial dataset by Larson et al. To separate the fibers in these samples, we tested four different architectures of convolutional neural networks. When comparing our neural network approach to a semi-supervised one, we obtained Dice and Matthews coefficients reaching up to 98%, showing that these automated approaches can match human-supervised methods, in some cases separating fibers that human-curated algorithms could not find. The software written for this project is open source, released under a permissive license, and can be freely adapted and re-used in other domains.}, 
+         number = {11}, 
+         journal = {Scientific Data}, 
+         publisher = {Nature Publishing Group}, 
+         author = {Fioravante de Siqueira, Alexandre and Ushizima, Daniela M. and van der Walt, Stéfan J.}, 
+         year = {2022}, 
+         month = {Feb}, 
+         pages = {32} 
+}
