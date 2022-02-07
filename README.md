@@ -6,14 +6,17 @@
 
 <sup>2</sup> _Lawrence Berkeley National Laboratory, Berkeley, USA_
 
-* This paper is available on: [[arXiv]](http://arxiv.org/abs/2101.04823)
+* This paper is available on: [[Scientific Data]](https://doi.org/10.1038/s41597-022-01119-6) [[arXiv]](http://arxiv.org/abs/2101.04823)
 
 * Supplementary material available on: [[GitHub]](https://github.com/alexdesiqueira/fcn_microct/)
 
 * Supplementary data available on: [[Dryad]](https://doi.org/10.6078/D1069R)
 
-In this study we analyzed fibers from ex-situ X-ray CT fiber beds of nine samples from [Larson et al (2019)](http://dx.doi.org/doi:10.18126/M2QM0Z)'s datasets. To detect individual fibers in these samples, we tested four different fully convolutional neural networks — U-net, 3D U-net, Tiramisu, and 3D Tiramisu. When comparing our neural network approach to Larson et al. results, we obtained [Dice](https://doi.org/10.2307/1932409) and [Matthews](https://doi.org/10.1016/0005-2795(75)90109-9) coefficients greater than 92.28 ± 9.65%, reaching up to 98.42 ± 0.03%. This shows that the network results are close to the human-supervised ones in these fiber beds, in some cases separating fibers that Larson et al's analysis could not identify. Here you find the data resulting from our study, under review by Nature Scientific Data.
+* If you find this material useful, please cite the accompanying paper:
 
+> Fioravante de Siqueira, A., Ushizima, D.M. & van der Walt, S.J. A reusable neural network pipeline for unidirectional fiber segmentation. Sci Data 9, 32 (2022). https://doi.org/10.1038/s41597-022-01119-6
+
+In this study we analyzed fibers from ex-situ X-ray CT fiber beds of nine samples from [Larson et al (2019)](http://dx.doi.org/doi:10.18126/M2QM0Z)'s datasets. To detect individual fibers in these samples, we tested four different fully convolutional neural networks — U-net, 3D U-net, Tiramisu, and 3D Tiramisu. When comparing our neural network approach to Larson et al. results, we obtained [Dice](https://doi.org/10.2307/1932409) and [Matthews](https://doi.org/10.1016/0005-2795(75)90109-9) coefficients greater than 92.28 ± 9.65%, reaching up to 98.42 ± 0.03%. This shows that the network results are close to the human-supervised ones in these fiber beds, in some cases separating fibers that Larson et al's analysis could not identify. Here you find the data resulting from our study.
 
 ## Downloading Larson et al's data
 
